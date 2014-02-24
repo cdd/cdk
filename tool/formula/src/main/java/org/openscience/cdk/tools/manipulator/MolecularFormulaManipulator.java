@@ -96,6 +96,30 @@ public class MolecularFormulaManipulator {
 	}
 
 	/**
+	 * Occurrences of a given element from an isotope in a molecular formula.
+	 * 
+	 * @param  formula the formula
+	 * @param  isotope isotope of an element
+	 * @return         number of the times the element occurs
+	 * @see #getElementCount(IMolecularFormula, IElement)  
+	 */
+    public static int getElementCount(IMolecularFormula formula, IIsotope isotope) {
+        return getElementCount(formula, formula.getBuilder().newInstance(IElement.class, isotope));
+	}
+    
+    /**
+	 * Occurrences of a given element in a molecular formula.
+	 * 
+	 * @param  formula the formula
+	 * @param  symbol  element symbol (e.g. C for carbon)
+	 * @return         number of the times the element occurs
+	 * @see #getElementCount(IMolecularFormula, IElement)  
+	 */
+    public static int getElementCount(IMolecularFormula formula, String symbol) {
+        return getElementCount(formula, formula.getBuilder().newInstance(IElement.class, symbol));
+	}
+
+	/**
 	 * Get a list of IIsotope from a given IElement which is contained
 	 * molecular. The search is based only on the IElement.
 	 *
