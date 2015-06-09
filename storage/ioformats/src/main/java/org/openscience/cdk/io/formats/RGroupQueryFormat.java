@@ -24,8 +24,6 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
@@ -34,59 +32,55 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.RGroupQueryFormatTest")
 public class RGroupQueryFormat extends SimpleChemFormatMatcher implements IChemFormatMatcher {
-
 
     private static IResourceFormat myself = null;
 
     public RGroupQueryFormat() {}
 
-    @TestMethod("testResourceFormatSet")
     public static IResourceFormat getInstance() {
-        if (myself == null)
-            myself = new RGroupQueryFormat();
+        if (myself == null) myself = new RGroupQueryFormat();
         return myself;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "Symyx Rgroup query files";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
-        return new String[] { "mol", "rgp" };
+        return new String[]{"mol", "rgp"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
+    /** {@inheritDoc} */
+    @Override
     public String getReaderClassName() {
         return "org.openscience.cdk.io.RGroupQueryReader";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
+    /** {@inheritDoc} */
+    @Override
     public String getWriterClassName() {
         return "org.openscience.cdk.io.RGroupQueryWriter";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
         if (line.indexOf("$RGP") >= 0)
             return true;
@@ -94,20 +88,20 @@ public class RGroupQueryFormat extends SimpleChemFormatMatcher implements IChemF
             return false;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetSupportedDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getSupportedDataFeatures() {
-        return getRequiredDataFeatures() | DataFeatures.HAS_2D_COORDINATES ;
+        return getRequiredDataFeatures() | DataFeatures.HAS_2D_COORDINATES;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
         return DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
     }

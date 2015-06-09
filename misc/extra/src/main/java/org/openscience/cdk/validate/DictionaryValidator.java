@@ -1,26 +1,21 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
- * 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 package org.openscience.cdk.validate;
 
@@ -38,37 +33,32 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @author   Egon Willighagen
  * @cdk.githash
  * @cdk.created  2003-03-28
- */ 
+ */
 public class DictionaryValidator extends AbstractValidator {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(DictionaryValidator.class);
-    
-    private DictionaryDatabase db;
-    
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(DictionaryValidator.class);
+
+    private DictionaryDatabase  db;
+
     public DictionaryValidator(DictionaryDatabase db) {
         this.db = db;
     }
 
+    @Override
     public ValidationReport validateChemObject(IChemObject subject) {
         ValidationReport report = new ValidationReport();
-        Map<Object,Object> properties = subject.getProperties();
+        Map<Object, Object> properties = subject.getProperties();
         Iterator<Object> iter = properties.keySet().iterator();
         ValidationTest noNamespace = new ValidationTest(subject,
-            "Dictionary Reference lacks a namespace indicating the dictionary."
-        );
-        ValidationTest noDict = new ValidationTest(subject,
-            "The referenced dictionary does not exist."
-        );
-        ValidationTest noEntry = new ValidationTest(subject,
-            "The referenced entry does not exist in the dictionary."
-        );
+                "Dictionary Reference lacks a namespace indicating the dictionary.");
+        ValidationTest noDict = new ValidationTest(subject, "The referenced dictionary does not exist.");
+        ValidationTest noEntry = new ValidationTest(subject, "The referenced entry does not exist in the dictionary.");
         while (iter.hasNext()) {
             Object key = iter.next();
             if (key instanceof String) {
-                String keyName = (String)key;
+                String keyName = (String) key;
                 if (keyName.startsWith(DictionaryDatabase.DICTREFPROPERTYNAME)) {
-                    String dictRef = (String)properties.get(keyName);
+                    String dictRef = (String) properties.get(keyName);
                     String details = "Dictref being anaylyzed: " + dictRef + ". ";
                     noNamespace.setDetails(details);
                     noDict.setDetails(details);
@@ -76,12 +66,12 @@ public class DictionaryValidator extends AbstractValidator {
                     int index = dictRef.indexOf(':');
                     if (index != -1) {
                         report.addOK(noNamespace);
-                        String dict = dictRef.substring(0,index);
+                        String dict = dictRef.substring(0, index);
                         logger.debug("Looking for dictionary:" + dict);
                         if (db.hasDictionary(dict)) {
                             report.addOK(noDict);
-                            if (dictRef.length() > index+1) {
-                                String entry = dictRef.substring(index+1);
+                            if (dictRef.length() > index + 1) {
+                                String entry = dictRef.substring(index + 1);
                                 logger.debug("Looking for entry:" + entry);
                                 if (db.hasEntry(dict, entry)) {
                                     report.addOK(noEntry);
@@ -114,5 +104,5 @@ public class DictionaryValidator extends AbstractValidator {
         }
         return report;
     }
-    
+
 }

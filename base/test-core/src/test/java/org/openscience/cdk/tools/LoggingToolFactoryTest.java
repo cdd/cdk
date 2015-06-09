@@ -26,39 +26,34 @@ import org.junit.Test;
  */
 public class LoggingToolFactoryTest {
 
-    @Test public void testSetGetLoggingToolClass() {
+    @Test
+    public void testSetGetLoggingToolClass() {
         Class<? extends ILoggingTool> logger = LoggingTool.class;
         LoggingToolFactory.setLoggingToolClass(logger);
-        Assert.assertEquals(
-            LoggingTool.class.getName(),
-            LoggingToolFactory.getLoggingToolClass().getName()
-        );
+        Assert.assertEquals(LoggingTool.class.getName(), LoggingToolFactory.getLoggingToolClass().getName());
     }
-    
-    @Test public void testCreateLoggingTool() {
-        ILoggingTool logger = LoggingToolFactory.createLoggingTool(
-            LoggingToolFactoryTest.class
-        );
+
+    @Test
+    public void testCreateLoggingTool() {
+        ILoggingTool logger = LoggingToolFactory.createLoggingTool(LoggingToolFactoryTest.class);
         Assert.assertNotNull(logger);
     }
 
-    @Test public void testCreateLog4jLoggingTool() {
+    @Test
+    public void testCreateLog4jLoggingTool() {
         Class<? extends ILoggingTool> logger = LoggingTool.class;
         LoggingToolFactory.setLoggingToolClass(logger);
-        ILoggingTool instance = LoggingToolFactory.createLoggingTool(
-            LoggingToolFactoryTest.class
-        );
+        ILoggingTool instance = LoggingToolFactory.createLoggingTool(LoggingToolFactoryTest.class);
         Assert.assertTrue(instance instanceof LoggingTool);
     }
-    
-    @Test public void testCustomLogger() {
+
+    @Test
+    public void testCustomLogger() {
         LoggingToolFactory.setLoggingToolClass(CustomLogger.class);
-        ILoggingTool instance = LoggingToolFactory.createLoggingTool(
-            LoggingToolFactoryTest.class
-        );
+        ILoggingTool instance = LoggingToolFactory.createLoggingTool(LoggingToolFactoryTest.class);
         Assert.assertTrue(instance instanceof CustomLogger);
     }
-    
+
     /**
      * Custom dummy logger used in the
      * {@link LoggingToolFactoryTest#testCustomLogger()} test to see if
@@ -69,23 +64,50 @@ public class LoggingToolFactoryTest {
     private static class CustomLogger implements ILoggingTool {
 
         private CustomLogger(Class<?> sourceClass) {}
-        
+
         public static ILoggingTool create(Class<?> sourceClass) {
             return new CustomLogger(sourceClass);
         }
-        
+
+        @Override
         public void debug(Object object) {}
+
+        @Override
         public void debug(Object object, Object... objects) {}
+
+        @Override
         public void dumpClasspath() {}
+
+        @Override
         public void dumpSystemProperties() {}
+
+        @Override
         public void error(Object object) {}
+
+        @Override
         public void error(Object object, Object... objects) {}
+
+        @Override
         public void fatal(Object object) {}
+
+        @Override
         public void info(Object object) {}
+
+        @Override
         public void info(Object object, Object... objects) {}
-        public boolean isDebugEnabled() { return true; }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return true;
+        }
+
+        @Override
         public void setStackLength(int length) {}
+
+        @Override
         public void warn(Object object) {}
+
+        @Override
         public void warn(Object object, Object... objects) {}
     }
 }

@@ -25,7 +25,6 @@ package org.openscience.cdk.smsd.interfaces;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  * Interface for mappings.
@@ -34,21 +33,19 @@ import org.openscience.cdk.annotations.TestClass;
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
 
-@TestClass("org.openscience.cdk.smsd.interfaces.IFinalMappingTest")
 public interface IFinalMapping {
 
-   
     /**
      * Adds mapping to the mapping list
      * @param mapping List of all MCS mapping between a given
-     * reactant and product 
+     * reactant and product
      */
     public void add(Map<Integer, Integer> mapping);
 
     /**
      * Sets mapping list
      * @param list List of all MCS mapping between a given
-     * reactant and product 
+     * reactant and product
      */
     public void set(List<Map<Integer, Integer>> list);
 

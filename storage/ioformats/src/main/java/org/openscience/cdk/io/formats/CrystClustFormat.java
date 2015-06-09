@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,8 +18,6 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
@@ -32,57 +25,55 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.CrystClustFormatTest")
 public class CrystClustFormat extends SimpleChemFormatMatcher implements IChemFormatMatcher {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public CrystClustFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new CrystClustFormat();
-    	return myself;
+        if (myself == null) myself = new CrystClustFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "CrystClust";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"crystclust"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { 
-      return "org.openscience.cdk.io.CrystClustReader";
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return "org.openscience.cdk.io.CrystClustReader";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { 
-      return "org.openscience.cdk.io.CrystClustWriter";
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return "org.openscience.cdk.io.CrystClustWriter";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
         if (lineNumber == 1 && line.startsWith("frame: ")) {
             return true;
@@ -90,23 +81,22 @@ public class CrystClustFormat extends SimpleChemFormatMatcher implements IChemFo
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return getRequiredDataFeatures();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return getRequiredDataFeatures();
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.HAS_3D_COORDINATES |
-		       DataFeatures.HAS_UNITCELL_PARAMETERS |
-               DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
-	}
+        return DataFeatures.HAS_3D_COORDINATES | DataFeatures.HAS_UNITCELL_PARAMETERS
+                | DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
+    }
 }

@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- * 
+ *
  * MX Cheminformatics Tools for Java
  *
  * Copyright (c) 2007-2009 Metamolecular, LLC
@@ -48,7 +48,6 @@ package org.openscience.cdk.smsd.algorithm.vflib.interfaces;
 
 import java.util.List;
 import java.util.Map;
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smsd.algorithm.vflib.builder.TargetProperties;
@@ -59,7 +58,6 @@ import org.openscience.cdk.smsd.algorithm.vflib.builder.TargetProperties;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public interface IMapper {
 
     /**

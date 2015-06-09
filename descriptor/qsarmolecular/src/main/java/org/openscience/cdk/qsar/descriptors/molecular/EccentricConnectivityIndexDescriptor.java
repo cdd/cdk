@@ -19,8 +19,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.graph.matrix.AdjacencyMatrix;
@@ -33,22 +31,21 @@ import org.openscience.cdk.qsar.result.IDescriptorResult;
 import org.openscience.cdk.qsar.result.IntegerResult;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-
 /**
  * A topological descriptor combining distance and adjacency information.
  * This descriptor is described by Sharma et al. {@cdk.cite SHA97} and has been shown
  * to correlate well with a number of physical properties. The descriptor is also reported to
- * have good discriminatory ability. 
+ * have good discriminatory ability.
  * <p>
- * The eccentric connectivity index for a hydrogen supressed molecular graph is given by the 
+ * The eccentric connectivity index for a hydrogen supressed molecular graph is given by the
  * expression
  * <center>
  * \xi^{c} = \sum_{i = 1}{n} E(i) V(i)
  * </center>
- * where E(i) is the eccentricity of the i<sup>th</sup> atom (path length from the 
+ * where E(i) is the eccentricity of the i<sup>th</sup> atom (path length from the
  * i<sup>th</sup> atom to the atom farthest from it) and V(i) is the vertex degree of the
  * i<sup>th</sup> atom.
- * 
+ *
  * <p>This descriptor uses these parameters:
  * <table border="1">
  *   <tr>
@@ -71,18 +68,17 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:eccentricConnectivityIndex
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.EccentricConnectivityIndexDescriptorTest")
 public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private static final String[] names = {"ECCEN"};
+
+    private static final String[] NAMES = {"ECCEN"};
 
     public EccentricConnectivityIndexDescriptor() {}
 
-	@TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#eccentricConnectivityIndex",
-		    this.getClass().getName(),
-		    "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#eccentricConnectivityIndex", this
+                        .getClass().getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -91,7 +87,7 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      *@param  params            The new parameters value
      *@exception  CDKException  Description of the Exception
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
@@ -101,15 +97,15 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      *
      *@return    The parameters value
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // no parameters to return
-        return(null);
+        return (null);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     /**
@@ -117,12 +113,11 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      *
      *@return    The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
-        return(null);
+        return (null);
     }
-
 
     /**
      *  Gets the parameterType attribute of the EccentricConnectivityIndexDescriptor object
@@ -130,9 +125,9 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      *@param  name  Description of the Parameter
      *@return       The parameterType value
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
-         return (null);
+        return (null);
     }
 
     /**
@@ -142,14 +137,14 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      *@return            An IntegerResult value representing the eccentric connectivity index
      */
 
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         IAtomContainer local = AtomContainerManipulator.removeHydrogens(container);
 
         int natom = local.getAtomCount();
         int[][] admat = AdjacencyMatrix.getMatrix(local);
         int[][] distmat = PathTools.computeFloydAPSP(admat);
-        
+
         int eccenindex = 0;
         for (int i = 0; i < natom; i++) {
             int max = -1;
@@ -160,8 +155,8 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
             eccenindex += max * degree;
         }
         IntegerResult retval = new IntegerResult(eccenindex);
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames(), null);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames(), null);
     }
 
     /**
@@ -175,10 +170,8 @@ public class EccentricConnectivityIndexDescriptor extends AbstractMolecularDescr
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResult(1);
     }
 }
-    
-

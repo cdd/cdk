@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -41,16 +36,16 @@ public interface ILonePair extends IElectronContainer {
      *
      * @return the associated Atom.
      * @see    #setAtom
-	 */
-	public IAtom getAtom();
+     */
+    public IAtom getAtom();
 
-	/**
-	 * Sets the associated Atom.
-	 *
-	 * @param atom the Atom this lone pair will be associated with
+    /**
+     * Sets the associated Atom.
+     *
+     * @param atom the Atom this lone pair will be associated with
      * @see    #getAtom
-	 */
-	public void setAtom(IAtom atom);
+     */
+    public void setAtom(IAtom atom);
 
     /**
      * Returns true if the given atom participates in this lone pair.
@@ -61,5 +56,3 @@ public interface ILonePair extends IElectronContainer {
     public boolean contains(IAtom atom);
 
 }
-
-

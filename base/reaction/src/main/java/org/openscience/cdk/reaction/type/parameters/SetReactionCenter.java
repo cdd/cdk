@@ -1,6 +1,4 @@
-/* $Revision: 10248 $ $Author: egonw $ $Date: 2008-02-26 11:12:38 +0100 (Tue, 26 Feb 2008) $
- *
- * Copyright (C) 2008  Miquel Rojas Cherto <miguelrojasch@users.sf.net>
+/* Copyright (C) 2008  Miquel Rojas Cherto <miguelrojasch@users.sf.net>
  *
  * Contact: cdk-devel@list.sourceforge.net
  *
@@ -20,18 +18,15 @@
  */
 package org.openscience.cdk.reaction.type.parameters;
 
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  * Class extension of ParameterReact class which defines if a reaction is set already the reaction center
  * in the reactants.
- * 
+ *
  * @author      miguelrojasch
  * @cdk.module  reaction
  * @cdk.githash
  */
-@TestClass(value="org.openscience.cdk.reaction.type.parameters.SetReactionCenterTest")
-public class SetReactionCenter extends ParameterReact{
+public class SetReactionCenter extends ParameterReact {
 
-	
 }

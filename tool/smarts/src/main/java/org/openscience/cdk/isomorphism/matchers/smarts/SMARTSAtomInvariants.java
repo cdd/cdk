@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -25,8 +25,6 @@
 package org.openscience.cdk.isomorphism.matchers.smarts;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtom;
@@ -50,7 +48,7 @@ import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
  * implementation different values for the ring information may be set. The
  * choice of ring set affects {@link #ringNumber()} and {@link #ringSize()}.
  * Some implementations store all ring sizes whilst others (Daylight) store only
- * the smallest. The {@link #degree()} also depends on whether hydrogens are                                                                          
+ * the smallest. The {@link #degree()} also depends on whether hydrogens are
  * suppressed or represented as explicit atoms. <p/> The {@link
  * #configureDaylightWithRingInfo(IAtomContainer)} and {@link
  * #configureDaylightWithoutRingInfo(IAtomContainer)} static utilities create
@@ -60,35 +58,34 @@ import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
  * @author John May
  * @cdk.module smarts
  */
-@TestClass("org.openscience.cdk.isomorphism.matchers.smarts.DaylightSMARTSAtomInvariantsTest") 
 final class SMARTSAtomInvariants {
 
     /** Property key to index the class by. */
-    static String KEY = "SMARTS.INVARIANTS";
+    static String                KEY = "SMARTS.INVARIANTS";
 
     /** the molecule which this atom belongs. */
     private final IAtomContainer target;
-    
+
     /** Total number of bonds formed - also refereed to as bond order sum. */
-    private final int valence;
+    private final int            valence;
 
     /** The number of rings this atom can be found in. */
-    private final int ringNumber;
+    private final int            ringNumber;
 
     /** The size of rings an atom is found in. */
-    private final Set<Integer> ringSize;
+    private final Set<Integer>   ringSize;
 
     /** Total number of connected atoms including implicit hydrogens. */
-    private final int connectivity;
+    private final int            connectivity;
 
     /** Total number of connected ring bonds. */
-    private final int ringConnectivity;
+    private final int            ringConnectivity;
 
     /** Total number of explicitly connected atoms. */
-    private final int degree;
+    private final int            degree;
 
     /** The total number of hydrogens on an atom. */
-    private final int totalHydrogenCount;
+    private final int            totalHydrogenCount;
 
     /**
      * Internal constructor - simple takes all the values.
@@ -102,14 +99,8 @@ final class SMARTSAtomInvariants {
      *                           count)
      * @param totalHydrogenCount the total number of hydrogens
      */
-    SMARTSAtomInvariants(IAtomContainer target,
-                         int valence,
-                         int ringNumber,
-                         Set<Integer> ringSize,
-                         int ringConnectivity,
-                         int degree,
-                         int connectivity,
-                         int totalHydrogenCount) {
+    SMARTSAtomInvariants(IAtomContainer target, int valence, int ringNumber, Set<Integer> ringSize,
+            int ringConnectivity, int degree, int connectivity, int totalHydrogenCount) {
         this.target = target;
         this.valence = valence;
         this.ringNumber = ringNumber;
@@ -119,10 +110,10 @@ final class SMARTSAtomInvariants {
         this.ringConnectivity = ringConnectivity;
         this.degree = degree;
     }
-    
-    @TestMethod("target") IAtomContainer target() {
+
+    IAtomContainer target() {
         return target;
-    } 
+    }
 
     /**
      * Access the valence of this atom. The valence is matched by the {@code
@@ -135,7 +126,7 @@ final class SMARTSAtomInvariants {
      *
      * @return the valence of the atom.
      */
-    @TestMethod("valence") int valence() {
+    int valence() {
         return valence;
     }
 
@@ -147,7 +138,7 @@ final class SMARTSAtomInvariants {
      *
      * @return number or rings
      */
-    @TestMethod("ringNumber,ringNumber_cyclophane") int ringNumber() {
+    int ringNumber() {
         return ringNumber;
     }
 
@@ -160,7 +151,7 @@ final class SMARTSAtomInvariants {
      *
      * @return ring sizes
      */
-    @TestMethod("ringSize,ringSize_cyclophane,ringSize_imidazole") Set<Integer> ringSize() {
+    Set<Integer> ringSize() {
         return ringSize;
     }
 
@@ -172,7 +163,7 @@ final class SMARTSAtomInvariants {
      *
      * @return ring connectivity
      */
-    @TestMethod("ringConnectivity") int ringConnectivity() {
+    int ringConnectivity() {
         return ringConnectivity;
     }
 
@@ -183,7 +174,7 @@ final class SMARTSAtomInvariants {
      *
      * @return connectivity
      */
-    @TestMethod("connectivity") int connectivity() {
+    int connectivity() {
         return connectivity;
     }
 
@@ -195,7 +186,7 @@ final class SMARTSAtomInvariants {
      *
      * @return connectivity
      */
-    @TestMethod("degree") int degree() {
+    int degree() {
         return degree;
     }
 
@@ -204,7 +195,7 @@ final class SMARTSAtomInvariants {
      *
      * @return
      */
-    @TestMethod("totalHydrogenCount") int totalHydrogenCount() {
+    int totalHydrogenCount() {
         return totalHydrogenCount;
     }
 
@@ -212,7 +203,7 @@ final class SMARTSAtomInvariants {
      * Computes {@link SMARTSAtomInvariants} and stores on the {@link #KEY} or
      * each {@link IAtom} in the {@code container}. The {@link
      * CDKConstants#ISINRING} is also set for each bond. This configuration does
-     * not include ring information and values are left as unset. 
+     * not include ring information and values are left as unset.
      * Ring membership is still configured but not ring size.
      *
      * <blockquote><pre>
@@ -225,7 +216,6 @@ final class SMARTSAtomInvariants {
      *
      * @param container the container to configure
      */
-    @TestMethod("noRingInfo")
     static void configureDaylightWithoutRingInfo(IAtomContainer container) {
         EdgeToBondMap map = EdgeToBondMap.withSpaceFor(container);
         int[][] graph = GraphUtil.toAdjList(container, map);
@@ -251,7 +241,6 @@ final class SMARTSAtomInvariants {
      *
      * @param container the container to configure
      */
-    @TestMethod("valence,degree")
     static void configureDaylightWithRingInfo(IAtomContainer container) {
         EdgeToBondMap map = EdgeToBondMap.withSpaceFor(container);
         int[][] graph = GraphUtil.toAdjList(container, map);
@@ -268,15 +257,13 @@ final class SMARTSAtomInvariants {
      * @param ringInfo  logical condition as whether ring info should be
      *                  included
      */
-    private static void configureDaylight(IAtomContainer container,
-                                          int[][] graph,
-                                          EdgeToBondMap bondMap,
-                                          boolean ringInfo) {
+    private static void configureDaylight(IAtomContainer container, int[][] graph, EdgeToBondMap bondMap,
+            boolean ringInfo) {
 
         int nAtoms = container.getAtomCount();
 
         int[] ringNumber = new int[nAtoms];
-        int[] ringSize   = new int[nAtoms];
+        int[] ringSize = new int[nAtoms];
 
         Arrays.fill(ringSize, nAtoms + 1);
 
@@ -286,16 +273,14 @@ final class SMARTSAtomInvariants {
                 int size = cycle.length - 1;
                 for (int i = 1; i < cycle.length; i++) {
                     int v = cycle[i];
-                    if (size < ringSize[v])
-                        ringSize[v] = size;
+                    if (size < ringSize[v]) ringSize[v] = size;
                     ringNumber[v]++;
                     bondMap.get(cycle[i], cycle[i - 1]).setFlag(CDKConstants.ISINRING, true);
                 }
             }
         } else {
             // ring membership is super cheap
-            for (IBond bond : new RingSearch(container, graph).ringFragments()
-                                                              .bonds()) {
+            for (IBond bond : new RingSearch(container, graph).ringFragments().bonds()) {
                 bond.setFlag(CDKConstants.ISINRING, true);
             }
         }
@@ -304,16 +289,14 @@ final class SMARTSAtomInvariants {
 
             IAtom atom = container.getAtom(v);
 
-            int implHCount = checkNotNull(atom.getImplicitHydrogenCount(),
-                                          "Implicit hydrogen count was not set.");
+            int implHCount = checkNotNull(atom.getImplicitHydrogenCount(), "Implicit hydrogen count was not set.");
 
-            int totalHCount     = implHCount;
-            int valence         = implHCount;
-            int degree          = 0;
+            int totalHCount = implHCount;
+            int valence = implHCount;
+            int degree = 0;
             int ringConnections = 0;
 
-
-            // traverse bonds 
+            // traverse bonds
             for (int w : graph[v]) {
                 IBond bond = bondMap.get(v, w);
                 IBond.Order order = bond.getOrder();
@@ -335,20 +318,13 @@ final class SMARTSAtomInvariants {
 
             }
 
-            SMARTSAtomInvariants inv = new SMARTSAtomInvariants(container,
-                                                                valence,
-                                                                ringNumber[v],
-                                                                ringSize[v] <= nAtoms ? Collections.singleton(ringSize[v])
-                                                                                      : Collections.<Integer>emptySet(),
-                                                                ringConnections,
-                                                                degree,
-                                                                degree + implHCount,
-                                                                totalHCount);
+            SMARTSAtomInvariants inv = new SMARTSAtomInvariants(container, valence, ringNumber[v],
+                    ringSize[v] <= nAtoms ? Collections.singleton(ringSize[v]) : Collections.<Integer> emptySet(),
+                    ringConnections, degree, degree + implHCount, totalHCount);
 
             // if there was no properties a default size LinkedHashMap is created
             // automatically
-            atom.setProperty(SMARTSAtomInvariants.KEY,
-                             inv);
+            atom.setProperty(SMARTSAtomInvariants.KEY, inv);
         }
     }
 }

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,59 +18,53 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
-
 /**
  * See <a href="http://www.povray.org/">here</a>.
- * 
+ *
  * @author Miguel Rojas
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.POVRayFormatTest")
 public class POVRayFormat extends AbstractResourceFormat implements IResourceFormat {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public POVRayFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new POVRayFormat();
-    	return myself;
+        if (myself == null) myself = new POVRayFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "POV Ray";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"pov"};
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 }

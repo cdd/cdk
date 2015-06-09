@@ -1,20 +1,20 @@
 /* Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.silent;
 
@@ -38,8 +38,7 @@ import org.openscience.cdk.interfaces.ICrystal;
  *
  * @cdk.keyword crystal
  */
-public class Crystal extends AtomContainer implements Serializable, ICrystal, Cloneable
-{
+public class Crystal extends AtomContainer implements Serializable, ICrystal, Cloneable {
 
     /**
      * Determines if a de-serialized object is compatible with this class.
@@ -47,31 +46,31 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      * This value must only be changed if and only if the new version
      * of this class is incompatible with the old version. See Sun docs
      * for <a href=http://java.sun.com/products/jdk/1.1/docs/guide/serialization/spec/version.doc.html>details</a>.
-	 */
-	private static final long serialVersionUID = 5919649450390509278L;
+     */
+    private static final long serialVersionUID = 5919649450390509278L;
 
-	/** The a axis. */
-    private Vector3d aAxis;
+    /** The a axis. */
+    private Vector3d          aAxis;
     /** The b axis. */
-    private Vector3d bAxis;
+    private Vector3d          bAxis;
     /** The c axis. */
-    private Vector3d cAxis;
+    private Vector3d          cAxis;
 
     /**
      * Number of symmetry related atoms.
      */
-    private Integer zValue = 1;
+    private Integer           zValue           = 1;
 
     /**
      * Number of symmetry related atoms.
      */
-    private String spaceGroup = "P1";
+    private String            spaceGroup       = "P1";
 
     /**
      * Constructs a new crystal with zero length cell axis.
      */
     public Crystal() {
-    	super();
+        super();
         setZeroAxes();
     }
 
@@ -87,13 +86,14 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
     }
 
     /**
-     * Sets the A unit cell axes in Cartesian coordinates in a 
+     * Sets the A unit cell axes in Cartesian coordinates in a
      * Euclidean space.
      *
      * @param  newAxis the new A axis
      *
      * @see    #getA
      */
+    @Override
     public void setA(Vector3d newAxis) {
         aAxis = newAxis;
     }
@@ -106,6 +106,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #setA
      */
+    @Override
     public Vector3d getA() {
         return aAxis;
     }
@@ -117,6 +118,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see    #getB
      */
+    @Override
     public void setB(Vector3d newAxis) {
         bAxis = newAxis;
     }
@@ -129,6 +131,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #setB
      */
+    @Override
     public Vector3d getB() {
         return bAxis;
     }
@@ -140,6 +143,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #getC
      */
+    @Override
     public void setC(Vector3d newAxis) {
         cAxis = newAxis;
     }
@@ -152,6 +156,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #setC
      */
+    @Override
     public Vector3d getC() {
         return cAxis;
     }
@@ -163,6 +168,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #setSpaceGroup
      */
+    @Override
     public String getSpaceGroup() {
         return spaceGroup;
     }
@@ -174,6 +180,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @see       #getSpaceGroup
      */
+    @Override
     public void setSpaceGroup(String group) {
         spaceGroup = group;
     }
@@ -184,6 +191,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      * @return the number of asymmetric parts in the unit cell
      * @see    #setZ
      */
+    @Override
     public Integer getZ() {
         return zValue;
     }
@@ -194,6 +202,7 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      * @param   value the number of asymmetric parts in the unit cell
      * @see           #getZ
      */
+    @Override
     public void setZ(Integer value) {
         this.zValue = value;
     }
@@ -203,8 +212,9 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
      *
      * @return The cloned crystal.
      */
+    @Override
     public ICrystal clone() throws CloneNotSupportedException {
-        Crystal clone = (Crystal)super.clone();
+        Crystal clone = (Crystal) super.clone();
         // clone the axes
         clone.setA(new Vector3d(this.aAxis));
         clone.setB(new Vector3d(this.bAxis));
@@ -215,23 +225,24 @@ public class Crystal extends AtomContainer implements Serializable, ICrystal, Cl
     /**
      * Returns a String representation of this crystal.
      */
+    @Override
     public String toString() {
         StringBuffer resultString = new StringBuffer(64);
         resultString.append("Crystal(").append(hashCode());
         if (getSpaceGroup() != null) {
-        	resultString.append(", SG=").append(getSpaceGroup());
+            resultString.append(", SG=").append(getSpaceGroup());
         }
         if (getZ() > 0) {
-        	resultString.append(", Z=").append(getZ());
+            resultString.append(", Z=").append(getZ());
         }
         if (getA() != null) {
-        	resultString.append(", a=(").append(aAxis.x).append(", ").append(aAxis.y).append(", ").append(aAxis.z);
+            resultString.append(", a=(").append(aAxis.x).append(", ").append(aAxis.y).append(", ").append(aAxis.z);
         }
         if (getB() != null) {
-        	resultString.append("), b=(").append(bAxis.x).append(", ").append(bAxis.y).append(", ").append(bAxis.z);
+            resultString.append("), b=(").append(bAxis.x).append(", ").append(bAxis.y).append(", ").append(bAxis.z);
         }
         if (getC() != null) {
-        	resultString.append("), c=(").append(cAxis.x).append(", ").append(cAxis.y).append(", ").append(cAxis.z);
+            resultString.append("), c=(").append(cAxis.x).append(", ").append(cAxis.y).append(", ").append(cAxis.z);
         }
         resultString.append(", ").append(super.toString());
         return resultString.toString();

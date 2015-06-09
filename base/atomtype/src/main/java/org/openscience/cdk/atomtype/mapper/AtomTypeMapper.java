@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -19,8 +17,6 @@
  */
 package org.openscience.cdk.atomtype.mapper;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.atomtypes.OWLAtomTypeMappingReader;
 
 import java.io.InputStream;
@@ -33,60 +29,53 @@ import java.util.Map;
  * schemes. For example, it allows to convert atom types from the CDK scheme to the
  * Sybyl scheme; using this approach it is possible to use the CDK atom type perception
  * algorithm and write the resulting atom types using the Sybyl atom type scheme.
- * 
+ *
  * @cdk.module atomtype
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.atomtype.mapper.AtomTypeMapperTest")
 public class AtomTypeMapper {
 
-	private static Map<String,AtomTypeMapper> mappers = new HashMap<String,AtomTypeMapper>();
-	
-	private String mappingFile;
-	
-	private Map<String,String> mappings;
-	
-	private AtomTypeMapper(String mappingFile) {
-		this.mappingFile = mappingFile;
-		InputStream stream = this.getClass().getClassLoader().getResourceAsStream(mappingFile);
-		OWLAtomTypeMappingReader reader = new OWLAtomTypeMappingReader(
-			new InputStreamReader(stream)
-		);
-		mappings = reader.readAtomTypeMappings();
-	}
+    private static Map<String, AtomTypeMapper> mappers = new HashMap<String, AtomTypeMapper>();
 
-  private AtomTypeMapper(String mappingFile, InputStream stream) {
-      this.mappingFile = mappingFile;
-      OWLAtomTypeMappingReader reader = new OWLAtomTypeMappingReader(
-        new InputStreamReader(stream)
-      );
-      mappings = reader.readAtomTypeMappings();
+    private String                             mappingFile;
+
+    private Map<String, String>                mappings;
+
+    private AtomTypeMapper(String mappingFile) {
+        this.mappingFile = mappingFile;
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(mappingFile);
+        OWLAtomTypeMappingReader reader = new OWLAtomTypeMappingReader(new InputStreamReader(stream));
+        mappings = reader.readAtomTypeMappings();
     }
 
-	/**
-	 * Instantiates an atom type to atom type mapping, based on the given mapping file.
-	 * For example, the mapping file <code>org.openscience.cdk.config.data.cdk-sybyl-mappings.owl</code>
-	 * which defines how CDK atom types are mapped to Sybyl atom types.
-	 * 
-	 * @param  mappingFile File name of the OWL file defining the atom type to atom type mappings.
-	 * @return             An instance of AtomTypeMapper for the given mapping file.
-	 */
-	@TestMethod("testGetInstance_String")
-	public static AtomTypeMapper getInstance(String mappingFile) {
-		if (!mappers.containsKey(mappingFile)) {
-			mappers.put(mappingFile, new AtomTypeMapper(mappingFile));
-		}
-		return mappers.get(mappingFile);
-	}
+    private AtomTypeMapper(String mappingFile, InputStream stream) {
+        this.mappingFile = mappingFile;
+        OWLAtomTypeMappingReader reader = new OWLAtomTypeMappingReader(new InputStreamReader(stream));
+        mappings = reader.readAtomTypeMappings();
+    }
 
-	/**
-	 * Instantiates an atom type to atom type mapping, based on the given {@link InputStream}.
-	 * 
-	 * @param  mappingFile Name of the {@link InputStream} defining the atom type to atom type mappings.
-	 * @param  stream      the {@link InputStream} from which the mappings as read
-	 * @return             An instance of AtomTypeMapper for the given mapping file.
-	 */
-    @TestMethod("testGetInstance_String_InputStream")
+    /**
+     * Instantiates an atom type to atom type mapping, based on the given mapping file.
+     * For example, the mapping file <code>org.openscience.cdk.config.data.cdk-sybyl-mappings.owl</code>
+     * which defines how CDK atom types are mapped to Sybyl atom types.
+     *
+     * @param  mappingFile File name of the OWL file defining the atom type to atom type mappings.
+     * @return             An instance of AtomTypeMapper for the given mapping file.
+     */
+    public static AtomTypeMapper getInstance(String mappingFile) {
+        if (!mappers.containsKey(mappingFile)) {
+            mappers.put(mappingFile, new AtomTypeMapper(mappingFile));
+        }
+        return mappers.get(mappingFile);
+    }
+
+    /**
+     * Instantiates an atom type to atom type mapping, based on the given {@link InputStream}.
+     *
+     * @param  mappingFile Name of the {@link InputStream} defining the atom type to atom type mappings.
+     * @param  stream      the {@link InputStream} from which the mappings as read
+     * @return             An instance of AtomTypeMapper for the given mapping file.
+     */
     public static AtomTypeMapper getInstance(String mappingFile, InputStream stream) {
         if (!mappers.containsKey(mappingFile)) {
             mappers.put(mappingFile, new AtomTypeMapper(mappingFile, stream));
@@ -101,10 +90,9 @@ public class AtomTypeMapper {
      * @param   type atom type to map to the target schema
      * @return  atom type name in the target schema
      */
-    @TestMethod("testMapAtomType_String")
-	public String mapAtomType(String type) {
-		return mappings.get(type);
-	}
+    public String mapAtomType(String type) {
+        return mappings.get(type);
+    }
 
     /**
      * Returns the name of this mapping. In case of file inputs, it returns the filename,
@@ -112,9 +100,8 @@ public class AtomTypeMapper {
      *
      * @return the name of the mapping represented by this {@link AtomTypeMapper}.
      */
-	@TestMethod("testGetMapping")
-	public String getMapping() {
-		return mappingFile;
-	}
+    public String getMapping() {
+        return mappingFile;
+    }
 
 }

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -33,22 +28,20 @@ package org.openscience.cdk.interfaces;
  */
 public interface IElectronContainer extends IChemObject {
 
-	/**
-	 * Returns the number of electrons in this electron container.
-	 *
-	 * @return The number of electrons in this electron container.
+    /**
+     * Returns the number of electrons in this electron container.
+     *
+     * @return The number of electrons in this electron container.
      * @see     #setElectronCount
-	 */
-	public Integer getElectronCount();
+     */
+    public Integer getElectronCount();
 
-	/**
-	 * Sets the number of electrons in this electron container.
-	 *
-	 * @param   electronCount The number of electrons in this electron container.
+    /**
+     * Sets the number of electrons in this electron container.
+     *
+     * @param   electronCount The number of electrons in this electron container.
      * @see     #getElectronCount
-	 */
-	public void setElectronCount(Integer electronCount);
+     */
+    public void setElectronCount(Integer electronCount);
 
 }
-
-

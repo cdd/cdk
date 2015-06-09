@@ -48,10 +48,10 @@ class ASTPeriodicGroupNumber extends SimpleNode {
         super(p, id);
     }
 
-
     /**
      * Accept the visitor. *
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

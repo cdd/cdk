@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -39,8 +34,6 @@ import java.util.StringTokenizer;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.cdk.interfaces.IAtom;
@@ -56,7 +49,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 
 /**
  * This is not a reader for the CIF and mmCIF crystallographic formats.
- * It is able, however, to extract some content from such files. 
+ * It is able, however, to extract some content from such files.
  * It's very ad hoc, not written
  * using any dictionary. So please complain if something is not working.
  * In addition, the things it does read are considered experimental.
@@ -74,22 +67,20 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.created 2003-10-12
  * @cdk.iooptions
  */
-@TestClass("org.openscience.cdk.io.CIFReaderTest")
 public class CIFReader extends DefaultChemObjectReader {
 
-    private BufferedReader input;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CIFReader.class);
+    private BufferedReader      input;
+    private static ILoggingTool logger  = LoggingToolFactory.createLoggingTool(CIFReader.class);
 
-    private ICrystal crystal = null;
+    private ICrystal            crystal = null;
     // cell parameters
-    private double a = 0.0;
-    private double b = 0.0;
-    private double c = 0.0;
-    private double alpha = 0.0;
-    private double beta = 0.0;
-    private double gamma = 0.0;
-    
+    private double              a       = 0.0;
+    private double              b       = 0.0;
+    private double              c       = 0.0;
+    private double              alpha   = 0.0;
+    private double              beta    = 0.0;
+    private double              gamma   = 0.0;
+
     /**
      * Create an CIF like file reader.
      *
@@ -98,56 +89,57 @@ public class CIFReader extends DefaultChemObjectReader {
     public CIFReader(Reader input) {
         this.input = new BufferedReader(input);
     }
-    
+
     public CIFReader(InputStream input) {
         this(new InputStreamReader(input));
     }
-    
+
     public CIFReader() {
         this(new StringReader(""));
     }
-    
-    @TestMethod("testGetFormat")
+
+    @Override
     public IResourceFormat getFormat() {
         return CIFFormat.getInstance();
     }
 
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) throws CDKException {
         this.input = new BufferedReader(input);
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
-    @TestMethod("testAccepts")
-    public boolean accepts(Class testClass) {
+    @Override
+    public boolean accepts(Class<? extends IChemObject> testClass) {
         if (IChemFile.class.equals(testClass)) return true;
-		Class[] interfaces = testClass.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IChemFile.class.equals(interfaces[i])) return true;
-		}
-    Class superClass = testClass.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
+        Class<?>[] interfaces = testClass.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IChemFile.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = testClass.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
     }
-    
+
     /**
      * Read a ChemFile from input.
      *
      * @return the content in a ChemFile object
      */
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IChemFile) {
-            IChemFile cf = (IChemFile)object;
+            IChemFile cf = (IChemFile) object;
             try {
                 cf = readChemFile(cf);
             } catch (IOException e) {
                 logger.error("Input/Output error while reading from input.");
             }
-            return (T)cf;
+            return (T) cf;
         } else {
             throw new CDKException("Only supported is reading of ChemFile.");
         }
@@ -167,25 +159,24 @@ public class CIFReader extends DefaultChemObjectReader {
         String line = input.readLine();
         boolean end_found = false;
         while (input.ready() && line != null && !end_found) {
-            if (line.startsWith("#")) {
-                logger.warn("Skipping comment: " + line);
-                // skip comment lines
-            } else if (line.length() == 0) {
+            if (line.length() == 0) {
                 logger.debug("Skipping empty line");
                 // skip empty lines
-            } else if (!(line.startsWith("_") || 
-                  line.startsWith("loop_"))) {
-                logger.warn("Skipping unrecognized line: " + line);
+            } else if (line.charAt(0) == '#') {
+                logger.warn("Skipping comment: ", line);
+                // skip comment lines
+            } else if (!(line.charAt(0) == '_' || line.startsWith("loop_"))) {
+                logger.warn("Skipping unrecognized line: ", line);
                 // skip line
             } else {
-                
+
                 /* determine CIF command */
                 String command = "";
-                int spaceIndex = line.indexOf(" ");
+                int spaceIndex = line.indexOf(' ');
                 if (spaceIndex != -1) {
                     // everything upto space is command
                     try {
-                        command = new String(line.substring(0, spaceIndex));
+                        command = line.substring(0, spaceIndex);
                     } catch (StringIndexOutOfBoundsException sioobe) {
                         // disregard this line
                         break;
@@ -194,8 +185,8 @@ public class CIFReader extends DefaultChemObjectReader {
                     // complete line is command
                     command = line;
                 }
-                
-                logger.debug("command: " + command);
+
+                logger.debug("command: ", command);
                 if (command.startsWith("_cell")) {
                     processCellParameter(command, line);
                 } else if (command.equals("loop_")) {
@@ -205,14 +196,16 @@ public class CIFReader extends DefaultChemObjectReader {
                     crystal.setSpaceGroup(value);
                 } else {
                     // skip command
-                    logger.warn("Skipping command: " + command);
+                    logger.warn("Skipping command: ", command);
                     line = input.readLine();
                     if (line.startsWith(";")) {
                         logger.debug("Skipping block content");
-                        line = input.readLine().trim();
-                        while (!line.equals(";")) { 
-                            line = input.readLine().trim();
-                            logger.debug("Skipping block line: " + line);
+                        line = input.readLine();
+                        if (line != null) line = line.trim();
+                        while (!line.equals(";")) {
+                            line = input.readLine();
+                            if (line != null) line = line.trim();
+                            logger.debug("Skipping block line: ", line);
                         }
                         line = input.readLine();
                     }
@@ -220,7 +213,7 @@ public class CIFReader extends DefaultChemObjectReader {
             }
             line = input.readLine();
         }
-        logger.info("Adding crystal to file with #atoms: " + crystal.getAtomCount());
+        logger.info("Adding crystal to file with #atoms: ", crystal.getAtomCount());
         model.setCrystal(crystal);
         seq.addChemModel(model);
         file.addChemSequence(seq);
@@ -232,42 +225,41 @@ public class CIFReader extends DefaultChemObjectReader {
         if (command.equals("length_a")) {
             String value = line.substring(14).trim();
             a = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
         } else if (command.equals("length_b")) {
             String value = line.substring(14).trim();
             b = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
         } else if (command.equals("length_c")) {
             String value = line.substring(14).trim();
             c = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
         } else if (command.equals("angle_alpha")) {
             String value = line.substring(17).trim();
             alpha = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
         } else if (command.equals("angle_beta")) {
             String value = line.substring(16).trim();
             beta = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
         } else if (command.equals("angle_gamma")) {
             String value = line.substring(17).trim();
             gamma = parseIntoDouble(value);
-            possiblySetCellParams(a,b,c,alpha,beta,gamma);
-        }        
+            possiblySetCellParams(a, b, c, alpha, beta, gamma);
+        }
     }
-    
-    private void possiblySetCellParams(double a,double b,double c,double alpha,double beta,double gamma) {
-        if (a != 0.0 && b != 0.0 && c != 0.0 &&
-            alpha != 0.0 && beta != 0.0 && gamma != 0.0) {
+
+    private void possiblySetCellParams(double a, double b, double c, double alpha, double beta, double gamma) {
+        if (a != 0.0 && b != 0.0 && c != 0.0 && alpha != 0.0 && beta != 0.0 && gamma != 0.0) {
             logger.info("Found and set crystal cell parameters");
-            Vector3d[] axes = CrystalGeometryTools.notionalToCartesian(a,b,c, alpha, beta, gamma);
-            
+            Vector3d[] axes = CrystalGeometryTools.notionalToCartesian(a, b, c, alpha, beta, gamma);
+
             crystal.setA(axes[0]);
             crystal.setB(axes[1]);
             crystal.setC(axes[2]);
         }
     }
-    
+
     private void processLoopBlock() throws IOException {
         String line = input.readLine().trim();
         if (line.startsWith("_atom")) {
@@ -282,10 +274,11 @@ public class CIFReader extends DefaultChemObjectReader {
     private void skipUntilEmptyOrCommentLine(String line) throws IOException {
         // skip everything until empty line, or comment line
         while (line != null && line.length() > 0 && line.charAt(0) != '#') {
-            line = input.readLine().trim();
+            line = input.readLine();
+            if (line != null) line = line.trim();
         }
     }
-    
+
     private void processAtomLoopBlock(String firstLine) throws IOException {
         int atomLabel = -1; // -1 means not found in this block
         int atomSymbol = -1;
@@ -300,60 +293,59 @@ public class CIFReader extends DefaultChemObjectReader {
         boolean hasParsableInformation = false;
         while (line != null && line.charAt(0) == '_') {
             headerCount++;
-            if (line.equals("_atom_site_label") ||
-                line.equals("_atom_site_label_atom_id")) {
+            if (line.equals("_atom_site_label") || line.equals("_atom_site_label_atom_id")) {
                 atomLabel = headerCount;
                 hasParsableInformation = true;
-                logger.info("label found in col: " + atomLabel);
+                logger.info("label found in col: ", atomLabel);
             } else if (line.startsWith("_atom_site_fract_x")) {
                 atomFractX = headerCount;
                 hasParsableInformation = true;
-                logger.info("frac x found in col: " + atomFractX);
+                logger.info("frac x found in col: ", atomFractX);
             } else if (line.startsWith("_atom_site_fract_y")) {
                 atomFractY = headerCount;
                 hasParsableInformation = true;
-                logger.info("frac y found in col: " + atomFractY);
+                logger.info("frac y found in col: ", atomFractY);
             } else if (line.startsWith("_atom_site_fract_z")) {
                 atomFractZ = headerCount;
                 hasParsableInformation = true;
-                logger.info("frac z found in col: " + atomFractZ);
+                logger.info("frac z found in col: ", atomFractZ);
             } else if (line.equals("_atom_site.Cartn_x")) {
                 atomRealX = headerCount;
                 hasParsableInformation = true;
-                logger.info("cart x found in col: " + atomRealX);
+                logger.info("cart x found in col: ", atomRealX);
             } else if (line.equals("_atom_site.Cartn_y")) {
                 atomRealY = headerCount;
                 hasParsableInformation = true;
-                logger.info("cart y found in col: " + atomRealY);
+                logger.info("cart y found in col: ", atomRealY);
             } else if (line.equals("_atom_site.Cartn_z")) {
                 atomRealZ = headerCount;
                 hasParsableInformation = true;
-                logger.info("cart z found in col: " + atomRealZ);
+                logger.info("cart z found in col: ", atomRealZ);
             } else if (line.equals("_atom_site.type_symbol")) {
                 atomSymbol = headerCount;
                 hasParsableInformation = true;
-                logger.info("type_symbol found in col: " + atomSymbol);
+                logger.info("type_symbol found in col: ", atomSymbol);
             } else {
-                logger.warn("Ignoring atom loop block field: " + line);
+                logger.warn("Ignoring atom loop block field: ", line);
             }
             line = input.readLine().trim();
         }
-        if (hasParsableInformation == false ) {
+        if (hasParsableInformation == false) {
             logger.info("No parsable info found");
             skipUntilEmptyOrCommentLine(line);
         } else {
             // now that headers are parsed, read the data
-            while(line != null && line.length() > 0 && line.charAt(0) != '#') {
+            while (line != null && line.length() > 0 && line.charAt(0) != '#') {
                 logger.debug("new row");
                 StringTokenizer tokenizer = new StringTokenizer(line);
                 if (tokenizer.countTokens() < headerCount) {
                     logger.warn("Column count mismatch; assuming continued on next line");
-                    logger.debug("Found #expected, #found: " + headerCount + ", " + tokenizer.countTokens());
+                    logger.debug("Found #expected, #found: ", headerCount, ", ", tokenizer.countTokens());
                     tokenizer = new StringTokenizer(line + input.readLine());
                 }
                 int colIndex = 0;
                 // process one row
-                IAtom atom = crystal.getBuilder().newInstance(IAtom.class,"C");
+                IAtom atom = crystal.getBuilder().newInstance(IAtom.class, "C");
                 Point3d frac = new Point3d();
                 Point3d real = new Point3d();
                 boolean hasFractional = false;
@@ -361,7 +353,7 @@ public class CIFReader extends DefaultChemObjectReader {
                 while (tokenizer.hasMoreTokens()) {
                     colIndex++;
                     String field = tokenizer.nextToken();
-                    logger.debug("Parsing col,token: " + colIndex + "=" + field);
+                    logger.debug("Parsing col,token: ", colIndex, "=", field);
                     if (colIndex == atomLabel) {
                         if (atomSymbol == -1) {
                             // no atom symbol found, use label
@@ -382,15 +374,15 @@ public class CIFReader extends DefaultChemObjectReader {
                         atom.setSymbol(field);
                     } else if (colIndex == atomRealX) {
                         hasCartesian = true;
-                        logger.debug("Adding x3: " + parseIntoDouble(field));
+                        logger.debug("Adding x3: ", parseIntoDouble(field));
                         real.x = parseIntoDouble(field);
                     } else if (colIndex == atomRealY) {
                         hasCartesian = true;
-                        logger.debug("Adding y3: " + parseIntoDouble(field));
+                        logger.debug("Adding y3: ", parseIntoDouble(field));
                         real.y = parseIntoDouble(field);
                     } else if (colIndex == atomRealZ) {
                         hasCartesian = true;
-                        logger.debug("Adding x3: " + parseIntoDouble(field));
+                        logger.debug("Adding x3: ", parseIntoDouble(field));
                         real.z = parseIntoDouble(field);
                     }
                 }
@@ -404,36 +396,37 @@ public class CIFReader extends DefaultChemObjectReader {
                 if (hasFractional) {
                     atom.setFractionalPoint3d(frac);
                 }
-                logger.debug("Adding atom: " + atom);
+                logger.debug("Adding atom: ", atom);
                 crystal.addAtom(atom);
-                
+
                 // look up next row
-                line = input.readLine().trim();
+                line = input.readLine();
+                if (line != null) line = line.trim();
             }
         }
     }
-    
+
     /**
      * Process double in the format: '.071(1)'.
      */
     private double parseIntoDouble(String value) {
         double returnVal = 0.0;
         if (value.charAt(0) == '.') value = "0" + value;
-        int bracketIndex = value.indexOf("(");
+        int bracketIndex = value.indexOf('(');
         if (bracketIndex != -1) {
             value = value.substring(0, bracketIndex);
         }
         try {
             returnVal = Double.parseDouble(value);
         } catch (Exception exception) {
-            logger.error("Could not parse double string: " + value);
+            logger.error("Could not parse double string: ", value);
         }
         return returnVal;
     }
-    
+
     private String extractFirstLetters(String value) {
         StringBuffer result = new StringBuffer();
-        for (int i=0; i<value.length(); i++) {
+        for (int i = 0; i < value.length(); i++) {
             if (Character.isDigit(value.charAt(i))) {
                 break;
             } else {
@@ -442,8 +435,8 @@ public class CIFReader extends DefaultChemObjectReader {
         }
         return result.toString();
     }
-    
-    @TestMethod("testClose")
+
+    @Override
     public void close() throws IOException {
         input.close();
     }

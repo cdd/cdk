@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2008  Egon Willighagen <egonw@sci.kun.nl>
+/* Copyright (C) 2006-2008  Egon Willighagen <egonw@sci.kun.nl>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -37,8 +35,6 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
@@ -52,10 +48,11 @@ import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.formats.MDLV3000Format;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.BondManipulator;
 
 /**
- * Class that implements the MDL mol V3000 format. This reader reads the 
+ * Class that implements the MDL mol V3000 format. This reader reads the
  * element symbol and 2D or 3D coordinates from the ATOM block.
  *
  * @cdk.module io
@@ -64,25 +61,24 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
  *
  * @author      Egon Willighagen <egonw@users.sf.net>
  * @cdk.created 2006
- * 
+ *
  * @cdk.keyword MDL molfile V3000
  * @cdk.require java1.4+
  */
-@TestClass("org.openscience.cdk.io.MDLV3000ReaderTest")
 public class MDLV3000Reader extends DefaultChemObjectReader {
 
-    BufferedReader input = null;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(MDLV3000Reader.class);
+    BufferedReader              input  = null;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(MDLV3000Reader.class);
 
-    private Pattern keyValueTuple;
-    private Pattern keyValueTuple2;
-    
-    private int lineNumber;
+    private Pattern             keyValueTuple;
+    private Pattern             keyValueTuple2;
+
+    private int                 lineNumber;
 
     public MDLV3000Reader(Reader in) {
-    	this(in, Mode.RELAXED);
+        this(in, Mode.RELAXED);
     }
+
     public MDLV3000Reader(Reader in, Mode mode) {
         input = new BufferedReader(in);
         initIOSettings();
@@ -94,61 +90,63 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
     }
 
     public MDLV3000Reader(InputStream input) {
-    	this(input, Mode.RELAXED);
+        this(input, Mode.RELAXED);
     }
+
     public MDLV3000Reader(InputStream input, Mode mode) {
         this(new InputStreamReader(input), mode);
     }
-    
+
     public MDLV3000Reader() {
         this(new StringReader(""));
     }
-    
-    @TestMethod("testGetFormat")
+
+    @Override
     public IResourceFormat getFormat() {
         return MDLV3000Format.getInstance();
     }
 
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) throws CDKException {
         if (input instanceof BufferedReader) {
-            this.input = (BufferedReader)input;
+            this.input = (BufferedReader) input;
         } else {
             this.input = new BufferedReader(input);
         }
         lineNumber = 0;
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
-	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IAtomContainer.class.equals(interfaces[i])) return true;
-		}
-		if (IAtomContainer.class.equals(classObject)) return true;
-    Class superClass = classObject.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
+    @Override
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IAtomContainer.class.equals(interfaces[i])) return true;
+        }
+        if (IAtomContainer.class.equals(classObject)) return true;
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
 
-	public <T extends IChemObject> T read(T object) throws CDKException {
+    @Override
+    public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IAtomContainer) {
-            return (T)readMolecule(object.getBuilder());
+            return (T) readMolecule(object.getBuilder());
         }
         return null;
     }
-    
+
     public IAtomContainer readMolecule(IChemObjectBuilder builder) throws CDKException {
-        return builder.newInstance(IAtomContainer.class,readConnectionTable(builder));
+        return builder.newInstance(IAtomContainer.class, readConnectionTable(builder));
     }
-    
+
     public IAtomContainer readConnectionTable(IChemObjectBuilder builder) throws CDKException {
-    	logger.info("Reading CTAB block");
+        logger.info("Reading CTAB block");
         IAtomContainer readData = builder.newInstance(IAtomContainer.class);
         boolean foundEND = false;
         String lastLine = readHeader(readData);
@@ -174,48 +172,48 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
         }
         return readData;
     }
-    
+
     /**
      * @throws CDKException when no file content is detected
      * @return Last line read
      */
     public String readHeader(IAtomContainer readData) throws CDKException {
-		// read four lines
-    	String line1 = readLine();
-    	if (line1 == null) {
-    		throw new CDKException("Expected a header line, but found nothing.");
-    	}
-    	if (line1.length() > 0) {
-    		if (line1.startsWith("M  V30")) {
-    			// no header
-    			return line1;
-    		}
-    		readData.setProperty(CDKConstants.TITLE, line1);
-    	}
-    	readLine();
-    	String line3 = readLine();
-    	if (line3.length() > 0) readData.setProperty(CDKConstants.COMMENT, line3);
+        // read four lines
+        String line1 = readLine();
+        if (line1 == null) {
+            throw new CDKException("Expected a header line, but found nothing.");
+        }
+        if (line1.length() > 0) {
+            if (line1.startsWith("M  V30")) {
+                // no header
+                return line1;
+            }
+            readData.setProperty(CDKConstants.TITLE, line1);
+        }
+        readLine();
+        String line3 = readLine();
+        if (line3.length() > 0) readData.setProperty(CDKConstants.COMMENT, line3);
         String line4 = readLine();
         if (!line4.contains("3000")) {
             throw new CDKException("This file is not a MDL V3000 molfile.");
         }
-    	return readLine();
-	}
+        return readLine();
+    }
 
-	/**
+    /**
      * Reads the atoms, coordinates and charges.
      *
      * <p>IMPORTANT: it does not support the atom list and its negation!
      */
     public void readAtomBlock(IAtomContainer readData) throws CDKException {
-    	logger.info("Reading ATOM block");
-    	IsotopeFactory isotopeFactory;
+        logger.info("Reading ATOM block");
+        IsotopeFactory isotopeFactory;
         try {
-	        isotopeFactory = Isotopes.getInstance();
+            isotopeFactory = Isotopes.getInstance();
         } catch (IOException exception) {
-	        throw new CDKException("Could not initiate the IsotopeFactory.", exception);
+            throw new CDKException("Could not initiate the IsotopeFactory.", exception);
         }
-        
+
         int RGroupCounter = 1;
         int Rnumber = 0;
         String[] rGroup = null;
@@ -242,37 +240,38 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                 // parse the element
                 String element = tokenizer.nextToken();
                 if (isotopeFactory.isElement(element)) {
-                    atom = isotopeFactory.configure(readData.getBuilder().newInstance(IAtom.class,element));
+                    atom = isotopeFactory.configure(readData.getBuilder().newInstance(IAtom.class, element));
                 } else if ("A".equals(element)) {
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                 } else if ("Q".equals(element)) {
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                 } else if ("*".equals(element)) {
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                 } else if ("LP".equals(element)) {
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                 } else if ("L".equals(element)) {
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
-                } else if (element.length() > 0 && element.charAt(0) == 'R'){
-                	logger.debug("Atom ", element, " is not an regular element. Creating a PseudoAtom.");
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
+                } else if (element.length() > 0 && element.charAt(0) == 'R') {
+                    logger.debug("Atom ", element, " is not an regular element. Creating a PseudoAtom.");
                     //check if the element is R
-                	rGroup = element.split("^R");
-                    if (rGroup.length > 1){
-                    	try{
-                    		Rnumber = Integer.valueOf(rGroup[(rGroup.length-1)]).intValue();
-                    		RGroupCounter=Rnumber;
-                    	}catch(Exception ex){
-                    		Rnumber=RGroupCounter;
-                    		RGroupCounter++;
-                    	}
-                    	element="R"+Rnumber;
+                    rGroup = element.split("^R");
+                    if (rGroup.length > 1) {
+                        try {
+                            Rnumber = Integer.valueOf(rGroup[(rGroup.length - 1)]).intValue();
+                            RGroupCounter = Rnumber;
+                        } catch (Exception ex) {
+                            Rnumber = RGroupCounter;
+                            RGroupCounter++;
+                        }
+                        element = "R" + Rnumber;
                     }
-                    atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                 } else {
-                	if (mode == ISimpleChemObjectReader.Mode.STRICT) {
-                		throw new CDKException("Invalid element type. Must be an existing element, or one in: A, Q, L, LP, *.");
-                	}
-                	atom = readData.getBuilder().newInstance(IPseudoAtom.class,element);
+                    if (mode == ISimpleChemObjectReader.Mode.STRICT) {
+                        throw new CDKException(
+                                "Invalid element type. Must be an existing element, or one in: A, Q, L, LP, *.");
+                    }
+                    atom = readData.getBuilder().newInstance(IPseudoAtom.class, element);
                     atom.setSymbol(element);
                 }
 
@@ -297,10 +296,10 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                 if (!mapping.equals("0")) {
                     logger.warn("Skipping atom-atom mapping: " + mapping);
                 } // else: default 0 is no mapping defined
-                
+
                 // the rest are key value things
-                if (command.indexOf("=") != -1) {
-                    Map<String,String> options = parseOptions(exhaustStringTokenizer(tokenizer));
+                if (command.indexOf('=') != -1) {
+                    Map<String, String> options = parseOptions(exhaustStringTokenizer(tokenizer));
                     Iterator<String> keys = options.keySet().iterator();
                     while (keys.hasNext()) {
                         String key = keys.next();
@@ -315,27 +314,27 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                                 logger.warn("Not parsing key: " + key);
                             }
                         } catch (Exception exception) {
-                            String error = "Error while parsing key/value " + key + "=" +
-                            value + ": " + exception.getMessage();
+                            String error = "Error while parsing key/value " + key + "=" + value + ": "
+                                    + exception.getMessage();
                             logger.error(error);
                             logger.debug(exception);
                             throw new CDKException(error, exception);
                         }
                     }
                 }
-                
+
                 // store atom
                 readData.addAtom(atom);
                 logger.debug("Added atom: " + atom);
             }
         }
     }
-    
+
     /**
      * Reads the bond atoms, order and stereo configuration.
      */
     public void readBondBlock(IAtomContainer readData) throws CDKException {
-    	logger.info("Reading BOND block");
+        logger.info("Reading BOND block");
         boolean foundEND = false;
         while (isReady() && !foundEND) {
             String command = readCommand(readLine());
@@ -362,7 +361,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                     if (order >= 4) {
                         logger.warn("Query order types are not supported (yet). File a bug if you need it");
                     } else {
-                        bond.setOrder(BondManipulator.createBondOrder((double)order));
+                        bond.setOrder(BondManipulator.createBondOrder((double) order));
                     }
                 } catch (Exception exception) {
                     String error = "Error while parsing bond index";
@@ -374,7 +373,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                 try {
                     String indexAtom1String = tokenizer.nextToken();
                     int indexAtom1 = Integer.parseInt(indexAtom1String);
-                    IAtom atom1 = readData.getAtom(indexAtom1 -1);
+                    IAtom atom1 = readData.getAtom(indexAtom1 - 1);
                     bond.setAtom(atom1, 0);
                 } catch (Exception exception) {
                     String error = "Error while parsing index atom 1 in bond";
@@ -386,7 +385,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                 try {
                     String indexAtom2String = tokenizer.nextToken();
                     int indexAtom2 = Integer.parseInt(indexAtom2String);
-                    IAtom atom2 = readData.getAtom(indexAtom2 -1);
+                    IAtom atom2 = readData.getAtom(indexAtom2 - 1);
                     bond.setAtom(atom2, 1);
                 } catch (Exception exception) {
                     String error = "Error while parsing index atom 2 in bond";
@@ -395,8 +394,8 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                     throw new CDKException(error, exception);
                 }
                 // the rest are key=value fields
-                if (command.indexOf("=") != -1) {
-                    Map<String,String> options = parseOptions(exhaustStringTokenizer(tokenizer));
+                if (command.indexOf('=') != -1) {
+                    Map<String, String> options = parseOptions(exhaustStringTokenizer(tokenizer));
                     Iterator<String> keys = options.keySet().iterator();
                     while (keys.hasNext()) {
                         String key = keys.next();
@@ -409,7 +408,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                                 } else if (configuration == 1) {
                                     bond.setStereo(IBond.Stereo.UP);
                                 } else if (configuration == 2) {
-                                    bond.setStereo((IBond.Stereo)CDKConstants.UNSET);
+                                    bond.setStereo((IBond.Stereo) CDKConstants.UNSET);
                                 } else if (configuration == 3) {
                                     bond.setStereo(IBond.Stereo.DOWN);
                                 }
@@ -417,22 +416,22 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                                 logger.warn("Not parsing key: " + key);
                             }
                         } catch (Exception exception) {
-                            String error = "Error while parsing key/value " + key + "=" +
-                            value + ": " + exception.getMessage();
+                            String error = "Error while parsing key/value " + key + "=" + value + ": "
+                                    + exception.getMessage();
                             logger.error(error);
                             logger.debug(exception);
                             throw new CDKException(error, exception);
                         }
                     }
                 }
-                
+
                 // storing bond
                 readData.addBond(bond);
                 logger.debug("Added bond: " + bond);
             }
         }
     }
-    
+
     /**
      * Reads labels.
      */
@@ -453,10 +452,10 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                 // parse the external index
                 String externalIndexString = tokenizer.nextToken();
                 logger.warn("Skipping external index: " + externalIndexString);
-                
+
                 // the rest are key=value fields
-                Map<String,String> options = new Hashtable<String,String>();
-                if (command.indexOf("=") != -1) {
+                Map<String, String> options = new Hashtable<String, String>();
+                if (command.indexOf('=') != -1) {
                     options = parseOptions(exhaustStringTokenizer(tokenizer));
                 }
 
@@ -471,7 +470,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                         try {
                             if (key.equals("ATOMS")) {
                                 StringTokenizer atomsTokenizer = new StringTokenizer(value);
-                                Integer.parseInt(atomsTokenizer.nextToken()); // should be 1, int atomCount = 
+                                Integer.parseInt(atomsTokenizer.nextToken()); // should be 1, int atomCount =
                                 atomID = Integer.parseInt(atomsTokenizer.nextToken());
                             } else if (key.equals("LABEL")) {
                                 label = value;
@@ -479,19 +478,22 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
                                 logger.warn("Not parsing key: " + key);
                             }
                         } catch (Exception exception) {
-                            String error = "Error while parsing key/value " + key + "=" +
-                            value + ": " + exception.getMessage();
+                            String error = "Error while parsing key/value " + key + "=" + value + ": "
+                                    + exception.getMessage();
                             logger.error(error);
                             logger.debug(exception);
                             throw new CDKException(error, exception);
                         }
                         if (atomID != -1 && label.length() > 0) {
-                        	IAtom atom = readData.getAtom(atomID-1);
-                            if (!(atom instanceof IPseudoAtom)) {
-                                atom = readData.getBuilder().newInstance(IPseudoAtom.class,atom);
+                            IAtom original = readData.getAtom(atomID - 1);
+                            IAtom replacement = original;
+                            if (!(original instanceof IPseudoAtom)) {
+                                replacement = readData.getBuilder().newInstance(IPseudoAtom.class,
+                                                                                original);
                             }
-                            ((IPseudoAtom)atom).setLabel(label);
-                            readData.setAtom(atomID-1, atom);
+                            ((IPseudoAtom) replacement).setLabel(label);
+                            if (replacement != original)
+                                AtomContainerManipulator.replaceAtomByAtom(readData, original, replacement);
                         }
                     }
                 } else {
@@ -501,7 +503,6 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
         }
     }
 
-            
     /**
      * Reads the command on this line. If the line is continued on the next, that
      * part is added.
@@ -510,9 +511,9 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
      */
     private String readCommand(String line) throws CDKException {
         if (line.startsWith("M  V30 ")) {
-            String command =  line.substring(7);
+            String command = line.substring(7);
             if (command.endsWith("-")) {
-                command = command.substring(0, command.length()-1);
+                command = command.substring(0, command.length() - 1);
                 command += readCommand(readLine());
             }
             return command;
@@ -520,9 +521,9 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
             throw new CDKException("Could not read MDL file: unexpected line: " + line);
         }
     }
-    
-    private Map<String,String> parseOptions(String string) throws CDKException {
-        Map<String,String> keyValueTuples = new Hashtable<String,String>();
+
+    private Map<String, String> parseOptions(String string) throws CDKException {
+        Map<String, String> keyValueTuples = new Hashtable<String, String>();
         while (string.length() >= 3) {
             logger.debug("Matching remaining option string: " + string);
             Matcher tuple1Matcher = keyValueTuple2.matcher(string);
@@ -550,17 +551,17 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
         }
         return keyValueTuples;
     }
-    
+
     public String exhaustStringTokenizer(StringTokenizer tokenizer) {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(" ");
+        buffer.append(' ');
         while (tokenizer.hasMoreTokens()) {
             buffer.append(tokenizer.nextToken());
-            buffer.append(" ");
+            buffer.append(' ');
         }
         return buffer.toString();
     }
-    
+
     public String readLine() throws CDKException {
         String line = null;
         try {
@@ -575,7 +576,7 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
         }
         return line;
     }
-    
+
     public boolean isReady() throws CDKException {
         try {
             return input.ready();
@@ -587,13 +588,11 @@ public class MDLV3000Reader extends DefaultChemObjectReader {
         }
     }
 
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
-    
-    private void initIOSettings() {
-    }
 
-    
+    private void initIOSettings() {}
+
 }

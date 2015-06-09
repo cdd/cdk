@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -24,11 +24,8 @@
 
 package org.openscience.cdk.isomorphism;
 
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 import java.util.BitSet;
 import java.util.Set;
@@ -36,18 +33,17 @@ import java.util.Set;
 /**
  * A predicate for filtering atom-mapping results. This class is intended for
  * use with {@link Pattern}.
- * 
+ *
  * <blockquote><pre>{@code
  *     Pattern     pattern = Ullmann.findSubstructure(query);
  *     List<int[]> unique  = FluentIterable.of(patter.matchAll(target))
  *                                         .filter(new UniqueAtomMatches())
  *                                         .toList();
  * }</pre></blockquote>
- * 
+ *
  * @author John May
  * @cdk.module isomorphism
  */
-@TestClass("org.openscience.cdk.isomorphism.MappingPredicatesTest")
 final class UniqueAtomMatches implements Predicate<int[]> {
 
     /** Which mappings have we seen already. */
@@ -74,14 +70,13 @@ final class UniqueAtomMatches implements Predicate<int[]> {
      * @inheritDoc
      */
     @Override
-    @TestMethod("uniqueAtoms")
     public boolean apply(int[] input) {
         return unique.add(toBitSet(input));
     }
 
     /**
      * Convert a mapping to a bitset.
-     * 
+     *
      * @param mapping an atom mapping
      * @return a bit set of the mapped vertices (values in array)
      */

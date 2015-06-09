@@ -22,8 +22,6 @@ package org.openscience.cdk.renderer.generators;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IReaction;
 import org.openscience.cdk.renderer.RendererModel;
 import org.openscience.cdk.renderer.elements.ElementGroup;
@@ -36,47 +34,41 @@ import org.openscience.cdk.renderer.generators.parameter.AbstractGeneratorParame
  * @cdk.module renderextra
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.generators.ReactionSceneGeneratorTest")
 public class ReactionSceneGenerator implements IGenerator<IReaction> {
 
-	/** Boolean that indicates if boxes are drawn around the reaction. */
-    public static class ShowReactionBoxes extends
-    AbstractGeneratorParameter<Boolean> {
-    	/** {@inheritDoc} */
-    	public Boolean getDefault() {
-    		return Boolean.TRUE;
-    	}
+    /** Boolean that indicates if boxes are drawn around the reaction. */
+    public static class ShowReactionBoxes extends AbstractGeneratorParameter<Boolean> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Boolean getDefault() {
+            return Boolean.TRUE;
+        }
     }
-    private IGeneratorParameter<Boolean> showReactionBoxes =
-    	new ShowReactionBoxes();
+
+    private IGeneratorParameter<Boolean> showReactionBoxes = new ShowReactionBoxes();
 
     /** Double which indicates how wide the arrow head is in screen pixels. */
-    public static class ArrowHeadWidth extends
-    AbstractGeneratorParameter<Double> {
-    	/** {@inheritDoc} */
-    	public Double getDefault() {
-    		return 10.0;
-    	}
-    }
-    private IGeneratorParameter<Double> arrowHeadWidth =
-    	new ArrowHeadWidth();
+    public static class ArrowHeadWidth extends AbstractGeneratorParameter<Double> {
 
-	/** {@inheritDoc} */
-	@Override
-    @TestMethod("testEmptyReaction")
-	public IRenderingElement generate(IReaction reaction, RendererModel model) {
-		return new ElementGroup();
-	}
-	
-	/** {@inheritDoc} */
-	@Override
-	@TestMethod("testGetParameters")
+        /** {@inheritDoc} */
+        @Override
+        public Double getDefault() {
+            return 10.0;
+        }
+    }
+
+    private IGeneratorParameter<Double> arrowHeadWidth = new ArrowHeadWidth();
+
+    /** {@inheritDoc} */
+    @Override
+    public IRenderingElement generate(IReaction reaction, RendererModel model) {
+        return new ElementGroup();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<IGeneratorParameter<?>> getParameters() {
-        return Arrays.asList(
-            new IGeneratorParameter<?>[] {
-            	showReactionBoxes,
-            	arrowHeadWidth
-            }
-        );
+        return Arrays.asList(new IGeneratorParameter<?>[]{showReactionBoxes, arrowHeadWidth});
     }
 }

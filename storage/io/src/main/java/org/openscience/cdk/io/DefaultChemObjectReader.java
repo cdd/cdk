@@ -19,13 +19,9 @@
  */
 package org.openscience.cdk.io;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.io.listener.IChemObjectIOListener;
 import org.openscience.cdk.io.listener.IReaderListener;
-import org.openscience.cdk.io.setting.IOSetting;
 
 /**
  * Abstract class that ChemObjectReader's can implement to have it
@@ -39,13 +35,13 @@ public abstract class DefaultChemObjectReader extends ChemObjectIO implements IS
     /**
      * An event to be sent to listeners when a frame is read.
      */
-    private ReaderEvent frameReadEvent = null;
-    
-    protected IChemObjectReader.Mode mode = IChemObjectReader.Mode.RELAXED;
-    protected IChemObjectReaderErrorHandler errorHandler = null;
+    private ReaderEvent                     frameReadEvent = null;
+
+    protected IChemObjectReader.Mode        mode           = IChemObjectReader.Mode.RELAXED;
+    protected IChemObjectReaderErrorHandler errorHandler   = null;
 
     /* Extra convenience methods */
-    
+
     /**
      * Sends a frame read event to the registered ReaderListeners.
      */
@@ -56,48 +52,49 @@ public abstract class DefaultChemObjectReader extends ChemObjectIO implements IS
                 if (frameReadEvent == null) {
                     frameReadEvent = new ReaderEvent(this);
                 }
-                ((IReaderListener)listener).frameRead(frameReadEvent);
+                ((IReaderListener) listener).frameRead(frameReadEvent);
             }
         }
     }
 
+    @Override
     public void setReaderMode(ISimpleChemObjectReader.Mode mode) {
-    	this.mode = mode;
+        this.mode = mode;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setErrorHandler(IChemObjectReaderErrorHandler handler) {
         this.errorHandler = handler;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(String message) throws CDKException {
         if (this.errorHandler != null) this.errorHandler.handleError(message);
         if (this.mode == Mode.STRICT) throw new CDKException(message);
     }
 
     /** {@inheritDoc} */
-    public void handleError(String message, Exception exception)
-    throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, exception);
+    @Override
+    public void handleError(String message, Exception exception) throws CDKException {
+        if (this.errorHandler != null) this.errorHandler.handleError(message, exception);
         if (this.mode == Mode.STRICT) {
             throw new CDKException(message, exception);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(String message, int row, int colStart, int colEnd) throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, row, colStart, colEnd);
+        if (this.errorHandler != null) this.errorHandler.handleError(message, row, colStart, colEnd);
         if (this.mode == Mode.STRICT) throw new CDKException(message);
     }
 
     /** {@inheritDoc} */
-    public void handleError(String message, int row, int colStart, int colEnd, Exception exception)
-    throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, row, colStart, colEnd, exception);
+    @Override
+    public void handleError(String message, int row, int colStart, int colEnd, Exception exception) throws CDKException {
+        if (this.errorHandler != null) this.errorHandler.handleError(message, row, colStart, colEnd, exception);
         if (this.mode == Mode.STRICT) {
             throw new CDKException(message, exception);
         }

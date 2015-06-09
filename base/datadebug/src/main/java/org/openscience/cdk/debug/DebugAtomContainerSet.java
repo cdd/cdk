@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,7 +21,6 @@ package org.openscience.cdk.debug;
 import java.util.Map;
 
 import org.openscience.cdk.AtomContainerSet;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemObjectChangeEvent;
@@ -34,235 +31,266 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 
 /**
  * Debugging data class.
- * 
+ *
  * @author     egonw
  * @cdk.module datadebug
  * @cdk.githash
  */
-public class DebugAtomContainerSet extends AtomContainerSet
-    implements IAtomContainerSet {
+public class DebugAtomContainerSet extends AtomContainerSet implements IAtomContainerSet {
 
     private static final long serialVersionUID = -8358480615782437454L;
-    
-    ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(DebugAtomContainerSet.class);
 
-    /** {@inheritDoc} */ @Override
+    ILoggingTool              logger           = LoggingToolFactory.createLoggingTool(DebugAtomContainerSet.class);
+
+    /** {@inheritDoc} */
+    @Override
     public void addListener(IChemObjectListener col) {
-		logger.debug("Adding listener: ", col);
-		super.addListener(col);
-	}
+        logger.debug("Adding listener: ", col);
+        super.addListener(col);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public int getListenerCount() {
-		logger.debug("Getting listener count: ", super.getListenerCount());
-		return super.getListenerCount();
-	}
+        logger.debug("Getting listener count: ", super.getListenerCount());
+        return super.getListenerCount();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void removeListener(IChemObjectListener col) {
-		logger.debug("Removing listener: ", col);
-		super.removeListener(col);
-	}
+        logger.debug("Removing listener: ", col);
+        super.removeListener(col);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void notifyChanged() {
-		logger.debug("Notifying changed");
-		super.notifyChanged();
-	}
+        logger.debug("Notifying changed");
+        super.notifyChanged();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void notifyChanged(IChemObjectChangeEvent evt) {
-		logger.debug("Notifying changed event: ", evt);
-		super.notifyChanged(evt);
-	}
+        logger.debug("Notifying changed event: ", evt);
+        super.notifyChanged(evt);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void setProperty(Object description, Object property) {
-		logger.debug("Setting property: ", description + "=" + property);
-		super.setProperty(description, property);
-	}
+        logger.debug("Setting property: ", description + "=" + property);
+        super.setProperty(description, property);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void removeProperty(Object description) {
-		logger.debug("Removing property: ", description);
-		super.removeProperty(description);
-	}
+        logger.debug("Removing property: ", description);
+        super.removeProperty(description);
+    }
 
-    /** {@inheritDoc} */ @Override
-    public Object getProperty(Object description) {
-		logger.debug("Getting property: ", description + "=" + super.getProperty(description));
-		return super.getProperty(description);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public <T> T getProperty(Object description) {
+        logger.debug("Getting property: ", description + "=" + super.getProperty(description));
+        return super.getProperty(description);
+    }
 
-    /** {@inheritDoc} */ @Override
-    public Map<Object,Object> getProperties() {
-		logger.debug("Getting properties");
-		return super.getProperties();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public Map<Object, Object> getProperties() {
+        logger.debug("Getting properties");
+        return super.getProperties();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public String getID() {
-		logger.debug("Getting ID: ", super.getID());
-		return super.getID();
-	}
+        logger.debug("Getting ID: ", super.getID());
+        return super.getID();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void setID(String identifier) {
-		logger.debug("Setting ID: ", identifier);
-		super.setID(identifier);
-	}
+        logger.debug("Setting ID: ", identifier);
+        super.setID(identifier);
+    }
 
-    /** {@inheritDoc} */ @Override
-    public void setFlag(int flag_type, boolean flag_value) {
-		logger.debug("Setting flag: ", flag_type + "=" + flag_value);
-		super.setFlag(flag_type, flag_value);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void setFlag(int flagType, boolean flagValue) {
+        logger.debug("Setting flag: ", flagType + "=" + flagValue);
+        super.setFlag(flagType, flagValue);
+    }
 
-    /** {@inheritDoc} */ @Override
-    public boolean getFlag(int flag_type) {
-		logger.debug("Setting flag: ", flag_type + "=" + super.getFlag(flag_type));
-		return super.getFlag(flag_type);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public boolean getFlag(int flagType) {
+        logger.debug("Setting flag: ", flagType + "=" + super.getFlag(flagType));
+        return super.getFlag(flagType);
+    }
 
-    /** {@inheritDoc} */ @Override
-    public void setProperties(Map<Object,Object> properties) {
-		logger.debug("Setting properties: ", properties);
-		super.setProperties(properties);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public void addProperties(Map<Object, Object> properties) {
+        logger.debug("Setting properties: ", properties);
+        super.addProperties(properties);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void setFlags(boolean[] flagsNew) {
-		logger.debug("Setting flags:", flagsNew.length);
-		super.setFlags(flagsNew);
-	}
+        logger.debug("Setting flags:", flagsNew.length);
+        super.setFlags(flagsNew);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public boolean[] getFlags() {
-		logger.debug("Getting flags:", super.getFlags().length);
-		return super.getFlags();
-	}
+        logger.debug("Getting flags:", super.getFlags().length);
+        return super.getFlags();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         Object clone = null;
         try {
-        	clone = super.clone();
+            clone = super.clone();
         } catch (Exception exception) {
-        	logger.error("Could not clone DebugAtom: " + exception.getMessage(), exception);
-        	logger.debug(exception);
+            logger.error("Could not clone DebugAtom: " + exception.getMessage(), exception);
+            logger.debug(exception);
         }
         return clone;
-	}
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public IChemObjectBuilder getBuilder() {
-		return DebugChemObjectBuilder.getInstance();
-	}
+        return DebugChemObjectBuilder.getInstance();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void addAtomContainer(IAtomContainer atomContainer) {
-		logger.debug("Adding atom container: ", atomContainer);
-		super.addAtomContainer(atomContainer);
-	}
+        logger.debug("Adding atom container: ", atomContainer);
+        super.addAtomContainer(atomContainer);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void removeAtomContainer(IAtomContainer atomContainer) {
-		logger.debug("Removing atom container: ", atomContainer);
-		super.removeAtomContainer(atomContainer);
-	}
+        logger.debug("Removing atom container: ", atomContainer);
+        super.removeAtomContainer(atomContainer);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void removeAllAtomContainers() {
-		logger.debug("Removing all atom containers");
-		super.removeAllAtomContainers();
-	}
+        logger.debug("Removing all atom containers");
+        super.removeAllAtomContainers();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void removeAtomContainer(int pos) {
-		logger.debug("Removing atom container at pos: ", pos);
-		super.removeAtomContainer(pos);
-	}
+        logger.debug("Removing atom container at pos: ", pos);
+        super.removeAtomContainer(pos);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void replaceAtomContainer(int position, IAtomContainer container) {
-		logger.debug("Replacing atom container at pos: ", position);
-		super.replaceAtomContainer(position, container);
-	}
-	
-    /** {@inheritDoc} */ @Override
+        logger.debug("Replacing atom container at pos: ", position);
+        super.replaceAtomContainer(position, container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean setMultiplier(IAtomContainer container, Double multiplier) {
-		logger.debug("Setting multiplier for atomcontainer: ", container, ""+multiplier);
-		return super.setMultiplier(container, multiplier);
-	}
+        logger.debug("Setting multiplier for atomcontainer: ", container, "" + multiplier);
+        return super.setMultiplier(container, multiplier);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void setMultiplier(int position, Double multiplier) {
-		logger.debug("Setting multiplier for atomcontainer at pos: ", ""+position, ""+multiplier);
-		super.setMultiplier(position, multiplier);
-	}
+        logger.debug("Setting multiplier for atomcontainer at pos: ", "" + position, "" + multiplier);
+        super.setMultiplier(position, multiplier);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public Double[] getMultipliers() {
-		logger.debug("Getting multipliers array: ", super.getMultipliers().length);
-		return super.getMultipliers();
-	}
+        logger.debug("Getting multipliers array: ", super.getMultipliers().length);
+        return super.getMultipliers();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public boolean setMultipliers(Double[] newMultipliers) {
-		logger.debug("Setting multipliers array: ", newMultipliers.length);
-		return super.setMultipliers(newMultipliers);
-	}
+        logger.debug("Setting multipliers array: ", newMultipliers.length);
+        return super.setMultipliers(newMultipliers);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void addAtomContainer(IAtomContainer atomContainer, double multiplier) {
-		logger.debug("Adding atom container with multiplier: ", ""+multiplier, atomContainer);
-		super.addAtomContainer(atomContainer, multiplier);
-	}
+        logger.debug("Adding atom container with multiplier: ", "" + multiplier, atomContainer);
+        super.addAtomContainer(atomContainer, multiplier);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void add(IAtomContainerSet atomContainerSet) {
-		logger.debug("Adding set of atom containers: ", atomContainerSet);
-		super.add(atomContainerSet);
-	}
+        logger.debug("Adding set of atom containers: ", atomContainerSet);
+        super.add(atomContainerSet);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public Iterable<IAtomContainer> atomContainers() {
-		logger.debug("Getting AtomContainer iterator");
-		return super.atomContainers();
-	}
+        logger.debug("Getting AtomContainer iterator");
+        return super.atomContainers();
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public IAtomContainer getAtomContainer(int number) {
-		logger.debug("Getting atom container at: ", number);
-		return super.getAtomContainer(number);
-	}
+        logger.debug("Getting atom container at: ", number);
+        return super.getAtomContainer(number);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public Double getMultiplier(int number) {
-		logger.debug("Getting multiplier at: ", number);
-		return super.getMultiplier(number);
-	}
+        logger.debug("Getting multiplier at: ", number);
+        return super.getMultiplier(number);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public Double getMultiplier(IAtomContainer container) {
-		logger.debug("Getting multiplier for atom container: ", container);
-		return super.getMultiplier(container);
-	}
+        logger.debug("Getting multiplier for atom container: ", container);
+        return super.getMultiplier(container);
+    }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public int getAtomContainerCount() {
-		logger.debug("Getting atom container count: ", super.getAtomContainerCount());
-		return super.getAtomContainerCount();
-	}
+        logger.debug("Getting atom container count: ", super.getAtomContainerCount());
+        return super.getAtomContainerCount();
+    }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testIsEmpty")
     @Override
     public boolean isEmpty() {
-    	logger.debug("Checking if the atom container set empty: ", atomContainerCount == 0);
-    	return atomContainerCount == 0;
+        logger.debug("Checking if the atom container set empty: ", atomContainerCount == 0);
+        return atomContainerCount == 0;
     }
 }

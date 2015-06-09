@@ -30,10 +30,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.PseudoAtom;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.BondTools;
 import org.openscience.cdk.interfaces.IAtom;
@@ -52,36 +49,33 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.helper.MolHandlerTest")
 public class MolHandler {
 
-    private IAtomContainer atomContainer = null;
-    private boolean removeHydrogen = false;
-    private final ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(MolHandler.class);
-    private ICanonicalMoleculeLabeller canonLabeler = new CanonicalLabellingAdaptor();
+    private IAtomContainer             atomContainer  = null;
+    private boolean                    removeHydrogen = false;
+    private final ILoggingTool         logger         = LoggingToolFactory.createLoggingTool(MolHandler.class);
+    private ICanonicalMoleculeLabeller canonLabeler   = new CanonicalLabellingAdaptor();
 
     /**
      * Creates a new instance of MolHandler
-     * @param MolFile atomContainer file name
+     * @param molFile atomContainer file name
      * @param cleanMolecule
      * @param removeHydrogen
      *
      */
-    @TestMethod("MolHandlerTest")
-    public MolHandler(String MolFile, boolean removeHydrogen, boolean cleanMolecule) {
+    public MolHandler(String molFile, boolean removeHydrogen, boolean cleanMolecule) {
 
         MDLReader molRead = null;
         this.removeHydrogen = removeHydrogen;
         try {
             FileInputStream readMolecule = null;
 
-            readMolecule = new FileInputStream(MolFile);
+            readMolecule = new FileInputStream(molFile);
             molRead = new MDLReader(new InputStreamReader(readMolecule));
             this.atomContainer = (IAtomContainer) molRead.read(new AtomContainer());
             molRead.close();
             readMolecule.close();
-            /*Remove Hydrogen by Asad*/
+            /* Remove Hydrogen by Asad */
             if (removeHydrogen) {
                 atomContainer = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
             }
@@ -96,7 +90,7 @@ public class MolHandler {
                 CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(atomContainer.getBuilder());
                 adder.addImplicitHydrogens(atomContainer);
                 // figure out which atoms are in aromatic rings:
-                CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+                Aromaticity.cdkLegacy().apply(atomContainer);
                 BondTools.makeUpDownBonds(atomContainer);
             }
         } catch (IOException ex) {
@@ -121,14 +115,14 @@ public class MolHandler {
      * @param cleanMolecule
      * @param removeHydrogen
      */
-    @TestMethod("MolHandlerTest")
     public MolHandler(IAtomContainer container, boolean removeHydrogen, boolean cleanMolecule) {
         String molID = container.getID();
         this.removeHydrogen = removeHydrogen;
         this.atomContainer = container;
         if (removeHydrogen) {
             try {
-                this.atomContainer = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
+                this.atomContainer = ExtAtomContainerManipulator
+                        .removeHydrogensExceptSingleAndPreserveAtomID(atomContainer);
             } catch (Exception ex) {
                 logger.error(ex);
             }
@@ -147,7 +141,7 @@ public class MolHandler {
                 CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(atomContainer.getBuilder());
                 adder.addImplicitHydrogens(atomContainer);
                 // figure out which atoms are in aromatic rings:
-                CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+                Aromaticity.cdkLegacy().apply(atomContainer);
             } catch (CDKException ex) {
                 logger.error(ex);
             }
@@ -159,7 +153,6 @@ public class MolHandler {
      * Returns the modified container
      * @return get processed / modified container
      */
-    @TestMethod("testGetMolecule")
     public IAtomContainer getMolecule() {
         return atomContainer;
     }
@@ -168,14 +161,13 @@ public class MolHandler {
      * Returns true if hydrogens were made implicit else return false
      * @return true if remove H else false
      */
-    @TestMethod("testGetRemoveHydrogenFlag")
     public boolean getRemoveHydrogenFlag() {
         return removeHydrogen;
     }
 
     private boolean isPseudoAtoms() {
         for (IAtom atoms : atomContainer.atoms()) {
-            if (atoms instanceof IPseudoAtom || atoms instanceof PseudoAtom) {
+            if (atoms instanceof IPseudoAtom) {
                 return true;
             }
         }

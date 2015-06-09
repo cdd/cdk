@@ -23,18 +23,22 @@
  */
 package org.openscience.cdk.graph;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.openscience.cdk.graph.BitMatrixTest.toBitSet;
 
 import java.util.Arrays;
 import java.util.BitSet;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.openscience.cdk.graph.BitMatrixTest.toBitSet;
-import static org.openscience.cdk.graph.InitialCycles.Cycle;
+import org.openscience.cdk.graph.InitialCycles.Cycle;
+
+import org.junit.Test;
 
 /**
  * @author John May
@@ -42,7 +46,8 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
  */
 public class GreedyBasisTest {
 
-    @Test public void add() {
+    @Test
+    public void add() {
         Cycle c1 = mock(Cycle.class);
         Cycle c2 = mock(Cycle.class);
         when(c1.edgeVector()).thenReturn(new BitSet());
@@ -55,7 +60,8 @@ public class GreedyBasisTest {
         assertThat(basis.members(), hasItems(c1, c2));
     }
 
-    @Test public void addAll() {
+    @Test
+    public void addAll() {
         Cycle c1 = mock(Cycle.class);
         Cycle c2 = mock(Cycle.class);
         when(c1.edgeVector()).thenReturn(new BitSet());
@@ -74,7 +80,8 @@ public class GreedyBasisTest {
         basis.members().add(c1);
     }
 
-    @Test public void subsetOfBasis() {
+    @Test
+    public void subsetOfBasis() {
         Cycle c1 = mock(Cycle.class);
         Cycle c2 = mock(Cycle.class);
         Cycle c3 = mock(Cycle.class);
@@ -93,7 +100,8 @@ public class GreedyBasisTest {
 
     }
 
-    @Test public void independence() {
+    @Test
+    public void independence() {
         Cycle c1 = mock(Cycle.class);
         Cycle c2 = mock(Cycle.class);
         Cycle c3 = mock(Cycle.class);
@@ -114,7 +122,8 @@ public class GreedyBasisTest {
         assertFalse(basis.isIndependent(c3));
     }
 
-    @Test public void size() {
+    @Test
+    public void size() {
         GreedyBasis basis = new GreedyBasis(3, 12);
         assertThat(basis.size(), is(0));
         Cycle c1 = mock(Cycle.class);

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -27,41 +25,43 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 
 /**
  * Debugging data class.
- * 
+ *
  * @author     Miguel Rojas
  * @cdk.module datadebug
  * @cdk.githash
  */
-public class DebugPDBMonomer extends PDBMonomer  implements IPDBMonomer {
+public class DebugPDBMonomer extends PDBMonomer implements IPDBMonomer {
 
-	private static final long serialVersionUID = -5156111560946745699L;
-	
-	ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(DebugAtomContainer.class);
+    private static final long serialVersionUID = -5156111560946745699L;
 
-    /** {@inheritDoc} */ @Override
-	public void setICode(String newICode) {
-    	logger.debug("Setting I Code: ", newICode);
-		super.setICode(newICode);
+    ILoggingTool              logger           = LoggingToolFactory.createLoggingTool(DebugAtomContainer.class);
+
+    /** {@inheritDoc} */
+    @Override
+    public void setICode(String newICode) {
+        logger.debug("Setting I Code: ", newICode);
+        super.setICode(newICode);
     }
-	
-    /** {@inheritDoc} */ @Override
+
+    /** {@inheritDoc} */
+    @Override
     public String getICode() {
-    	logger.debug("Getting I Code: ", super.getICode());
-		return super.getICode();
-    }
-    
-    /** {@inheritDoc} */ @Override
-    public void setChainID(String newChainID) {
-    	logger.debug("Setting ChainID: ", newChainID);
-		super.setChainID(newChainID);
-    }
-    
-    /** {@inheritDoc} */ @Override
-    public String getChainID() {
-    	logger.debug("Getting ChainID: ", super.getChainID());
-		return super.getChainID();
+        logger.debug("Getting I Code: ", super.getICode());
+        return super.getICode();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void setChainID(String newChainID) {
+        logger.debug("Setting ChainID: ", newChainID);
+        super.setChainID(newChainID);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getChainID() {
+        logger.debug("Getting ChainID: ", super.getChainID());
+        return super.getChainID();
+    }
 
 }

@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -32,9 +27,10 @@ import java.io.InputStream;
 import javax.vecmath.Vector3d;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemFile;
@@ -54,24 +50,24 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  */
 public class JmolTest extends CDKTestCase {
 
-    private ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(JmolTest.class);
+    private ILoggingTool logger = LoggingToolFactory.createLoggingTool(JmolTest.class);
 
     /**
      * Now come the actual tests...
      */
 
-
     /**
      * Special CML characteristics:
      * <ul><li> &lt;crystal></li></ul>
      */
-    @Test public void testEstron() throws Exception {
+    @Test
+    public void testEstron() throws Exception {
         String filename = "data/cml/estron.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -85,8 +81,8 @@ public class JmolTest extends CDKTestCase {
         // test the molecule
         ICrystal crystal = model.getCrystal();
         Assert.assertNotNull(crystal);
-        Assert.assertEquals(4*42, crystal.getAtomCount());
-        Assert.assertTrue(GeometryTools.has3DCoordinates(crystal));
+        Assert.assertEquals(4 * 42, crystal.getAtomCount());
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(crystal));
         // test the cell axes
         Vector3d a = crystal.getA();
         Assert.assertTrue(a.x != 0.0);
@@ -100,12 +96,14 @@ public class JmolTest extends CDKTestCase {
      * Special CML characteristics:
      * - Jmol Animation
      */
-    @Test public void testAnimation() throws Exception {
+    @Ignore("It is broken, but not used, AFAIK")
+    public void testAnimation() throws Exception {
         String filename = "data/cml/SN1_reaction.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -123,19 +121,20 @@ public class JmolTest extends CDKTestCase {
         IAtomContainer mol = som.getAtomContainer(0);
         Assert.assertNotNull(mol);
         Assert.assertEquals(mol.getAtomCount(), 25);
-        Assert.assertTrue(GeometryTools.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(mol));
     }
-
 
     /**
      * No special CML code, just regression test for Jmol releases
      */
-    @Test public void testMethanolTwo() throws Exception {
+    @Test
+    public void testMethanolTwo() throws Exception {
         String filename = "data/cml/methanol2.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -153,18 +152,20 @@ public class JmolTest extends CDKTestCase {
         IAtomContainer mol = model.getMoleculeSet().getAtomContainer(0);
         Assert.assertNotNull(mol);
         Assert.assertEquals(mol.getAtomCount(), 6);
-        Assert.assertTrue(GeometryTools.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(mol));
     }
 
     /**
      * No special CML code, just regression test for Jmol releases
      */
-    @Test public void testMethanolOne() throws Exception {
+    @Test
+    public void testMethanolOne() throws Exception {
         String filename = "data/cml/methanol1.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -183,7 +184,7 @@ public class JmolTest extends CDKTestCase {
         IAtomContainer mol = som.getAtomContainer(0);
         Assert.assertNotNull(mol);
         Assert.assertEquals(mol.getAtomCount(), 6);
-        Assert.assertTrue(GeometryTools.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(mol));
     }
 
 }

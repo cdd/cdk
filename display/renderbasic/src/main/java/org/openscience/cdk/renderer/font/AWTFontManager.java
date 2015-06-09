@@ -21,31 +21,27 @@ package org.openscience.cdk.renderer.font;
 import java.awt.Font;
 import java.util.HashMap;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * AWT-specific font manager.
- * 
+ *
  * @cdk.module renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.font.AWTFontManagerTest")
 public class AWTFontManager extends AbstractFontManager {
 
     private HashMap<Integer, Font> fontSizeToFontMap;
 
-    private int minFontSize;
+    private int                    minFontSize;
 
-    private Font currentFont;
+    private Font                   currentFont;
 
     /**
      * Make a manager for fonts in AWT, with a minimum font size of 9.
      */
-    @TestMethod("testConstructor")
     public AWTFontManager() {
         // apparently 9 pixels per em is the minimum
-        // but I don't know if (size 9 == 9 px.em-1)... 
+        // but I don't know if (size 9 == 9 px.em-1)...
         this.minFontSize = 9;
         this.makeFonts();
         this.toMiddle();
@@ -53,6 +49,7 @@ public class AWTFontManager extends AbstractFontManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void makeFonts() {
         int size = this.minFontSize;
         double scale = 0.5;
@@ -60,11 +57,9 @@ public class AWTFontManager extends AbstractFontManager {
 
         for (int i = 0; i < 20; i++) {
             if (super.getFontStyle() == IFontManager.FontStyle.NORMAL) {
-                this.fontSizeToFontMap.put(size,
-                        new Font(super.getFontName(), Font.PLAIN, size));
+                this.fontSizeToFontMap.put(size, new Font(super.getFontName(), Font.PLAIN, size));
             } else {
-                this.fontSizeToFontMap.put(size,
-                        new Font(super.getFontName(), Font.BOLD, size));
+                this.fontSizeToFontMap.put(size, new Font(super.getFontName(), Font.BOLD, size));
             }
             this.registerFontSizeMapping(scale, size);
             size += 1;
@@ -73,16 +68,17 @@ public class AWTFontManager extends AbstractFontManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setFontForZoom(double zoom) {
         int size = this.getFontSizeForZoom(zoom);
         if (size != -1) {
-            this.currentFont = this.fontSizeToFontMap.get(size); 
+            this.currentFont = this.fontSizeToFontMap.get(size);
         }
     }
 
     /**
      * Get the current font.
-     * 
+     *
      * @return the font at this zoom level
      */
     public Font getFont() {

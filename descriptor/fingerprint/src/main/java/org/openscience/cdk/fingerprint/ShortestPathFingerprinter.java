@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
+/* Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -26,14 +24,21 @@
 package org.openscience.cdk.fingerprint;
 
 import java.io.Serializable;
-import java.util.*;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.ConnectivityChecker;
-import org.openscience.cdk.interfaces.*;
-import org.openscience.cdk.ringsearch.SSSRFinder;
+import org.openscience.cdk.graph.Cycles;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomContainerSet;
+import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 import org.openscience.cdk.tools.manipulator.RingSetManipulator;
@@ -46,10 +51,10 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * search in a database. They are also a means for determining the similarity of chemical structures.
 
  * <pre>
- * 
+ *
  * A fingerprint is generated for an AtomContainer with this code:
  * It is recommended to use atomtyped container before generating the fingerprints.
- * 
+ *
  * For example: AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
  *
  *   AtomContainer molecule = new AtomContainer();
@@ -68,27 +73,26 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * </P>
  *
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
  *
  */
-@TestClass("org.openscience.cdk.fingerprint.ShortestPathFingerprinterTest")
 public class ShortestPathFingerprinter extends RandomNumber implements IFingerprinter, Serializable {
 
     /**
      * The default length of created fingerprints.
      */
-    public final static int DEFAULT_SIZE = 1024;
-    private static final long serialVersionUID = 7867864332244557861L;
+    public final static int     DEFAULT_SIZE     = 1024;
+    private static final long   serialVersionUID = 7867864332244557861L;
     /**
      * The default length of created fingerprints.
      */
-    private int fingerprintLength;
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(ShortestPathFingerprinter.class);
+    private int                 fingerprintLength;
+    private static ILoggingTool logger           = LoggingToolFactory
+                                                         .createLoggingTool(ShortestPathFingerprinter.class);
 
     /**
      * Creates a fingerprint generator of length
@@ -116,10 +120,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
      * @return A {@link BitSet} representing the fingerprint
      */
     @Override
-    @TestMethod("testgetBitFingerprint_IAtomContainer")
-    public IBitFingerprint getBitFingerprint(
-            IAtomContainer ac)
-            throws CDKException {
+    public IBitFingerprint getBitFingerprint(IAtomContainer ac) throws CDKException {
 
         IAtomContainer atomContainer = null;
         try {
@@ -127,7 +128,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
         } catch (CloneNotSupportedException ex) {
             logger.error("Failed to clone the molecule:", ex);
         }
-        CDKHueckelAromaticityDetector.detectAromaticity(atomContainer);
+        Aromaticity.cdkLegacy().apply(atomContainer);
         BitSet bitSet = new BitSet(fingerprintLength);
         if (!ConnectivityChecker.isConnected(atomContainer)) {
             IAtomContainerSet partitionedMolecules = ConnectivityChecker.partitionIntoMolecules(atomContainer);
@@ -148,7 +149,6 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
      * @throws UnsupportedOperationException method is not supported
      */
     @Override
-    @TestMethod("testGetRawFingerprint")
     public Map<String, Integer> getRawFingerprint(IAtomContainer ac) throws CDKException {
         throw new UnsupportedOperationException();
     }
@@ -195,8 +195,7 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
         /*
          * Add ring information
          */
-        SSSRFinder finder = new SSSRFinder(container);
-        IRingSet sssr = finder.findEssentialRings();
+        IRingSet sssr = Cycles.essential(container).toRingSet();
         RingSetManipulator.sort(sssr);
         for (Iterator<IAtomContainer> it = sssr.atomContainers().iterator(); it.hasNext();) {
             IAtomContainer ring = it.next();
@@ -252,13 +251,11 @@ public class ShortestPathFingerprinter extends RandomNumber implements IFingerpr
     }
 
     @Override
-    @TestMethod("testGetSize")
     public int getSize() {
         return fingerprintLength;
     }
 
     @Override
-    @TestMethod("testGetCountFingerprint")
     public ICountFingerprint getCountFingerprint(IAtomContainer iac) throws CDKException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

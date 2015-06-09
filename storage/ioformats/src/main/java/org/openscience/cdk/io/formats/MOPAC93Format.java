@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2014  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,8 +18,6 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
@@ -32,75 +25,74 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.MOPAC93FormatTest")
 public class MOPAC93Format extends SimpleChemFormatMatcher implements IChemFormatMatcher {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public MOPAC93Format() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new MOPAC93Format();
-    	return myself;
+        if (myself == null) myself = new MOPAC93Format();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "MOPAC 93";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
-        return new String[]{"mop","mopcrt","mopout"};
+        return new String[]{"mop", "mopcrt", "mopout"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { return null; }
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return null;
+    }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
-        if (line.indexOf("MOPAC  93") >= 0) {
-            return true;
-        }
+        return line.contains("MOPAC  93");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isXMLBased() {
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
-    public boolean isXMLBased() {
-		return false;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
-
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

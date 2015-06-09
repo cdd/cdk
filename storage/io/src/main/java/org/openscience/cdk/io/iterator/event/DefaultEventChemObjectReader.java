@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2005-2007  The Jmol Development Team
+/* Copyright (C) 2005-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,16 +18,11 @@
  */
 package org.openscience.cdk.io.iterator.event;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.io.ChemObjectIO;
 import org.openscience.cdk.io.ReaderEvent;
 import org.openscience.cdk.io.listener.IChemObjectIOListener;
 import org.openscience.cdk.io.listener.IReaderListener;
-import org.openscience.cdk.io.setting.IOSetting;
 
 /**
  * Abstract class that IteratingChemObjectReader's can implement to have it
@@ -49,22 +39,24 @@ public abstract class DefaultEventChemObjectReader extends ChemObjectIO implemen
     private ReaderEvent frameReadEvent = null;
 
     public boolean accepts(IChemObject object) {
-    	return accepts(object.getClass());
+        return accepts(object.getClass());
     }
-    public boolean accepts(Class objectClass) {
+
+    @Override
+    public boolean accepts(Class<? extends IChemObject> objectClass) {
         // leave it up the read(IChemObject) to decide by default
         return true;
     }
-    
+
     /* Extra convenience methods */
-    
+
     /**
      * File IO generally does not support removing of entries.
      */
     public void remove() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Sends a frame read event to the registered ReaderListeners.
      */

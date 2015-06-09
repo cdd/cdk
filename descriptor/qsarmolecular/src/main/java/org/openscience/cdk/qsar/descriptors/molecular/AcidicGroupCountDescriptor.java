@@ -21,9 +21,7 @@ package org.openscience.cdk.qsar.descriptors.molecular;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -39,7 +37,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * Returns the number of acidic groups. The list of acidic groups is defined
- * by these SMARTS "$([O;H1]-[C,S,P]=O)", "$([*;-;!$(*~[*;+])])", 
+ * by these SMARTS "$([O;H1]-[C,S,P]=O)", "$([*;-;!$(*~[*;+])])",
  * "$([NH](S(=O)=O)C(F)(F)F)", and "$(n1nnnc1)" originally presented in
  * JOELib {@cdk.cite WEGNER2006}.
  *
@@ -49,46 +47,39 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:acidicGroupCount
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.AcidicGroupCountDescriptorTest")
 public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private final static String[] SMARTS_STRINGS = {
-        "[$([O;H1]-[C,S,P]=O)]",
-        "[$([*;-;!$(*~[*;+])])]",
-        "[$([NH](S(=O)=O)C(F)(F)F)]",
-        "[$(n1nnnc1)]"
-    };
-    private final static String[] names = {"nAcid"};
+    private final static String[] SMARTS_STRINGS = {"[$([O;H1]-[C,S,P]=O)]", "[$([*;-;!$(*~[*;+])])]",
+            "[$([NH](S(=O)=O)C(F)(F)F)]", "[$(n1nnnc1)]"};
+    private final static String[] NAMES          = {"nAcid"};
 
-    private List<SMARTSQueryTool> tools = new ArrayList<SMARTSQueryTool>();
-    private boolean checkAromaticity;
+    private List<SMARTSQueryTool> tools          = new ArrayList<SMARTSQueryTool>();
+    private boolean               checkAromaticity;
 
     /**
      * Creates a new {@link AcidicGroupCountDescriptor}.
      */
-    @TestMethod("testConstructor")
     public AcidicGroupCountDescriptor() {
         this.checkAromaticity = true;
     }
 
-    @Override public void initialise(IChemObjectBuilder builder) {
+    @Override
+    public void initialise(IChemObjectBuilder builder) {
         for (String smarts : SMARTS_STRINGS) {
             tools.add(new SMARTSQueryTool(smarts, builder));
         }
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#acidicGroupCount",
-            this.getClass().getName(),
-            "The Chemistry Development Kit"
-        );
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#acidicGroupCount", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length != 1) {
             throw new CDKException("AcidicGroupCountDescriptor requires 1 parameter.");
@@ -103,7 +94,7 @@ public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor impl
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         Object params[] = new Object[1];
         params[0] = this.checkAromaticity;
@@ -111,28 +102,24 @@ public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor impl
     }
 
     /** {@inheritDoc} */
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
 
-        if(tools.isEmpty()) {
+        if (tools.isEmpty()) {
             throw new IllegalStateException("descriptor is not initalised, invoke 'initalise' first");
         }
 
         // do aromaticity detection
         if (this.checkAromaticity) {
             try {
-                AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(
-                    atomContainer
-                );
-                CDKHueckelAromaticityDetector.detectAromaticity(
-                    atomContainer
-                );
+                AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(atomContainer);
+                Aromaticity.cdkLegacy().apply(atomContainer);
             } catch (CDKException exception) {
                 return getDummyDescriptorValue(exception);
             }
@@ -141,27 +128,23 @@ public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor impl
         try {
             int count = 0;
             for (SMARTSQueryTool tool : tools) {
-                if (tool.matches(atomContainer))
-                    count += tool.countMatches();
+                if (tool.matches(atomContainer)) count += tool.countMatches();
             }
-            return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(),
-                new IntegerResult(count),
-                getDescriptorNames()
-            );
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    count), getDescriptorNames());
         } catch (CDKException exception) {
             return getDummyDescriptorValue(exception);
         }
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResultType();
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "checkAromaticity";
@@ -170,7 +153,7 @@ public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor impl
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         Object object = null;
         if (name.equals("checkAromaticity")) object = true;
@@ -178,10 +161,7 @@ public class AcidicGroupCountDescriptor extends AbstractMolecularDescriptor impl
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception exception) {
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-            getParameters(), new IntegerResult(-1), getDescriptorNames(),
-            exception
-        );
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(-1),
+                getDescriptorNames(), exception);
     }
 }
-

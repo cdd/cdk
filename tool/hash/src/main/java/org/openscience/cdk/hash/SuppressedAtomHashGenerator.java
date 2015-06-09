@@ -24,15 +24,9 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.hash.stereo.StereoEncoder;
 import org.openscience.cdk.hash.stereo.StereoEncoderFactory;
-import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
-
-import java.util.Arrays;
-import java.util.BitSet;
 
 /**
  * A generator for atom hash codes where atoms maybe be <i>suppressed</i>. A
@@ -40,32 +34,30 @@ import java.util.BitSet;
  * hydrogens but ignore any values for the explicit hydrogens. This particularly
  * useful for stereo-centres where by removing explicit hydrogens could affect
  * the configuration.
- * 
- * The suppress atom hashes are returned as '0'. 
- * 
+ *
+ * The suppress atom hashes are returned as '0'.
+ *
  * @author John May
  * @cdk.module hash
  * @see org.openscience.cdk.hash.SeedGenerator
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.SuppressedAtomHashGeneratorTest")
-final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
-        implements AtomHashGenerator {
+final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator implements AtomHashGenerator {
 
     /* a generator for the initial atom seeds */
-    private final AtomHashGenerator seedGenerator;
+    private final AtomHashGenerator    seedGenerator;
 
     /* creates stereo encoders for IAtomContainers */
     private final StereoEncoderFactory factory;
 
     /* number of cycles to include adjacent invariants */
-    private final int depth;
+    private final int                  depth;
 
     /**
      * Function used to indicate which atoms should be suppressed. One can think
      * of this as 'masking' out a value.
      */
-    private final AtomSuppression suppression;
+    private final AtomSuppression      suppression;
 
     /**
      * Create a basic hash generator using the provided seed generator to
@@ -84,20 +76,15 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
      *                                  null
      * @see org.openscience.cdk.hash.SeedGenerator
      */
-    public SuppressedAtomHashGenerator(AtomHashGenerator    seedGenerator,
-                                       Pseudorandom         pseudorandom,
-                                       StereoEncoderFactory factory,
-                                       AtomSuppression      suppression,
-                                       int depth) {
+    public SuppressedAtomHashGenerator(AtomHashGenerator seedGenerator, Pseudorandom pseudorandom,
+            StereoEncoderFactory factory, AtomSuppression suppression, int depth) {
         super(pseudorandom);
-        if (seedGenerator == null)
-            throw new NullPointerException("seed generator cannot be null");
-        if (depth < 0)
-            throw new IllegalArgumentException("depth cannot be less then 0");
+        if (seedGenerator == null) throw new NullPointerException("seed generator cannot be null");
+        if (depth < 0) throw new IllegalArgumentException("depth cannot be less then 0");
         this.seedGenerator = seedGenerator;
-        this.factory       = factory;
-        this.suppression   = suppression;
-        this.depth         = depth;
+        this.factory = factory;
+        this.suppression = suppression;
+        this.depth = depth;
     }
 
     /**
@@ -116,24 +103,19 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
      *                                  null
      * @see org.openscience.cdk.hash.SeedGenerator
      */
-    public SuppressedAtomHashGenerator(AtomHashGenerator seedGenerator,
-                                       Pseudorandom      pseudorandom,
-                                       AtomSuppression   suppression,
-                                       int depth){
+    public SuppressedAtomHashGenerator(AtomHashGenerator seedGenerator, Pseudorandom pseudorandom,
+            AtomSuppression suppression, int depth) {
         this(seedGenerator, pseudorandom, StereoEncoderFactory.EMPTY, suppression, depth);
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testGenerate")
-    @Override public long[] generate(IAtomContainer container) {
-        int[][]    graph      = toAdjList(container);
+    @Override
+    public long[] generate(IAtomContainer container) {
+        int[][] graph = toAdjList(container);
         Suppressed suppressed = suppression.suppress(container);
-        return generate(seedGenerator.generate(container),
-                        factory.create(container, graph),
-                        graph,
-                        suppressed);
+        return generate(seedGenerator.generate(container), factory.create(container, graph), graph, suppressed);
     }
 
     /**
@@ -145,11 +127,8 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
      * @param graph   adjacency list representation
      * @return hash codes for atoms
      */
-    @TestMethod("testGenerate_ZeroDepth,testGenerate_Disconnected,testGenerate_Simple")
-    @Override long[] generate(long[]        current,
-                              StereoEncoder encoder,
-                              int[][]       graph,
-                              Suppressed    suppressed) {
+    @Override
+    long[] generate(long[] current, StereoEncoder encoder, int[][] graph, Suppressed suppressed) {
 
         // for the stereo perception depending on how the
         // (BasicPermutationParity) is done we need to set the value to be as
@@ -157,16 +136,14 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
         for (int i : suppressed.toArray()) {
             current[i] = Long.MAX_VALUE;
         }
-        
-        int    n        = graph.length;
-        long[] next     = copy(current);
+
+        int n = graph.length;
+        long[] next = copy(current);
 
         // buffers for including adjacent invariants
-        long[] unique   = new long[n];
+        long[] unique = new long[n];
         long[] included = new long[n];
 
-        
-        
         while (encoder.encode(current, next)) {
             copy(next, current);
         }
@@ -184,7 +161,7 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
             }
 
         }
-        
+
         // zero all suppressed values so they are not combined in any molecule
         // hash
         for (int i : suppressed.toArray()) {
@@ -207,28 +184,21 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
      * @param included   buffer for storing the rotated <i>unique</i> value, this
      *                   value is <i>rotated</i> each time the same value is
      *                   found.
-     * @param suppressed bit set indicates which atoms are 'suppressed'                
+     * @param suppressed bit set indicates which atoms are 'suppressed'
      * @return the next value for <i>v</i>
      */
-    @TestMethod("testRotation") long next(int[][]    graph,
-                                          int        v,
-                                          long[]     current,
-                                          long[]     unique,
-                                          long[]     included,
-                                          Suppressed suppressed) {
+    long next(int[][] graph, int v, long[] current, long[] unique, long[] included, Suppressed suppressed) {
 
-        if (suppressed.contains(v))
-            return current[v];
-        
+        if (suppressed.contains(v)) return current[v];
+
         long invariant = distribute(current[v]);
-        int  nUnique   = 0;
+        int nUnique = 0;
 
         for (int w : graph[v]) {
 
             // skip suppressed atom
-            if (suppressed.contains(w))
-                continue;
-            
+            if (suppressed.contains(w)) continue;
+
             long adjInv = current[w];
 
             // find index of already included neighbor
@@ -239,8 +209,7 @@ final class SuppressedAtomHashGenerator extends AbstractAtomHashGenerator
 
             // no match, then the value is unique, use adjInv
             // match, then rotate the previously included value
-            included[i] = (i == nUnique) ? unique[nUnique++] = adjInv
-                                         : rotate(included[i]);
+            included[i] = (i == nUnique) ? unique[nUnique++] = adjInv : rotate(included[i]);
 
             invariant ^= included[i];
         }

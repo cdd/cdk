@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
- *           
+ *
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,24 +28,21 @@ import java.io.Serializable;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomAdaptor;
 import org.apache.commons.math3.random.RandomGenerator;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * Generates pseudorandom numbers using the MersenneTwister method from commons-math.
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.fingerprint.RandomNumberTest")
 public class RandomNumber implements Serializable {
 
-    private static final long serialVersionUID = 23345464573453571L;
+    private static final long               serialVersionUID = 23345464573453571L;
 
-    private transient final RandomGenerator rg = new RandomAdaptor(new MersenneTwister());
+    private transient final RandomGenerator rg               = new RandomAdaptor(new MersenneTwister());
 
     /**
      * Mersenne Twister Random Number for a hashcode within a range between 0 to n.
@@ -54,7 +51,6 @@ public class RandomNumber implements Serializable {
      * @param seed the seed for the next pseudorandom number
      * @return next pseudorandom number
      */
-    @TestMethod("testGenerateMersenneTwisterRandomNumber")
     public int generateMersenneTwisterRandomNumber(int n, long seed) {
         rg.setSeed(seed);
         return rg.nextInt(n);

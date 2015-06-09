@@ -20,17 +20,17 @@ package org.openscience.cdk.renderer.elements;
 
 /**
  * Widget toolkit-independent, abstract definition of something to be drawn.
- * 
+ *
  * @cdk.module render
  * @cdk.githash
  */
 public interface IRenderingElement {
 
-	/**
-	 * Converts this {@link TextElement} into widget specific objects.
-	 * 
-	 * @param visitor Toolkit specific widget factory.
-	 */
-	public void accept(IRenderingVisitor visitor);
-	
+    /**
+     * Converts this {@link TextElement} into widget specific objects.
+     *
+     * @param visitor Toolkit specific widget factory.
+     */
+    public void accept(IRenderingVisitor visitor);
+
 }

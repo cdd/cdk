@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2004  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2004  The Chemistry Development Kit (CDK) project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -28,7 +23,7 @@ import java.io.*;
 public class MakeKeywordIndexDoclet {
 
     private final String javaDocKeywordTag = "cdk.keyword";
-    
+
     private final String rootToAPI = "/api/";
     private final String omitPackageNamePart = "org.openscience.cdk.";
 

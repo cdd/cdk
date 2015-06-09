@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -62,10 +54,9 @@ import java.io.IOException;
  * @cdk.set        qsar-descriptors
  * @cdk.dictref qsar-descriptors:vdwradius
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.VdWRadiusDescriptorTest")
 public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
-    private static final String[] names = {"vdwRadius"};
+    private static final String[] NAMES = {"vdwRadius"};
 
     /**
      *  Constructor for the VdWRadiusDescriptor object.
@@ -73,13 +64,11 @@ public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAt
      *  @throws IOException if an error ocurrs when reading atom type information
      *  @throws ClassNotFoundException if an error occurs during tom typing
      */
-    public VdWRadiusDescriptor() throws IOException, ClassNotFoundException {
-    }
-
+    public VdWRadiusDescriptor() throws IOException, ClassNotFoundException {}
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -92,22 +81,18 @@ public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAt
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod(value="testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#vdwradius",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#vdwradius", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * This descriptor does have any parameter.
      */
-    @TestMethod(value="testSetParameters_arrayObject")
-    public void setParameters(Object[] params) throws CDKException {
-    }
-
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
     /**
      *  Gets the parameters attribute of the VdWRadiusDescriptor object.
@@ -115,16 +100,15 @@ public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAt
      *@return    The parameters value
      * @see #setParameters
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      *  This method calculate the Van der Waals radius of an atom.
@@ -133,22 +117,21 @@ public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAt
      *@return                   The Van der Waals radius of the atom
      */
 
-    @TestMethod(value = "testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer container) {
         String symbol = atom.getSymbol();
         double vdwradius = PeriodicTable.getVdwRadius(symbol);
         return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new DoubleResult(vdwradius), names);
+                new DoubleResult(vdwradius), NAMES);
 
     }
-
 
     /**
      *  Gets the parameterNames attribute of the VdWRadiusDescriptor object.
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -159,9 +142,8 @@ public class VdWRadiusDescriptor extends AbstractAtomicDescriptor implements IAt
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

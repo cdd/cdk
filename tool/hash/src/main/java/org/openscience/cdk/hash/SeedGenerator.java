@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
@@ -54,14 +52,12 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @see BasicAtomHashGenerator
  * @see ConjugatedAtomEncoder
  */
-@TestClass("org.openscience.cdk.hash.SeedGeneratorTest")
-final class SeedGenerator extends AbstractHashGenerator
-        implements AtomHashGenerator {
+final class SeedGenerator extends AbstractHashGenerator implements AtomHashGenerator {
 
     /* used to encode atom attributes */
-    private final AtomEncoder encoder;
-    
-    /** Optional suppression of atoms. */ 
+    private final AtomEncoder     encoder;
+
+    /** Optional suppression of atoms. */
     private final AtomSuppression suppression;
 
     /**
@@ -71,7 +67,6 @@ final class SeedGenerator extends AbstractHashGenerator
      * @throws NullPointerException encoder was null
      * @see ConjugatedAtomEncoder
      */
-    @TestMethod("testConstruct_Null")
     public SeedGenerator(AtomEncoder encoder) {
         this(encoder, new Xorshift(), AtomSuppression.unsuppressed());
     }
@@ -82,7 +77,7 @@ final class SeedGenerator extends AbstractHashGenerator
      * @param encoder a method for encoding atom invariant properties
      * @throws NullPointerException encoder was null
      * @see ConjugatedAtomEncoder
-     */ 
+     */
     public SeedGenerator(AtomEncoder encoder, AtomSuppression suppression) {
         this(encoder, new Xorshift(), suppression);
     }
@@ -93,14 +88,13 @@ final class SeedGenerator extends AbstractHashGenerator
      *
      * @param encoder      a method for encoding atom invariant properties
      * @param pseudorandom number generator to randomise initial invariants
-     * @param suppression  indicates which vertices should be suppressed                     
+     * @param suppression  indicates which vertices should be suppressed
      * @throws NullPointerException encoder or pseudorandom number generator was
      *                              null
      */
     SeedGenerator(AtomEncoder encoder, Pseudorandom pseudorandom, AtomSuppression suppression) {
         super(pseudorandom);
-        if (encoder == null)
-            throw new NullPointerException("encoder cannot be null");
+        if (encoder == null) throw new NullPointerException("encoder cannot be null");
         if (suppression == null)
             throw new NullPointerException("suppression cannot be null, use AtomSuppression.unsuppressed()");
         this.encoder = encoder;
@@ -110,20 +104,19 @@ final class SeedGenerator extends AbstractHashGenerator
     /**
      * @inheritDoc
      */
-    @TestMethod("testGenerate,testGenerate_SizeSeeding")
-    @Override public long[] generate(IAtomContainer container) {
+    @Override
+    public long[] generate(IAtomContainer container) {
 
         Suppressed suppressed = suppression.suppress(container);
-        
+
         int n = container.getAtomCount();
-        int m = n - suppressed.count();   // number of non-suppressed vertices
+        int m = n - suppressed.count(); // number of non-suppressed vertices
         int seed = m > 1 ? 9803 % m : 1;
 
         long[] hashes = new long[n];
 
         for (int i = 0; i < n; i++) {
-            hashes[i] = distribute(seed * encoder.encode(container.getAtom(i),
-                                                         container));
+            hashes[i] = distribute(seed * encoder.encode(container.getAtom(i), container));
         }
         return hashes;
     }

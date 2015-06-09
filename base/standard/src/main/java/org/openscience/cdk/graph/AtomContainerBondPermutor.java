@@ -22,24 +22,22 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 /**
  * This class allows the user to iterate through the set of all possible
- * permutations of the bond order in a given atom container. This provides a 
- * means to check the dependency of an algorithm's results on the bond order of 
+ * permutations of the bond order in a given atom container. This provides a
+ * means to check the dependency of an algorithm's results on the bond order of
  * the input atom container.
- * 
+ *
  * <p>Typical use:<pre>
  * AtomContainerBondPermutor permutor = new AtomContainerBondPermutor(container);
  * while (permutor.hasNext()) {
  *   IAtomContainer permutedContainer = permutor.next();
  *   ...
  * }</pre>
- * 
+ *
  *
  * @author         maclean
  * @cdk.githash
@@ -47,28 +45,28 @@ import org.openscience.cdk.interfaces.IBond;
  * @cdk.keyword    permutation
  * @cdk.module     standard
  */
-@TestClass("AtomContainerAtomPermutorTest")
 public class AtomContainerBondPermutor extends AtomContainerPermutor {
 
     /**
      * A permutor wraps the original atom container, and produces cloned
      * (and permuted!) copies on demand.
-     * 
+     *
      * @param atomContainer the atom container to permute
      */
-    @TestMethod("constructorTest")
     public AtomContainerBondPermutor(IAtomContainer atomContainer) {
         super(atomContainer.getBondCount(), atomContainer);
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.graph.AtomContainerPermutor#containerFromPermutation(int[])
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.graph.AtomContainerPermutor#containerFromPermutation
+     * (int[])
      */
-    @TestMethod("containerFromPermutationTest")
+    @Override
     public IAtomContainer containerFromPermutation(int[] permutation) {
         try {
-            IAtomContainer permutedContainer =
-                (IAtomContainer) super.atomContainer.clone();
+            IAtomContainer permutedContainer = (IAtomContainer) super.atomContainer.clone();
             int n = permutedContainer.getBondCount();
             IBond[] permutedBonds = new IBond[n];
             for (int i = 0; i < n; i++) {
@@ -82,4 +80,3 @@ public class AtomContainerBondPermutor extends AtomContainerPermutor {
     }
 
 }
-

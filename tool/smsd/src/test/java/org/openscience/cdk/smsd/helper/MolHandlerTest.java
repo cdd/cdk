@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -43,31 +42,25 @@ import org.openscience.cdk.smsd.tools.MolHandler;
  */
 public class MolHandlerTest {
 
-    public MolHandlerTest() {
-    }
+    public MolHandlerTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of getMolecule method, of class MolHandler.
      */
     @Test
     public void testGetMolecule() {
-        System.out.println("getMolecule");
         MolHandler instance = new MolHandler(new AtomContainer(), true, true);
         IAtomContainer result = instance.getMolecule();
         assertNotNull(result);
@@ -78,7 +71,6 @@ public class MolHandlerTest {
      */
     @Test
     public void testGetRemoveHydrogenFlag() {
-        System.out.println("getRemoveHydrogenFlag");
         MolHandler instance = new MolHandler(new AtomContainer(), true, true);
         boolean expResult = true;
         boolean result = instance.getRemoveHydrogenFlag();

@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -104,13 +104,7 @@ public class CompatibilityMatrixTest {
         m.set(1, 0);
         m.set(1, 3);
         m.set(2, 4);
-        assertThat(m.fix(),
-                   is(new int[][]{
-                           {0, 1, 1, 0, 1},
-                           {1, 0, 0, 1, 0},
-                           {0, 0, 0, 0, 1},
-                           {0, 0, 0, 0, 0},
-                           {0, 0, 0, 0, 0},
-                   }));
+        assertThat(m.fix(), is(new int[][]{{0, 1, 1, 0, 1}, {1, 0, 0, 1, 0}, {0, 0, 0, 0, 1}, {0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0},}));
     }
 }

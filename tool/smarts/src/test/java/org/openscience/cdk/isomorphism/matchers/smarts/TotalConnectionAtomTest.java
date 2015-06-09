@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -40,18 +40,15 @@ import static org.mockito.Mockito.when;
  * @cdk.module test-smarts
  */
 public class TotalConnectionAtomTest {
+
     @Test
     public void matches() throws Exception {
         TotalConnectionAtom matcher = new TotalConnectionAtom(2, mock(IChemObjectBuilder.class));
         IAtom atom = mock(IAtom.class);
-        when(atom.getProperty(SMARTSAtomInvariants.KEY)).thenReturn(new SMARTSAtomInvariants(mock(IAtomContainer.class),
-                                                                                             0,
-                                                                                             0,
-                                                                                             Collections.<Integer>emptySet(),
-                                                                                             0,
-                                                                                             0,
-                                                                                             2,
-                                                                                             0));
+        when(atom.getProperty(SMARTSAtomInvariants.KEY))
+                .thenReturn(
+                        new SMARTSAtomInvariants(mock(IAtomContainer.class), 0, 0, Collections.<Integer> emptySet(), 0,
+                                0, 2, 0));
         assertTrue(matcher.matches(atom));
     }
 }

@@ -21,9 +21,6 @@ package org.openscience.cdk.tools;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 /**
  * Factory used to instantiate a {@link ILoggingTool}. To get an instance, run:
  * <pre>
@@ -35,19 +32,16 @@ import org.openscience.cdk.annotations.TestMethod;
  *   }
  * }
  * </pre>
- * 
+ *
  * @cdk.module core
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.tools.LoggingToolFactoryTest")
 public class LoggingToolFactory {
 
     /** Default logging tool. Currently, the log4j based one. */
-    public final static String DEFAULT_LOGGING_TOOL_CLASS =
-        "org.openscience.cdk.tools.LoggingTool";
+    public final static String                   DEFAULT_LOGGING_TOOL_CLASS = "org.openscience.cdk.tools.LoggingTool";
     /** Back-up logging tool. Currently, a tool that outputs to System.out. */
-    public final static String STDOUT_LOGGING_TOOL_CLASS =
-        "org.openscience.cdk.tools.SystemOutLoggingTool";
+    public final static String                   STDOUT_LOGGING_TOOL_CLASS  = "org.openscience.cdk.tools.SystemOutLoggingTool";
 
     private static Class<? extends ILoggingTool> userSetILoggerTool;
 
@@ -57,9 +51,7 @@ public class LoggingToolFactory {
      * @param loggingTool The new {@link ILoggingTool}.
      * @see   #getLoggingToolClass()
      */
-    @TestMethod("testSetGetLoggingToolClass,testCustomLogger")
-    public static void setLoggingToolClass(
-            Class<? extends ILoggingTool> loggingTool) {
+    public static void setLoggingToolClass(Class<? extends ILoggingTool> loggingTool) {
         LoggingToolFactory.userSetILoggerTool = loggingTool;
     }
 
@@ -69,7 +61,6 @@ public class LoggingToolFactory {
      * @return The currently used {@link ILoggingTool}.
      * @see    #setLoggingToolClass(Class)
      */
-    @TestMethod("testSetGetLoggingToolClass")
     public static Class<? extends ILoggingTool> getLoggingToolClass() {
         return LoggingToolFactory.userSetILoggerTool;
     }
@@ -77,41 +68,31 @@ public class LoggingToolFactory {
     /**
      * Dynamically create a {@link ILoggingTool} for the given
      * <code>sourceClass</code>.
-     * 
+     *
      * @param  sourceClass Class for which the {@link ILoggingTool} should be
      *                     constructed.
      * @return             An {@link ILoggingTool} implementation.
      */
-    @TestMethod("testCreateLoggingTool")
     public static ILoggingTool createLoggingTool(Class<?> sourceClass) {
         ILoggingTool tool = null;
         // first attempt the user set ILoggingTool
         if (userSetILoggerTool != null) {
-            tool = instantiateWithCreateMethod(
-                sourceClass, userSetILoggerTool
-            );
+            tool = instantiateWithCreateMethod(sourceClass, userSetILoggerTool);
         }
         if (tool == null) {
-            tool = initializeLoggingTool(
-                sourceClass, DEFAULT_LOGGING_TOOL_CLASS
-            );
+            tool = initializeLoggingTool(sourceClass, DEFAULT_LOGGING_TOOL_CLASS);
         }
         if (tool == null) {
-            tool = initializeLoggingTool(
-                sourceClass, STDOUT_LOGGING_TOOL_CLASS
-            );
+            tool = initializeLoggingTool(sourceClass, STDOUT_LOGGING_TOOL_CLASS);
         }
         return tool;
     }
 
-    private static ILoggingTool initializeLoggingTool(
-        Class<?> sourceClass, String className) {
+    private static ILoggingTool initializeLoggingTool(Class<?> sourceClass, String className) {
         try {
-            Class<?> possibleLoggingToolClass = sourceClass.getClassLoader()
-               .loadClass(className);
+            Class<?> possibleLoggingToolClass = sourceClass.getClassLoader().loadClass(className);
             if (ILoggingTool.class.isAssignableFrom(possibleLoggingToolClass)) {
-                return instantiateWithCreateMethod(sourceClass,
-                        possibleLoggingToolClass);
+                return instantiateWithCreateMethod(sourceClass, possibleLoggingToolClass);
             }
         } catch (ClassNotFoundException e) {
         } catch (SecurityException e) {
@@ -120,21 +101,15 @@ public class LoggingToolFactory {
         return null;
     }
 
-    private static ILoggingTool instantiateWithCreateMethod(
-            Class<?> sourceClass, Class<?> loggingToolClass) {
+    private static ILoggingTool instantiateWithCreateMethod(Class<?> sourceClass, Class<?> loggingToolClass) {
         Method createMethod;
         try {
-            createMethod = loggingToolClass.getMethod(
-                "create", Class.class
-            );
-            Object createdLoggingTool = createMethod.invoke(
-                null, sourceClass
-            );
+            createMethod = loggingToolClass.getMethod("create", Class.class);
+            Object createdLoggingTool = createMethod.invoke(null, sourceClass);
             if (createdLoggingTool instanceof ILoggingTool) {
-                return (ILoggingTool)createdLoggingTool;
+                return (ILoggingTool) createdLoggingTool;
             } else {
-                System.out.println("Expected ILoggingTool, but found a:"
-                        + createdLoggingTool.getClass().getName());
+                System.out.println("Expected ILoggingTool, but found a:" + createdLoggingTool.getClass().getName());
             }
         } catch (SecurityException e) {
         } catch (NoSuchMethodException e) {

@@ -1,27 +1,23 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
- * 
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.reaction.mechanism;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -41,87 +37,88 @@ import java.util.List;
 
 /**
  * <p>This mechanism displaces the charge (lonePair) because of
- * deficiency of charge. 
- * It returns the reaction mechanism which has been cloned the IMolecule.</p>
+ * deficiency of charge.
+ * It returns the reaction mechanism which has been cloned the {@link IAtomContainer}.</p>
  * <p>This reaction could be represented as [A*]-B| => A=[B*]</p>
- * 
+ *
  * @author         miguelrojasch
  * @cdk.created    2008-02-10
  * @cdk.module     reaction
  * @cdk.githash
  */
-@TestClass(value="org.openscience.cdk.reaction.mechanism.SharingElectronMechanismTest")
-public class SharingElectronMechanism implements IReactionMechanism{
+public class SharingElectronMechanism implements IReactionMechanism {
 
-	/** 
+    /**
      * Initiates the process for the given mechanism. The atoms to apply are mapped between
-     * reactants and products. 
+     * reactants and products.
      *
      *
      * @param atomContainerSet
      * @param atomList    The list of atoms taking part in the mechanism. Only allowed two atoms
      * @param bondList    The list of bonds taking part in the mechanism. Only allowed one bond
      * @return            The Reaction mechanism
-     * 
-	 */
-    @TestMethod(value="testInitiate_IAtomContainerSet_ArrayList_ArrayList")
-	public IReaction initiate(IAtomContainerSet atomContainerSet, ArrayList<IAtom> atomList,ArrayList<IBond> bondList) throws CDKException {
-		CDKAtomTypeMatcher atMatcher = CDKAtomTypeMatcher.getInstance(atomContainerSet.getBuilder());
-		if (atomContainerSet.getAtomContainerCount() != 1) {
-			throw new CDKException("SharingElectronMechanism only expects one IMolecule");
-		}
-		if (atomList.size() != 2) {
-			throw new CDKException("SharingElectronMechanism expects two atoms in the ArrayList");
-		}
-		if (bondList.size() != 1) {
-			throw new CDKException("SharingElectronMechanism only expect one bond in the ArrayList");
-		}
-		IAtomContainer molecule = atomContainerSet.getAtomContainer(0);
-		IAtomContainer reactantCloned;
-		try {
-			reactantCloned = (IAtomContainer) molecule.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new CDKException("Could not clone IMolecule!", e);
-		}
-		IAtom atom1 = atomList.get(0); // Atom containing the lone pair to share
-		IAtom atom1C = reactantCloned.getAtom(molecule.getAtomNumber(atom1));
-		IAtom atom2 = atomList.get(1); // Atom to neutralize the deficiency of charge
-		IAtom atom2C = reactantCloned.getAtom(molecule.getAtomNumber(atom2));
-		IBond bond1 = bondList.get(0);
-		int posBond1 = molecule.getBondNumber(bond1);
+     *
+     */
+    @Override
+    public IReaction initiate(IAtomContainerSet atomContainerSet, ArrayList<IAtom> atomList, ArrayList<IBond> bondList)
+            throws CDKException {
+        CDKAtomTypeMatcher atMatcher = CDKAtomTypeMatcher.getInstance(atomContainerSet.getBuilder());
+        if (atomContainerSet.getAtomContainerCount() != 1) {
+            throw new CDKException("SharingElectronMechanism only expects one IAtomContainer");
+        }
+        if (atomList.size() != 2) {
+            throw new CDKException("SharingElectronMechanism expects two atoms in the ArrayList");
+        }
+        if (bondList.size() != 1) {
+            throw new CDKException("SharingElectronMechanism only expect one bond in the ArrayList");
+        }
+        IAtomContainer molecule = atomContainerSet.getAtomContainer(0);
+        IAtomContainer reactantCloned;
+        try {
+            reactantCloned = (IAtomContainer) molecule.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new CDKException("Could not clone IAtomContainer!", e);
+        }
+        IAtom atom1 = atomList.get(0); // Atom containing the lone pair to share
+        IAtom atom1C = reactantCloned.getAtom(molecule.getAtomNumber(atom1));
+        IAtom atom2 = atomList.get(1); // Atom to neutralize the deficiency of charge
+        IAtom atom2C = reactantCloned.getAtom(molecule.getAtomNumber(atom2));
+        IBond bond1 = bondList.get(0);
+        int posBond1 = molecule.getBondNumber(bond1);
 
-		BondManipulator.increaseBondOrder(reactantCloned.getBond(posBond1));
-		
-		List<ILonePair> lonePair = reactantCloned.getConnectedLonePairsList(atom1C);
-		reactantCloned.removeLonePair(lonePair.get(lonePair.size() -1));
-		int charge = atom1C.getFormalCharge();
-		atom1C.setFormalCharge(charge+1);
-		
-		charge = atom2C.getFormalCharge();
-		atom2C.setFormalCharge(charge-1);
-    	
-    	atom1C.setHybridization(null);
-		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
+        BondManipulator.increaseBondOrder(reactantCloned.getBond(posBond1));
 
-		IAtomType type = atMatcher.findMatchingAtomType(reactantCloned, atom1C);
-		if (type == null) return null;
-		
-		atom2C.setHybridization(null);
-		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
-		type = atMatcher.findMatchingAtomType(reactantCloned, atom2C);
-		if (type == null) return null;
-		
-		IReaction reaction = atom2C.getBuilder().newInstance(IReaction.class);
-		reaction.addReactant(molecule);
-		
-		/* mapping */
-		for(IAtom atom:molecule.atoms()){
-			IMapping mapping = atom2C.getBuilder().newInstance(IMapping.class,atom, reactantCloned.getAtom(molecule.getAtomNumber(atom)));
-			reaction.addMapping(mapping);
-	    }
-		reaction.addProduct(reactantCloned);
-		
-		return reaction;
-	}
+        List<ILonePair> lonePair = reactantCloned.getConnectedLonePairsList(atom1C);
+        reactantCloned.removeLonePair(lonePair.get(lonePair.size() - 1));
+        int charge = atom1C.getFormalCharge();
+        atom1C.setFormalCharge(charge + 1);
+
+        charge = atom2C.getFormalCharge();
+        atom2C.setFormalCharge(charge - 1);
+
+        atom1C.setHybridization(null);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
+
+        IAtomType type = atMatcher.findMatchingAtomType(reactantCloned, atom1C);
+        if (type == null || type.getAtomTypeName().equals("X")) return null;
+
+        atom2C.setHybridization(null);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactantCloned);
+        type = atMatcher.findMatchingAtomType(reactantCloned, atom2C);
+        if (type == null || type.getAtomTypeName().equals("X")) return null;
+
+        IReaction reaction = atom2C.getBuilder().newInstance(IReaction.class);
+        reaction.addReactant(molecule);
+
+        /* mapping */
+        for (IAtom atom : molecule.atoms()) {
+            IMapping mapping = atom2C.getBuilder().newInstance(IMapping.class, atom,
+                    reactantCloned.getAtom(molecule.getAtomNumber(atom)));
+            reaction.addMapping(mapping);
+        }
+        reaction.addProduct(reactantCloned);
+
+        return reaction;
+    }
 
 }

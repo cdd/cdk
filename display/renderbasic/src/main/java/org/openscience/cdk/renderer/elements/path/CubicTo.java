@@ -24,17 +24,14 @@
 
 import javax.vecmath.Point2d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * A cubic curve in the path.
- * 
+ *
  * @author Arvid
  * @cdk.module renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.elements.path.CubicToTest")
 public class CubicTo extends PathElement {
 
     /** Coordinates of control point 1, control point 2 and end point. */
@@ -42,12 +39,11 @@ public class CubicTo extends PathElement {
 
     /**
      * Make a cubic curve path element.
-     * 
+     *
      * @param cp1 first control point in the cubic
      * @param cp2 second control point in the cubic
-     * @param ep end point of the cubic 
+     * @param ep end point of the cubic
      */
-    @TestMethod("testConstructor")
     public CubicTo(Point2d cp1, Point2d cp2, Point2d ep) {
         this(cp1.x, cp1.y, cp2.x, cp2.y, ep.x, ep.y);
     }
@@ -76,8 +72,8 @@ public class CubicTo extends PathElement {
      * @param cp1y first control point in the cubic y coord
      * @param cp2x second control point in the cubic x coord
      * @param cp2y second control point in the cubic y coord
-     * @param epx end point of the cubic x coord 
-     * @param epy end point of the cubic y coord 
+     * @param epx end point of the cubic x coord
+     * @param epy end point of the cubic y coord
      */
     public CubicTo(double cp1x, double cp1y, double cp2x, double cp2y, double epx, double epy) {
         this(new double[]{cp1x, cp1y, cp2x, cp2y, epx, epy});
@@ -85,18 +81,14 @@ public class CubicTo extends PathElement {
 
     /** {@inheritDoc} **/
     @Override
-    @TestMethod("testPoints")
     public float[] points() {
-     return new float[] { (float) coords[0],
-                          (float) coords[1],
-                          (float) coords[2],
-                          (float) coords[3],
-                          (float) coords[4],
-                          (float) coords[5]};
+        return new float[]{(float) coords[0], (float) coords[1], (float) coords[2], (float) coords[3],
+                (float) coords[4], (float) coords[5]};
     }
 
     /** @inheritDoc */
-    @Override public void points(double[] coords) {
+    @Override
+    public void points(double[] coords) {
         coords[0] = this.coords[0];
         coords[1] = this.coords[1];
         coords[2] = this.coords[2];

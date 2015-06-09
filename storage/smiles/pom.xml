@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-storage</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.6-SNAPSHOT</version>
+        <version>1.5.11-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-smiles</artifactId>
@@ -17,7 +17,6 @@
         <dependency>
             <groupId>java3d</groupId>
             <artifactId>vecmath</artifactId>
-            <version>1.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -47,12 +46,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>jgrapht</groupId>
-            <artifactId>jgrapht</artifactId>
-            <version>0.6.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
@@ -69,11 +62,6 @@
             <artifactId>cmlxom</artifactId>
             <version>3.1</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cdk-annotation</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

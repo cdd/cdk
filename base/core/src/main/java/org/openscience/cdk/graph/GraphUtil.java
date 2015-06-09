@@ -24,8 +24,6 @@
 package org.openscience.cdk.graph;
 
 import com.google.common.collect.Maps;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
@@ -44,13 +42,11 @@ import static java.util.Arrays.copyOf;
  * @see ShortestPaths
  * @see org.openscience.cdk.ringsearch.RingSearch
  */
-@TestClass("org.openscience.cdk.graph.GraphUtilTest")
 public class GraphUtil {
 
     private static final int DEFAULT_DEGREE = 4;
 
-    private GraphUtil() {
-    }
+    private GraphUtil() {}
 
     /**
      * Create an adjacent list representation of the {@literal container}.
@@ -61,12 +57,9 @@ public class GraphUtil {
      * @throws IllegalArgumentException a bond was found which contained atoms
      *                                  not in the molecule
      */
-    @TestMethod("testToAdjList,testToAdjList_resize,testToAdjList_missingAtom," +
-                        "testToAdjList_Empty,testToAdjList_Null")
     public static int[][] toAdjList(IAtomContainer container) {
 
-        if (container == null)
-            throw new NullPointerException("atom container was null");
+        if (container == null) throw new NullPointerException("atom container was null");
 
         int n = container.getAtomCount();
 
@@ -79,18 +72,15 @@ public class GraphUtil {
             int w = container.getAtomNumber(bond.getAtom(1));
 
             if (v < 0 || w < 0)
-                throw new IllegalArgumentException("bond at index " + container
-                        .getBondNumber(bond)
-                                                           + " contained an atom not pressent in molecule");
+                throw new IllegalArgumentException("bond at index " + container.getBondNumber(bond)
+                        + " contained an atom not pressent in molecule");
 
             graph[v][degree[v]++] = w;
             graph[w][degree[w]++] = v;
 
             // if the vertex degree of v or w reaches capacity, double the size
-            if (degree[v] == graph[v].length)
-                graph[v] = copyOf(graph[v], degree[v] * 2);
-            if (degree[w] == graph[w].length)
-                graph[w] = copyOf(graph[w], degree[w] * 2);
+            if (degree[v] == graph[v].length) graph[v] = copyOf(graph[v], degree[v] * 2);
+            if (degree[w] == graph[w].length) graph[w] = copyOf(graph[w], degree[w] * 2);
         }
 
         for (int v = 0; v < n; v++) {
@@ -111,11 +101,9 @@ public class GraphUtil {
      * @throws IllegalArgumentException a bond was found which contained atoms
      *                                  not in the molecule
      */
-    @TestMethod("testToAdjList_withMap")
     public static int[][] toAdjList(IAtomContainer container, EdgeToBondMap bondMap) {
 
-        if (container == null)
-            throw new NullPointerException("atom container was null");
+        if (container == null) throw new NullPointerException("atom container was null");
 
         int n = container.getAtomCount();
 
@@ -128,19 +116,16 @@ public class GraphUtil {
             int w = container.getAtomNumber(bond.getAtom(1));
 
             if (v < 0 || w < 0)
-                throw new IllegalArgumentException("bond at index " + container
-                        .getBondNumber(bond)
-                                                           + " contained an atom not pressent in molecule");
+                throw new IllegalArgumentException("bond at index " + container.getBondNumber(bond)
+                        + " contained an atom not pressent in molecule");
 
             graph[v][degree[v]++] = w;
             graph[w][degree[w]++] = v;
 
             // if the vertex degree of v or w reaches capacity, double the size
-            if (degree[v] == graph[v].length)
-                graph[v] = copyOf(graph[v], degree[v] * 2);
-            if (degree[w] == graph[w].length)
-                graph[w] = copyOf(graph[w], degree[w] * 2);
-            
+            if (degree[v] == graph[v].length) graph[v] = copyOf(graph[v], degree[v] * 2);
+            if (degree[w] == graph[w].length) graph[w] = copyOf(graph[w], degree[w] * 2);
+
             bondMap.put(v, w, bond);
         }
 
@@ -171,7 +156,6 @@ public class GraphUtil {
      * @param include the vertices of he graph to include in the subgraph
      * @return the subgraph
      */
-    @TestMethod("sequentialSubgraph,intermittentSubgraph,resizeSubgraph")
     public static int[][] subgraph(int[][] graph, int[] include) {
 
         // number of vertices in the graph and the subgraph
@@ -193,15 +177,12 @@ public class GraphUtil {
         // in the subgraph
         for (int v = 0; v < n; v++) {
             int p = mapping[v] - 1;
-            if (p < 0)
-                continue;
+            if (p < 0) continue;
 
             for (int w : graph[v]) {
                 int q = mapping[w] - 1;
-                if (q < 0)
-                    continue;
-                if (degree[p] == subgraph[p].length)
-                    subgraph[p] = copyOf(subgraph[p], 2 * subgraph[p].length);
+                if (q < 0) continue;
+                if (degree[p] == subgraph[p].length) subgraph[p] = copyOf(subgraph[p], 2 * subgraph[p].length);
                 subgraph[p][degree[p]++] = q;
             }
         }
@@ -226,7 +207,6 @@ public class GraphUtil {
      *                                  cycle
      * @see org.openscience.cdk.ringsearch.RingSearch#isolated()
      */
-    @TestMethod("testCycle,testAcyclic,testAcyclic2")
     public static int[] cycle(int[][] graph, int[] vertices) {
 
         int n = graph.length;
@@ -245,8 +225,7 @@ public class GraphUtil {
 
         for (int i = 1; i < m; i++) {
             int w = firstMarked(graph[path[i - 1]], marked);
-            if (w < 0)
-                throw new IllegalArgumentException("broken path");
+            if (w < 0) throw new IllegalArgumentException("broken path");
             path[i] = w;
             marked[w] = false;
         }
@@ -254,8 +233,7 @@ public class GraphUtil {
         // the path is a cycle if the start and end are adjacent, if this is
         // the case return the path
         for (int w : graph[path[m - 1]]) {
-            if (w == path[0])
-                return path;
+            if (w == path[0]) return path;
         }
 
         throw new IllegalArgumentException("path does not make a cycle");
@@ -268,7 +246,6 @@ public class GraphUtil {
      * @param marked marked values
      * @return first marked value, -1 if none found
      */
-    @TestMethod("firstMarked")
     static int firstMarked(int[] xs, boolean[] marked) {
         for (int x : xs)
             if (marked[x]) return x;
@@ -306,7 +283,7 @@ public class GraphUtil {
         /**
          * Access the bond store at the end points v and w. If no bond is
          * store, null is returned.
-         * 
+         *
          * @param v an endpoint
          * @param w another endpoint
          * @return the bond stored for the endpoints
@@ -316,9 +293,9 @@ public class GraphUtil {
         }
 
         /**
-         * Create a map with enough space for all the bonds in the molecule, 
+         * Create a map with enough space for all the bonds in the molecule,
          * {@code container}. Note - the map is not filled by this method.
-         * 
+         *
          * @param container the container
          * @return a map with enough space for the container
          */
@@ -328,10 +305,11 @@ public class GraphUtil {
     }
 
     /**
-     * Unordered storage of two int values. Mainly useful to index bonds by 
-     * it's vertex end points. 
+     * Unordered storage of two int values. Mainly useful to index bonds by
+     * it's vertex end points.
      */
     private static final class Tuple {
+
         private final int u, v;
 
         /**
@@ -354,8 +332,7 @@ public class GraphUtil {
 
             Tuple that = (Tuple) o;
 
-            return this.u == that.u && this.v == that.v ||
-                    this.u == that.v && this.v == that.u;
+            return this.u == that.u && this.v == that.v || this.u == that.v && this.v == that.u;
         }
 
         /**
@@ -367,5 +344,3 @@ public class GraphUtil {
         }
     }
 }
-
-

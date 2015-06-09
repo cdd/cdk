@@ -33,7 +33,7 @@ import java.util.Map;
  * <p/>
  * If the tetrahedral centre has an implicit hydrogen or lone pair then the
  * chiral atom is also stored as one of the ligands. This serves as a
- * placeholder to indicate where the implicit hydrogen or lone pair would be. 
+ * placeholder to indicate where the implicit hydrogen or lone pair would be.
  *
  * @cdk.module interfaces
  * @cdk.githash
@@ -44,8 +44,7 @@ public interface ITetrahedralChirality extends IStereoElement {
      * Enumeration that defines the two possible chiralities for this stereochemistry type.
      */
     public enum Stereo {
-        CLOCKWISE,
-        ANTI_CLOCKWISE;
+        CLOCKWISE, ANTI_CLOCKWISE;
 
         /**
          * Invert this conformation, inv(clockwise) = anti_clockwise,
@@ -87,12 +86,10 @@ public interface ITetrahedralChirality extends IStereoElement {
      */
     public Stereo getStereo();
 
-
     /**
      * @inheritDoc
      */
     @Override
     public ITetrahedralChirality map(Map<IAtom, IAtom> atoms, Map<IBond, IBond> bonds);
-
 
 }

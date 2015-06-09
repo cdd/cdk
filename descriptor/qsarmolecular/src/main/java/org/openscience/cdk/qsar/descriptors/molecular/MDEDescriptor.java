@@ -1,26 +1,24 @@
 /*
-*  Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
-*
-*  Contact: cdk-devel@lists.sourceforge.net
-*
-*  This program is free software; you can redistribute it and/or
-*  modify it under the terms of the GNU Lesser General Public License
-*  as published by the Free Software Foundation; either version 2.1
-*  of the License, or (at your option) any later version.
-*
-*  This program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU Lesser General Public License for more details.
-*
-*  You should have received a copy of the GNU Lesser General Public License
-*  along with this program; if not, write to the Free Software
-*  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ *  Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
+ *
+ *  Contact: cdk-devel@lists.sourceforge.net
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation; either version 2.1
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.graph.matrix.AdjacencyMatrix;
@@ -84,57 +82,48 @@ import java.util.List;
  * @cdk.set qsar-descriptors
  * @cdk.dictref qsar-descriptors:mde
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.MDEDescriptorTest")
 public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static final String[] names = {
-            "MDEC-11", "MDEC-12", "MDEC-13", "MDEC-14",
-            "MDEC-22", "MDEC-23", "MDEC-24",
-            "MDEC-33", "MDEC-34",
-            "MDEC-44",
-            "MDEO-11", "MDEO-12", "MDEO-22",
-            "MDEN-11", "MDEN-12", "MDEN-13",
-            "MDEN-22", "MDEN-23",
-            "MDEN-33"
-    };
+    private static final String[] NAMES  = {"MDEC-11", "MDEC-12", "MDEC-13", "MDEC-14", "MDEC-22", "MDEC-23",
+            "MDEC-24", "MDEC-33", "MDEC-34", "MDEC-44", "MDEO-11", "MDEO-12", "MDEO-22", "MDEN-11", "MDEN-12",
+            "MDEN-13", "MDEN-22", "MDEN-23", "MDEN-33"};
 
-    public static final int mdec11 = 0;
-    public static final int mdec12 = 1;
-    public static final int mdec13 = 2;
-    public static final int mdec14 = 3;
-    public static final int mdec22 = 4;
-    public static final int mdec23 = 5;
-    public static final int mdec24 = 6;
-    public static final int mdec33 = 7;
-    public static final int mdec34 = 8;
-    public static final int mdec44 = 9;
+    public static final int       MDEC11 = 0;
+    public static final int       MDEC12 = 1;
+    public static final int       MDEC13 = 2;
+    public static final int       MDEC14 = 3;
+    public static final int       MDEC22 = 4;
+    public static final int       MDEC23 = 5;
+    public static final int       MDEC24 = 6;
+    public static final int       MDEC33 = 7;
+    public static final int       MDEC34 = 8;
+    public static final int       MDEC44 = 9;
 
-    public static final int mdeo11 = 10;
-    public static final int mdeo12 = 11;
-    public static final int mdeo22 = 12;
+    public static final int       MDEO11 = 10;
+    public static final int       MDEO12 = 11;
+    public static final int       MDEO22 = 12;
 
-    public static final int mden11 = 13;
-    public static final int mden12 = 14;
-    public static final int mden13 = 15;
-    public static final int mden22 = 16;
-    public static final int mden23 = 17;
-    public static final int mden33 = 18;
+    public static final int       MDEN11 = 13;
+    public static final int       MDEN12 = 14;
+    public static final int       MDEN13 = 15;
+    public static final int       MDEN22 = 16;
+    public static final int       MDEN23 = 17;
+    public static final int       MDEN33 = 18;
 
+    private static final int      C_1    = 1;
+    private static final int      C_2    = 2;
+    private static final int      C_3    = 3;
+    private static final int      C_4    = 4;
 
-    private static final int C_1 = 1;
-    private static final int C_2 = 2;
-    private static final int C_3 = 3;
-    private static final int C_4 = 4;
+    private static final int      O_1    = 1;
+    private static final int      O_2    = 2;
 
-    private static final int O_1 = 1;
-    private static final int O_2 = 2;
-
-    private static final int N_1 = 1;
-    private static final int N_2 = 2;
-    private static final int N_3 = 3;
+    private static final int      N_1    = 1;
+    private static final int      N_2    = 2;
+    private static final int      N_3    = 3;
 
     public MDEDescriptor() {
-        
+
     }
 
     /**
@@ -151,12 +140,10 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#mde",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#mde",
+                this.getClass().getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -168,11 +155,10 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      *          is not of type String
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // none
     }
-
 
     /**
      * Gets the parameters attribute of the WeightDescriptor object.
@@ -180,16 +166,15 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @return The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      * Calculate the weight of specified element type in the supplied {@link org.openscience.cdk.interfaces.IAtomContainer}.
@@ -199,7 +184,7 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @return The total weight of atoms of the specified element type
      */
 
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
 
         IAtomContainer local = AtomContainerManipulator.removeHydrogens(container);
@@ -209,8 +194,8 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
             retval.add(dedge(local, i));
         }
 
-        return new DescriptorValue(getSpecification(),
-                getParameterNames(), getParameters(), retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     /**
@@ -224,7 +209,7 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(19);
     }
@@ -236,91 +221,91 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
         int[][] atypes = null;
 
         switch (which) {
-            case mdec11:
-            case mdec12:
-            case mdec13:
-            case mdec14:
-            case mdec22:
-            case mdec23:
-            case mdec24:
-            case mdec33:
-            case mdec34:
-            case mdec44:
+            case MDEC11:
+            case MDEC12:
+            case MDEC13:
+            case MDEC14:
+            case MDEC22:
+            case MDEC23:
+            case MDEC24:
+            case MDEC33:
+            case MDEC34:
+            case MDEC44:
                 atypes = evalATable(atomContainer, 6);
                 break;
-            case mdeo11:
-            case mdeo12:
-            case mdeo22:
+            case MDEO11:
+            case MDEO12:
+            case MDEO22:
                 atypes = evalATable(atomContainer, 8);
                 break;
-            case mden11:
-            case mden12:
-            case mden13:
-            case mden22:
-            case mden23:
-            case mden33:
+            case MDEN11:
+            case MDEN12:
+            case MDEN13:
+            case MDEN22:
+            case MDEN23:
+            case MDEN33:
                 atypes = evalATable(atomContainer, 7);
                 break;
         }
         double retval = 0;
         switch (which) {
-            case mdec11:
+            case MDEC11:
                 retval = evalCValue(tdist, atypes, C_1, C_1);
                 break;
-            case mdec12:
+            case MDEC12:
                 retval = evalCValue(tdist, atypes, C_1, C_2);
                 break;
-            case mdec13:
+            case MDEC13:
                 retval = evalCValue(tdist, atypes, C_1, C_3);
                 break;
-            case mdec14:
+            case MDEC14:
                 retval = evalCValue(tdist, atypes, C_1, C_4);
                 break;
-            case mdec22:
+            case MDEC22:
                 retval = evalCValue(tdist, atypes, C_2, C_2);
                 break;
-            case mdec23:
+            case MDEC23:
                 retval = evalCValue(tdist, atypes, C_2, C_3);
                 break;
-            case mdec24:
+            case MDEC24:
                 retval = evalCValue(tdist, atypes, C_2, C_4);
                 break;
-            case mdec33:
+            case MDEC33:
                 retval = evalCValue(tdist, atypes, C_3, C_3);
                 break;
-            case mdec34:
+            case MDEC34:
                 retval = evalCValue(tdist, atypes, C_3, C_4);
                 break;
-            case mdec44:
+            case MDEC44:
                 retval = evalCValue(tdist, atypes, C_4, C_4);
                 break;
 
-            case mdeo11:
+            case MDEO11:
                 retval = evalCValue(tdist, atypes, O_1, O_1);
                 break;
-            case mdeo12:
+            case MDEO12:
                 retval = evalCValue(tdist, atypes, O_1, O_2);
                 break;
-            case mdeo22:
+            case MDEO22:
                 retval = evalCValue(tdist, atypes, O_2, O_2);
                 break;
 
-            case mden11:
+            case MDEN11:
                 retval = evalCValue(tdist, atypes, N_1, N_1);
                 break;
-            case mden12:
+            case MDEN12:
                 retval = evalCValue(tdist, atypes, N_1, N_2);
                 break;
-            case mden13:
+            case MDEN13:
                 retval = evalCValue(tdist, atypes, N_1, N_3);
                 break;
-            case mden22:
+            case MDEN22:
                 retval = evalCValue(tdist, atypes, N_2, N_2);
                 break;
-            case mden23:
+            case MDEN23:
                 retval = evalCValue(tdist, atypes, N_2, N_3);
                 break;
-            case mden33:
+            case MDEN33:
                 retval = evalCValue(tdist, atypes, N_3, N_3);
                 break;
         }
@@ -370,22 +355,21 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
             lambda = Math.sqrt(lambda);
             n = n / 2;
         }
-        if (n == 0) return 0.0;
+        if (n == 0)
+            return 0.0;
         else
             return n / Math.pow(Math.pow(lambda, 1.0 / (2.0 * n)), 2);
     }
-
 
     /**
      * Gets the parameterNames attribute of the WeightDescriptor object.
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return null;
     }
-
 
     /**
      * Gets the parameterType attribute of the WeightDescriptor object.
@@ -393,7 +377,7 @@ public class MDEDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @param name Description of the Parameter
      * @return An Object whose class is that of the parameter requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }

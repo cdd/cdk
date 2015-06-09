@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObject;
@@ -47,7 +45,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
  * @cdk.githash
  * @cdk.keyword file format, OWL
  */
-@TestClass("org.openscience.cdk.io.rdf.CDKOWLReaderTest")
 public class CDKOWLReader extends DefaultChemObjectReader {
 
     private Reader input;
@@ -60,20 +57,20 @@ public class CDKOWLReader extends DefaultChemObjectReader {
     public CDKOWLReader(Reader input) {
         this.input = input;
     }
-    
+
     /**
      * Creates a new CDKOWLReader with an undefined input.
      */
     public CDKOWLReader() {
         this.input = null;
     }
-    
+
     /**
      * Returns the {@link IResourceFormat} for this reader.
      *
      * @return returns a {@link CDKOWLFormat}.
      */
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return CDKOWLFormat.getInstance();
     }
@@ -83,39 +80,38 @@ public class CDKOWLReader extends DefaultChemObjectReader {
      * {@link InputStream}. Use {@link #setReader(InputStream)} instead.
      *
      * @param reader reader to which should be written.
-     * @deprecated 
+     * @deprecated
      */
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) throws CDKException {
         this.input = reader;
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         this.input = new InputStreamReader(input);
     }
 
     /** {@inheritDoc} */
-	@TestMethod("testAccepts")
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
-		if (IAtomContainer.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IAtomContainer.class.equals(interfaces[i])) return true;
-		}
-		Class superClass = classObject.getSuperclass();
-	    if (superClass != null) return this.accepts(superClass);
-	        return false;
-	}
+        if (IAtomContainer.class.equals(classObject)) return true;
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IAtomContainer.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
 
     /** {@inheritDoc} */
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
         if (!(object instanceof IAtomContainer))
-            throw new CDKException(
-                "Only supported is reading of IMolecule objects."
-            );
-        IAtomContainer result = (IAtomContainer)object;
+            throw new CDKException("Only supported is reading of IAtomCOntainer objects.");
+        IAtomContainer result = (IAtomContainer) object;
 
         // do the actual parsing
         Model model = ModelFactory.createDefaultModel();
@@ -123,14 +119,13 @@ public class CDKOWLReader extends DefaultChemObjectReader {
 
         IAtomContainer mol = Convertor.model2Molecule(model, object.getBuilder());
         result.add(mol);
-        return (T)result;
+        return (T) result;
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
 
 }
-

@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -32,7 +27,7 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemModel;
@@ -50,8 +45,7 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  */
 public class JumboTest extends CDKTestCase {
 
-    private ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(JumboTest.class);
+    private ILoggingTool logger = LoggingToolFactory.createLoggingTool(JumboTest.class);
 
     /**
      * Now come the actual tests...
@@ -62,12 +56,14 @@ public class JumboTest extends CDKTestCase {
      * - <atomArray><atom/><atom/></atomArray>
      * - X2D only
      */
-    @Test public void testCuran() throws Exception {
+    @Test
+    public void testCuran() throws Exception {
         String filename = "data/cml/curan.xml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -84,8 +80,8 @@ public class JumboTest extends CDKTestCase {
         Assert.assertNotNull(mol);
         Assert.assertEquals(mol.getAtomCount(), 24);
         Assert.assertEquals(mol.getBondCount(), 28);
-        Assert.assertFalse(GeometryTools.has3DCoordinates(mol));
-        Assert.assertTrue(GeometryTools.has2DCoordinates(mol));
+        Assert.assertFalse(GeometryUtil.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has2DCoordinates(mol));
     }
 
     /**
@@ -93,12 +89,14 @@ public class JumboTest extends CDKTestCase {
      * - use of cml: namespace
      * - X2D only
      */
-    @Test public void testCephNS() throws Exception {
+    @Test
+    public void testCephNS() throws Exception {
         String filename = "data/cml/ceph-ns.xml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -115,8 +113,8 @@ public class JumboTest extends CDKTestCase {
         Assert.assertNotNull(mol);
         Assert.assertEquals(mol.getAtomCount(), 15);
         Assert.assertEquals(mol.getBondCount(), 16);
-        Assert.assertFalse(GeometryTools.has3DCoordinates(mol));
-        Assert.assertTrue(GeometryTools.has2DCoordinates(mol));
+        Assert.assertFalse(GeometryUtil.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has2DCoordinates(mol));
     }
 
     /**
@@ -125,12 +123,14 @@ public class JumboTest extends CDKTestCase {
      * - <bondArray><stringArray builtin="atomRef"/></atomArray>
      * - no coords
      */
-    @Test public void testNucleustest() throws Exception {
+    @Test
+    public void testNucleustest() throws Exception {
         String filename = "data/cml/nucleustest.xml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -147,8 +147,8 @@ public class JumboTest extends CDKTestCase {
         Assert.assertNotNull(mol);
         Assert.assertEquals("Incorrect number of atoms", 11, mol.getAtomCount());
         Assert.assertEquals("Incorrect number of bonds", 12, mol.getBondCount());
-        Assert.assertFalse("File does not have 3D coordinates", GeometryTools.has3DCoordinates(mol));
-        Assert.assertFalse("File does not have 2D coordinates", GeometryTools.has2DCoordinates(mol));
+        Assert.assertFalse("File does not have 3D coordinates", GeometryUtil.has3DCoordinates(mol));
+        Assert.assertFalse("File does not have 2D coordinates", GeometryUtil.has2DCoordinates(mol));
     }
 
 }

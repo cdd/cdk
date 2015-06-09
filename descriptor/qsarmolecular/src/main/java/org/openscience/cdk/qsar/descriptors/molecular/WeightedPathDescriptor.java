@@ -19,8 +19,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.interfaces.IAtom;
@@ -36,7 +34,6 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * Evaluates the weighted path descriptors.
@@ -63,7 +60,7 @@ import java.util.List;
  * from nitrogens</td></tr>
  * </table>
  * </center>
- * 
+ *
  * <p>This descriptor uses these parameters:
  * <table border="1">
  *   <tr>
@@ -77,7 +74,7 @@ import java.util.List;
  *     <td>no parameters</td>
  *   </tr>
  * </table>
- * 
+ *
  * @author Rajarshi Guha
  * @cdk.created 2006-01-15
  * @cdk.module qsarmolecular
@@ -85,24 +82,18 @@ import java.util.List;
  * @cdk.set qsar-descriptors
  * @cdk.dictref qsar-descriptors:weightedPath
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.WeightedPathDescriptorTest")
 public class WeightedPathDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static final String[] names = {
-            "WTPT-1", "WTPT-2", "WTPT-3", "WTPT-4", "WTPT-5"
-    };
+    private static final String[] NAMES = {"WTPT-1", "WTPT-2", "WTPT-3", "WTPT-4", "WTPT-5"};
 
-    public WeightedPathDescriptor() {
-    }
+    public WeightedPathDescriptor() {}
 
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#weightedPath",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#weightedPath", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the WeightedPathDescriptor object.
@@ -111,7 +102,7 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      * @throws org.openscience.cdk.exception.CDKException
      *          Description of the Exception
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
@@ -121,15 +112,15 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      *
      * @return The parameters value
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // no parameters to return
         return (null);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names; 
+        return NAMES;
     }
 
     /**
@@ -137,12 +128,11 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
         return (null);
     }
-
 
     /**
      * Gets the parameterType attribute of the WeightedPathDescriptor object.
@@ -150,7 +140,7 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      * @param name Description of the Parameter
      * @return The parameterType value
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return (null);
     }
@@ -162,7 +152,7 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      * @return A DoubleArrayResult value representing the weighted path values
      */
 
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         IAtomContainer local = AtomContainerManipulator.removeHydrogens(container);
         int natom = local.getAtomCount();
@@ -182,7 +172,8 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
         // heteroatoms
         double[] pathWts = getPathWeights(pathList, local);
         double mid = 0.0;
-        for (double pathWt3 : pathWts) mid += pathWt3;
+        for (double pathWt3 : pathWts)
+            mid += pathWt3;
         mid += natom; // since we don't calculate paths of length 0 above
 
         retval.add(mid);
@@ -202,7 +193,8 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
         }
         pathWts = getPathWeights(pathList, local);
         mid = 0.0;
-        for (double pathWt2 : pathWts) mid += pathWt2;
+        for (double pathWt2 : pathWts)
+            mid += pathWt2;
         mid += count;
         retval.add(mid);
 
@@ -221,7 +213,8 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
         }
         pathWts = getPathWeights(pathList, local);
         mid = 0.0;
-        for (double pathWt1 : pathWts) mid += pathWt1;
+        for (double pathWt1 : pathWts)
+            mid += pathWt1;
         mid += count;
         retval.add(mid);
 
@@ -240,13 +233,13 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
         }
         pathWts = getPathWeights(pathList, local);
         mid = 0.0;
-        for (double pathWt : pathWts) mid += pathWt;
+        for (double pathWt : pathWts)
+            mid += pathWt;
         mid += count;
         retval.add(mid);
 
-
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     /**
@@ -260,7 +253,7 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(5);
     }
@@ -282,5 +275,3 @@ public class WeightedPathDescriptor extends AbstractMolecularDescriptor implemen
     }
 
 }
-    
-

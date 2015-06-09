@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,10 +26,11 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.githash
  * @cdk.keyword SMARTS
  */
- class ASTAtomicMass extends SimpleNode {
-	/**
-	 * The atomic mass value
-	 */
+class ASTAtomicMass extends SimpleNode {
+
+    /**
+     * The atomic mass value
+     */
     private int mass;
 
     public ASTAtomicMass(int id) {
@@ -49,16 +48,20 @@ package org.openscience.cdk.smiles.smarts.parser;
         return mass;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
 
     /**
      * Sets the mass value.
-     * 
+     *
      * @param mass new mass value
      */
     public void setMass(int mass) {

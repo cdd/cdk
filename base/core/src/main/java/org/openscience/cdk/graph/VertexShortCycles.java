@@ -23,22 +23,17 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Determine the set of cycles which are the shortest through each vertex. 
- * Unlike the Smallest Set of Smallest Rings (SSSR), linear dependence of 
- * each cycle does not need to be verified. 
+ * Determine the set of cycles which are the shortest through each vertex.
+ * Unlike the Smallest Set of Smallest Rings (SSSR), linear dependence of
+ * each cycle does not need to be verified.
  *
  * @author John May
  * @cdk.module core
  */
-@TestClass("org.openscience.cdk.graph.VertexShortCyclesTest")
 final class VertexShortCycles {
 
     /** Shortest cycles stored as closed walks. */
@@ -54,8 +49,8 @@ final class VertexShortCycles {
      *  given initial cycles. */
     VertexShortCycles(InitialCycles initialCycles) {
 
-        int[][] graph  = initialCycles.graph();
-        int[]   sizeOf = new int[graph.length];
+        int[][] graph = initialCycles.graph();
+        int[] sizeOf = new int[graph.length];
 
         this.paths = new ArrayList<int[]>(initialCycles.numberOfCycles());
 
@@ -70,7 +65,7 @@ final class VertexShortCycles {
             // check if any vertex is the shortest through a vertex in the path
             for (final int v : path) {
                 if (sizeOf[v] < 1 || length <= sizeOf[v]) {
-                    found     = true;
+                    found = true;
                     sizeOf[v] = length;
                 }
             }
@@ -86,11 +81,9 @@ final class VertexShortCycles {
     /**
      * The paths of the shortest cycles, that paths are closed walks such that
      * the last and first vertex is the same.
-     * 
+     *
      * @return the paths
      */
-    @TestMethod("paths_bicyclo,paths_napthalene,paths_anthracene," +
-                        "paths_cyclophane_even")
     int[][] paths() {
         int[][] paths = new int[this.paths.size()][0];
         for (int i = 0; i < this.paths.size(); i++)
@@ -103,8 +96,6 @@ final class VertexShortCycles {
      *
      * @return number of cycles
      */
-    @TestMethod("size_bicyclo,size_napthalene,size_anthracene," +
-                        "size_cyclophane_even")
     int size() {
         return paths.size();
     }

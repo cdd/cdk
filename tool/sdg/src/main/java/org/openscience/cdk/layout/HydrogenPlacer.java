@@ -1,7 +1,7 @@
 /* Copyright (C) 2003-2013 The Chemistry Development Kit (CDK) project
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -10,21 +10,19 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.layout;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.ILoggingTool;
@@ -50,12 +48,10 @@ import java.util.List;
  * @cdk.githash
  * @see AtomPlacer
  */
-@TestClass("org.openscience.cdk.layout.HydrogenPlacerTest")
 public final class HydrogenPlacer {
 
     /** Class logger. */
-    private static final ILoggingTool logger = LoggingToolFactory
-            .createLoggingTool(HydrogenPlacer.class);
+    private static final ILoggingTool logger = LoggingToolFactory.createLoggingTool(HydrogenPlacer.class);
 
     /**
      * Place all hydrogens connected to atoms which have already been laid out.
@@ -63,7 +59,6 @@ public final class HydrogenPlacer {
      * @param container  atom container
      * @param bondLength bond length to user
      */
-    @TestMethod("testBug933572,testH2")
     public void placeHydrogens2D(final IAtomContainer container, final double bondLength) {
         logger.debug("placing hydrogens on all atoms");
         for (IAtom atom : container.atoms()) {
@@ -86,9 +81,8 @@ public final class HydrogenPlacer {
      * @see #placeHydrogens2D(org.openscience.cdk.interfaces.IAtomContainer,
      *      double)
      */
-    @TestMethod("testPlaceHydrogens2D")
     public void placeHydrogens2D(IAtomContainer container, IAtom atom) {
-        double bondLength = GeometryTools.getBondLengthAverage(container);
+        double bondLength = GeometryUtil.getBondLengthAverage(container);
         placeHydrogens2D(container, atom, bondLength);
     }
 
@@ -103,26 +97,21 @@ public final class HydrogenPlacer {
      *                                  has connected atoms which have not been
      *                                  placed.
      */
-    @TestMethod("testNoConnections,testNullContainer,unplacedNonHydrogen")
     public void placeHydrogens2D(IAtomContainer container, IAtom atom, double bondLength) {
 
-        if (container == null)
-            throw new IllegalArgumentException("cannot place hydrogens, no container provided");
+        if (container == null) throw new IllegalArgumentException("cannot place hydrogens, no container provided");
         if (atom.getPoint2d() == null)
             throw new IllegalArgumentException("cannot place hydrogens on atom without coordinates");
 
-        logger.debug("placing hydrogens connected to atom ", atom.getSymbol(),
-                     ": ", atom.getPoint2d());
+        logger.debug("placing hydrogens connected to atom ", atom.getSymbol(), ": ", atom.getPoint2d());
         logger.debug("bond length", bondLength);
 
         AtomPlacer atomPlacer = new AtomPlacer();
         atomPlacer.setMolecule(container);
 
-        List<IAtom> connected   = container.getConnectedAtomsList(atom);
-        IAtomContainer placed   = container.getBuilder()
-                                           .newInstance(IAtomContainer.class);
-        IAtomContainer unplaced = container.getBuilder()
-                                           .newInstance(IAtomContainer.class);
+        List<IAtom> connected = container.getConnectedAtomsList(atom);
+        IAtomContainer placed = container.getBuilder().newInstance(IAtomContainer.class);
+        IAtomContainer unplaced = container.getBuilder().newInstance(IAtomContainer.class);
 
         // divide connected atoms into those which are have and haven't been placed
         for (final IAtom conAtom : connected) {
@@ -130,8 +119,8 @@ public final class HydrogenPlacer {
                 if (conAtom.getSymbol().equals("H")) {
                     unplaced.addAtom(conAtom);
                 } else {
-                    throw new IllegalArgumentException("cannot place hydrogens, atom has connected" +
-                                                               " non-hydrogens without coordinates");
+                    throw new IllegalArgumentException("cannot place hydrogens, atom has connected"
+                            + " non-hydrogens without coordinates");
                 }
             } else {
                 placed.addAtom(conAtom);
@@ -144,7 +133,7 @@ public final class HydrogenPlacer {
             logger.debug("H-" + i, ": ", unplaced.getAtom(i).getPoint2d());
         }
 
-        Point2d centerPlacedAtoms = GeometryTools.get2DCenter(placed);
+        Point2d centerPlacedAtoms = GeometryUtil.get2DCenter(placed);
         atomPlacer.distributePartners(atom, placed, centerPlacedAtoms, unplaced, bondLength);
 
         logger.debug("Atom placement after procedure:");
@@ -154,4 +143,3 @@ public final class HydrogenPlacer {
         }
     }
 }
-

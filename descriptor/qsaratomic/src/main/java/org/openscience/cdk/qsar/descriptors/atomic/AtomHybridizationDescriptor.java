@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *  
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -20,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -59,34 +55,29 @@ import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
  * @cdk.set        qsar-descriptors
  * @cdk.dictref    qsar-descriptors:atomHybridization
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.AtomHybridizationDescriptorTest")
 public class AtomHybridizationDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
-	AtomTypeManipulator atman = null;
-	IAtom atom = null;
-	IAtomType matched = null;
-	
-	/**
-	 *  Gets the specification attribute of the AtomHybridizationDescriptor object
-	 *
-	 *@return    The specification value
-	 */
-	@TestMethod(value="testGetSpecification")
-    public DescriptorSpecification getSpecification() {
-		return new DescriptorSpecification(
-				"http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomHybridization",
-				this.getClass().getName(),
-				"The Chemistry Development Kit");
-	}
+    AtomTypeManipulator atman   = null;
+    IAtom               atom    = null;
+    IAtomType           matched = null;
 
+    /**
+     *  Gets the specification attribute of the AtomHybridizationDescriptor object
+     *
+     *@return    The specification value
+     */
+    @Override
+    public DescriptorSpecification getSpecification() {
+        return new DescriptorSpecification(
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomHybridization", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
+    }
 
     /**
      * This descriptor does have any parameter.
      */
-    @TestMethod(value="testSetParameters_arrayObject")
-    public void setParameters(Object[] params) throws CDKException {
-    }
-
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
     /**
      *  Gets the parameters attribute of the VdWRadiusDescriptor object.
@@ -94,30 +85,30 @@ public class AtomHybridizationDescriptor extends AbstractAtomicDescriptor implem
      *@return    The parameters value
      * @see #setParameters
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return new String[]{"aHyb"};
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), new IntegerResult((int) Double.NaN), getDescriptorNames(), e);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                (int) Double.NaN), getDescriptorNames(), e);
     }
 
     /**
-	 *  This method calculates the hybridization of an atom.
-	 *
-	 *@param  atom              The IAtom for which the DescriptorValue is requested
+     *  This method calculates the hybridization of an atom.
+     *
+     *@param  atom              The IAtom for which the DescriptorValue is requested
      *@param  container         Parameter is the atom container.
-	 *@return                   The hybridization
-	 */
+     *@return                   The hybridization
+     */
 
-	@TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer container) {
         try {
             matched = CDKAtomTypeMatcher.getInstance(atom.getBuilder()).findMatchingAtomType(container, atom);
@@ -126,20 +117,21 @@ public class AtomHybridizationDescriptor extends AbstractAtomicDescriptor implem
         }
         if (matched == null) {
             int atnum = container.getAtomNumber(atom);
-            return getDummyDescriptorValue(new CDKException("The matched atom type was null (atom number "+atnum+") "+atom.getSymbol()));
-		}
-		Hybridization atomHybridization = matched.getHybridization();
-		IntegerResult result = new IntegerResult(atomHybridization == null ? 0 : atomHybridization.ordinal());
-		return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                result, getDescriptorNames());
-	}
+            return getDummyDescriptorValue(new CDKException("The matched atom type was null (atom number " + atnum
+                    + ") " + atom.getSymbol()));
+        }
+        Hybridization atomHybridization = matched.getHybridization();
+        IntegerResult result = new IntegerResult(atomHybridization == null ? 0 : atomHybridization.ordinal());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), result,
+                getDescriptorNames());
+    }
 
     /**
      *  Gets the parameterNames attribute of the VdWRadiusDescriptor object.
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -150,9 +142,8 @@ public class AtomHybridizationDescriptor extends AbstractAtomicDescriptor implem
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

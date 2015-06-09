@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +19,6 @@
 package org.openscience.cdk.pharmacophore;
 
 import org.openscience.cdk.Bond;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.isomorphism.matchers.IQueryBond;
 
@@ -41,13 +34,12 @@ import org.openscience.cdk.isomorphism.matchers.IQueryBond;
  * @see org.openscience.cdk.pharmacophore.PharmacophoreMatcher
  * @see org.openscience.cdk.isomorphism.matchers.QueryAtomContainer
  */
-@TestClass("org.openscience.cdk.pharmacophore.PharmacophoreQueryBondTest")
 public class PharmacophoreQueryBond extends Bond implements IQueryBond {
+
     private double upper;
     private double lower;
 
-    public PharmacophoreQueryBond() {
-    }
+    public PharmacophoreQueryBond() {}
 
     /**
      * Create a query distance constraint between two query groups.
@@ -60,11 +52,9 @@ public class PharmacophoreQueryBond extends Bond implements IQueryBond {
      * @param upper The upper bound of the distance between the two groups
      * @see #PharmacophoreQueryBond(PharmacophoreQueryAtom,PharmacophoreQueryAtom,double)
      */
-    public PharmacophoreQueryBond(PharmacophoreQueryAtom atom1,
-                                  PharmacophoreQueryAtom atom2,
-                                  double lower, double upper) {
+    public PharmacophoreQueryBond(PharmacophoreQueryAtom atom1, PharmacophoreQueryAtom atom2, double lower, double upper) {
         super(atom1, atom2);
-        this.upper = round(upper,2);
+        this.upper = round(upper, 2);
         this.lower = round(lower, 2);
     }
 
@@ -82,11 +72,9 @@ public class PharmacophoreQueryBond extends Bond implements IQueryBond {
      * @param distance The exact distance between the two groups
      * @see #PharmacophoreQueryBond(PharmacophoreQueryAtom, PharmacophoreQueryAtom, double, double)
      */
-    public PharmacophoreQueryBond(PharmacophoreQueryAtom atom1,
-                                  PharmacophoreQueryAtom atom2,
-                                  double distance) {
+    public PharmacophoreQueryBond(PharmacophoreQueryAtom atom1, PharmacophoreQueryAtom atom2, double distance) {
         super(atom1, atom2);
-        this.upper = round(distance,2);
+        this.upper = round(distance, 2);
         this.lower = round(distance, 2);
     }
 
@@ -100,21 +88,20 @@ public class PharmacophoreQueryBond extends Bond implements IQueryBond {
      * @param bond The distance relationship in a target molecule
      * @return true if the target distance lies within the range of the query constraint
      */
-    @TestMethod("testMatches")
+    @Override
     public boolean matches(IBond bond) {
         if (bond instanceof PharmacophoreBond) {
-        PharmacophoreBond pbond = (PharmacophoreBond) bond;
-        double bondLength = round(pbond.getBondLength(), 2);
-        return bondLength >= lower && bondLength <= upper;
-        } else return false;
+            PharmacophoreBond pbond = (PharmacophoreBond) bond;
+            double bondLength = round(pbond.getBondLength(), 2);
+            return bondLength >= lower && bondLength <= upper;
+        } else
+            return false;
     }
 
-    @TestMethod("testUpper")
     public double getUpper() {
         return upper;
     }
 
-    @TestMethod("testLower")
     public double getLower() {
         return lower;
     }
@@ -131,7 +118,7 @@ public class PharmacophoreQueryBond extends Bond implements IQueryBond {
      *
      * @return  String representation of a distance constraint
      */
-    @TestMethod("testToString")
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("DC::" + getAtom(0) + "::" + getAtom(1) + "::[" + getLower() + " - " + getUpper() + "] ");

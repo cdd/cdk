@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -26,15 +25,8 @@ package org.openscience.cdk.smsd.interfaces;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtomContainer;
 
@@ -48,16 +40,14 @@ public abstract class AbstractMCSTest {
     public class AbstractMCSImpl extends AbstractMCS {
 
         @Override
-        public void init(IAtomContainer source, IAtomContainer target, boolean removeHydrogen, boolean cleanMol) throws CDKException {
-        }
+        public void init(IAtomContainer source, IAtomContainer target, boolean removeHydrogen, boolean cleanMol)
+                throws CDKException {}
 
         @Override
-        public void init(IQueryAtomContainer source, IAtomContainer target) throws CDKException {
-        }
+        public void init(IQueryAtomContainer source, IAtomContainer target) throws CDKException {}
 
         @Override
-        public void setChemFilters(boolean stereoFilter, boolean fragmentFilter, boolean energyFilter) {
-        }
+        public void setChemFilters(boolean stereoFilter, boolean fragmentFilter, boolean energyFilter) {}
 
         @Override
         public Double getEnergyScore(int Key) {
@@ -109,6 +99,7 @@ public abstract class AbstractMCSTest {
             return null;
         }
 
+        @Override
         public List<Map<Integer, Integer>> getAllMapping() {
             return null;
         }

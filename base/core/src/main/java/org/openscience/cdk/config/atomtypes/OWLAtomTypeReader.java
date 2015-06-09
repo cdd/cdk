@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -29,13 +27,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openscience.cdk.config.OWLBasedAtomTypeConfigurator;
 import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -46,20 +45,17 @@ import org.xml.sax.XMLReader;
  * @cdk.module  core
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.config.atomtypes.OWLAtomTypeReaderTest")
 public class OWLAtomTypeReader {
 
-    private XMLReader parser;
-    private Reader input;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(OWLAtomTypeReader.class);
+    private XMLReader           parser;
+    private Reader              input;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(OWLAtomTypeReader.class);
 
     /**
      * Instantiates the XML based AtomTypeReader.
-     * 
+     *
      * @param input The Reader to read the IAtomType's from.
      */
-    @TestMethod("testAtomTypeReader_Reader")
     public OWLAtomTypeReader(Reader input) {
         this.init();
         this.input = input;
@@ -76,7 +72,7 @@ public class OWLAtomTypeReader {
                 parser = saxParser.getXMLReader();
                 logger.info("Using JAXP/SAX XML parser.");
                 success = true;
-            } catch (Exception exception) {
+            } catch (ParserConfigurationException | SAXException exception) {
                 logger.warn("Could not instantiate JAXP/SAX XML reader!");
                 logger.debug(exception);
             }
@@ -84,12 +80,11 @@ public class OWLAtomTypeReader {
         // Xerces is an alternative
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("org.apache.xerces.parsers.SAXParser").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("org.apache.xerces.parsers.SAXParser")
+                        .newInstance();
                 logger.info("Using Xerces XML parser.");
                 success = true;
-            } catch (Exception exception) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
                 logger.warn("Could not instantiate Xerces XML reader!");
                 logger.debug(exception);
             }
@@ -103,11 +98,10 @@ public class OWLAtomTypeReader {
      * Reads the atom types from the data file.
      *
      * @param  builder The IChemObjectBuilder used to create new IAtomType's.
-     * @return         a List with atom types. Is empty if some reading error occured.
+     * @return         a List with atom types. Is empty if some reading error occurred.
      */
-    @TestMethod("testReadAtomTypes_CDK,testReadAtomTypes_IChemObjectBuilder")
     public List<IAtomType> readAtomTypes(IChemObjectBuilder builder) {
-    	List<IAtomType> isotopes = new ArrayList<IAtomType>();
+        List<IAtomType> isotopes = new ArrayList<IAtomType>();
         try {
             parser.setFeature("http://xml.org/sax/features/validation", false);
             logger.info("Deactivated validation");
@@ -121,7 +115,7 @@ public class OWLAtomTypeReader {
             parser.parse(new InputSource(input));
             isotopes = handler.getAtomTypes();
         } catch (IOException exception) {
-            logger.error("IOException: ",exception.getMessage());
+            logger.error("IOException: ", exception.getMessage());
             logger.debug(exception);
         } catch (SAXException saxe) {
             logger.error("SAXException: ", saxe.getMessage());
@@ -131,4 +125,3 @@ public class OWLAtomTypeReader {
     }
 
 }
-

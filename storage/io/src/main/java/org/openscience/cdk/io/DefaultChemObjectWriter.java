@@ -1,6 +1,4 @@
-/* $Revision$ $Author$$Date$
- *
- * Copyright (C) 2002-2007  The Jmol Development Team
+/* Copyright (C) 2002-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -19,12 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.io;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openscience.cdk.io.listener.IChemObjectIOListener;
-import org.openscience.cdk.io.setting.IOSetting;
 
 /**
  * Abstract class that ChemObjectReader's can implement to have it

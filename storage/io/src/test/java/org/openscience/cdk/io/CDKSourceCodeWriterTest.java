@@ -23,8 +23,6 @@
  */
 package org.openscience.cdk.io;
 
-import groovy.lang.GroovyShell;
-
 import java.io.StringWriter;
 
 import org.junit.Assert;
@@ -34,43 +32,46 @@ import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 /**
  * TestCase for the writer CDK source code files using one test file.
  *
  * @cdk.module test-io
- *
  * @see org.openscience.cdk.io.CDKSourceCodeWriterTest
  */
 public class CDKSourceCodeWriterTest extends ChemObjectIOTest {
 
-    @BeforeClass public static void setup() {
+    @BeforeClass
+    public static void setup() {
         setChemObjectIO(new CDKSourceCodeWriter());
     }
-    
-    @Test public void testAccepts() throws Exception {
-    	Assert.assertTrue(chemObjectIO.accepts(AtomContainer.class));
+
+    @Test
+    public void testAccepts() throws Exception {
+        Assert.assertTrue(chemObjectIO.accepts(AtomContainer.class));
     }
 
-    @Test public void testOutput() throws Exception {
+    @Test
+    public void testOutput() throws Exception {
         StringWriter writer = new StringWriter();
         IAtomContainer molecule = new AtomContainer();
         Atom atom = new Atom("C");
         atom.setMassNumber(14);
         molecule.addAtom(atom);
-        
+
         CDKSourceCodeWriter sourceWriter = new CDKSourceCodeWriter(writer);
         sourceWriter.write(molecule);
+        sourceWriter.close();
         String output = writer.toString();
-        Assert.assertTrue(output.indexOf("IAtom a1 = builder.newInstance(IAtom.class,\"C\")") != -1);
-
-        GroovyShell shell = new GroovyShell();
-        shell.evaluate(
-            // import the classes used in the output
-            "import org.openscience.cdk.interfaces.*;" +
-            "import org.openscience.cdk.*;" +
-            // compensate for the write to wrap the output in { ... }
-            "if (true) " + 
-            output
-        );
+        String newline = System.lineSeparator();
+        assertThat(output, is("{" + newline +
+                                      "  IChemObjectBuilder builder = DefaultChemObjectBuilder.getInstance();" + newline +
+                                      "  IAtomContainer mol = builder.newInstance(IAtomContainer.class);" + newline +
+                                      "  IAtom a1 = builder.newInstance(IAtom.class,\"C\");" + newline +
+                                      "  a1.setFormalCharge(0);" + newline +
+                                      "  mol.addAtom(a1);" + newline +
+                                      "}" + newline));
     }
 }

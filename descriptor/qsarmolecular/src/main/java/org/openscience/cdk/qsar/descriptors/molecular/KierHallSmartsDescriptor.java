@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2008 Rajarshi Guha  <rajarshi@users.sourceforge.net>
+/* Copyright (C) 2008 Rajarshi Guha  <rajarshi@users.sourceforge.net>
  *
  *  Contact: rajarshi@users.sourceforge.net
  *
@@ -25,8 +19,6 @@
 
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.fragments.EStateFragments;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -310,16 +302,16 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.set qsar-descriptors
  * @cdk.dictref qsar-descriptors:kierHallSmarts
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.KierHallSmartsDescriptorTest")
 public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
     private static String[] names;
-    private static final String[] smarts = EStateFragments.getSmarts();
+    private static final String[] SMARTS = EStateFragments.getSmarts();
 
     public KierHallSmartsDescriptor() {
         String[] tmp = EStateFragments.getNames();
         names = new String[tmp.length];
-        for (int i = 0; i < tmp.length; i++) names[i] = "khs." + tmp[i];
+        for (int i = 0; i < tmp.length; i++)
+            names[i] = "khs." + tmp[i];
     }
 
     /**
@@ -337,12 +329,11 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#kierHallSmarts",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#kierHallSmarts", this.getClass()
+                                                                                                         .getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -353,11 +344,10 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      *          if any parameters are specified
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params != null) throw new CDKException("Must not supply any parameters");
     }
-
 
     /**
      * Gets the parameters attribute of the descriptor.
@@ -365,22 +355,22 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      * @return The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value = "testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return names;
     }
 
-
     private DescriptorValue getDummyDescriptorValue(Exception e) {
         IntegerArrayResult result = new IntegerArrayResult();
-        for (String smart : smarts) result.add((int) Double.NaN);
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                result, getDescriptorNames(), e);
+        for (String smart : SMARTS)
+            result.add((int) Double.NaN);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), result,
+                                   getDescriptorNames(), e);
     }
 
     /**
@@ -389,7 +379,7 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      * @param container The molecule for which this descriptor is to be calculated
      * @return Counts of the fragments
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         if (container == null || container.getAtomCount() == 0) {
             return getDummyDescriptorValue(new CDKException("Container was null or else had no atoms"));
@@ -403,25 +393,28 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
             return getDummyDescriptorValue(new CDKException("Error during clone"));
         }
 
-        int[] counts = new int[smarts.length];
+        int[] counts = new int[SMARTS.length];
         try {
             SMARTSQueryTool sqt = new SMARTSQueryTool("C", container.getBuilder());
-            for (int i = 0; i < smarts.length; i++) {
-                sqt.setSmarts(smarts[i]);
+            for (int i = 0; i < SMARTS.length; i++) {
+                sqt.setSmarts(SMARTS[i]);
                 boolean status = sqt.matches(atomContainer);
                 if (status) {
                     counts[i] = sqt.getUniqueMatchingAtoms().size();
-                } else counts[i] = 0;
+                }
+                else
+                    counts[i] = 0;
             }
         } catch (CDKException e) {
             return getDummyDescriptorValue(e);
         }
 
         IntegerArrayResult result = new IntegerArrayResult();
-        for (Integer i : counts) result.add(i);
+        for (Integer i : counts)
+            result.add(i);
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                result, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), result,
+                                   getDescriptorNames());
     }
 
     /**
@@ -435,22 +428,20 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
-        return new IntegerArrayResult(smarts.length);
+        return new IntegerArrayResult(SMARTS.length);
     }
-
 
     /**
      * Gets the parameterNames attribute of the descriptor.
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return null;
     }
-
 
     /**
      * Gets the parameterType attribute of the descriptor.
@@ -458,7 +449,7 @@ public class KierHallSmartsDescriptor extends AbstractMolecularDescriptor implem
      * @param name Description of the Parameter
      * @return An Object whose class is that of the parameter requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }

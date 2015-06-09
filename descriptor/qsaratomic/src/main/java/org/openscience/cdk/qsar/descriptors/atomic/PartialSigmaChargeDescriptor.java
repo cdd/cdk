@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -20,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.charges.GasteigerMarsiliPartialCharges;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -35,7 +31,7 @@ import org.openscience.cdk.qsar.result.DoubleResult;
  *  The calculation of sigma partial charges in sigma-bonded systems of an heavy atom
  *  was made by Marsilli-Gasteiger. It is implemented with the Partial Equalization
  *  of Orbital Electronegativity (PEOE).
- *  
+ *
  * <p>This descriptor uses these parameters:
  * <table border="1">
  *   <tr>
@@ -59,36 +55,33 @@ import org.openscience.cdk.qsar.result.DoubleResult;
  * @cdk.dictref qsar-descriptors:partialSigmaCharge
  * @see GasteigerMarsiliPartialCharges
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.PartialSigmaChargeDescriptorTest")
 public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
 
-    private static final String[] names = {"partialSigmaCharge"};
+    private static final String[]          NAMES = {"partialSigmaCharge"};
 
-    private GasteigerMarsiliPartialCharges peoe = null;
+    private GasteigerMarsiliPartialCharges peoe  = null;
     /**Number of maximum iterations*/
-	private int maxIterations;
+    private int                            maxIterations;
 
     /**
      *  Constructor for the PartialSigmaChargeDescriptor object
      */
-    public PartialSigmaChargeDescriptor() { 
+    public PartialSigmaChargeDescriptor() {
         peoe = new GasteigerMarsiliPartialCharges();
     }
-    
+
     /**
      *  Gets the specification attribute of the PartialSigmaChargeDescriptor
      *  object
      *
      *@return    The specification value
      */
-    @TestMethod(value="testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#partialSigmaCharge",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#partialSigmaCharge", this
+                        .getClass().getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the PartialSigmaChargeDescriptor
@@ -97,7 +90,7 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
      *@param  params            Number of maximum iterations
      *@exception  CDKException  Description of the Exception
      */
-    @TestMethod(value="testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length > 1) {
             throw new CDKException("PartialSigmaChargeDescriptor only expects one parameter");
@@ -108,13 +101,12 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
         maxIterations = (Integer) params[0];
     }
 
-
     /**
      *  Gets the parameters attribute of the PartialSigmaChargeDescriptor object
      *
      *@return    The parameters value
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[1];
@@ -122,11 +114,10 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      *  The method returns apha partial charges assigned to an heavy atom through Gasteiger Marsili
@@ -137,12 +128,12 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
      *@param  ac                AtomContainer
      *@return                   Value of the alpha partial charge
      */
-    @TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer ac) {
-    	// FIXME: for now I'll cache the original charges, and restore them at the end of this method
-    	Double originalCharge = atom.getCharge();
+        // FIXME: for now I'll cache the original charges, and restore them at the end of this method
+        Double originalCharge = atom.getCharge();
         if (!isCachedAtomContainer(ac)) {
-            IAtomContainer mol = atom.getBuilder().newInstance(IAtomContainer.class,ac);
+            IAtomContainer mol = atom.getBuilder().newInstance(IAtomContainer.class, ac);
             if (maxIterations != 0) peoe.setMaxGasteigerIters(maxIterations);
             try {
                 peoe.assignGasteigerMarsiliSigmaPartialCharges(mol, true);
@@ -152,20 +143,15 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
                     cacheDescriptorValue(ac.getAtom(i), ac, new DoubleResult(mol.getAtom(i).getCharge()));
                 }
             } catch (Exception e) {
-                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                        new DoubleResult(Double.NaN),
-                        names, e);
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                        Double.NaN), NAMES, e);
             }
         }
         atom.setCharge(originalCharge);
 
-        return getCachedDescriptorValue(atom) != null
-                ? new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                getCachedDescriptorValue(atom),
-                names)
-                : null;
+        return getCachedDescriptorValue(atom) != null ? new DescriptorValue(getSpecification(), getParameterNames(),
+                getParameters(), getCachedDescriptorValue(atom), NAMES) : null;
     }
-
 
     /**
      *  Gets the parameterNames attribute of the PartialSigmaChargeDescriptor
@@ -173,13 +159,12 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "maxIterations";
         return params;
     }
-
 
     /**
      *  Gets the parameterType attribute of the PartialSigmaChargeDescriptor
@@ -188,10 +173,9 @@ public class PartialSigmaChargeDescriptor extends AbstractAtomicDescriptor {
      *@param  name  Description of the Parameter
      *@return       The parameterType value
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
-    	if ("maxIterations".equals(name)) return Integer.MAX_VALUE;
+        if ("maxIterations".equals(name)) return Integer.MAX_VALUE;
         return null;
     }
 }
-

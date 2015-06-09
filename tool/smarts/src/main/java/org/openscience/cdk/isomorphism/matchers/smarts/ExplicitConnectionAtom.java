@@ -1,7 +1,7 @@
 /* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *               2013       European Bioinformatics Institute
  *                          John May
- *                          
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -19,20 +19,17 @@
  */
 package org.openscience.cdk.isomorphism.matchers.smarts;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
  * Match an atom with the defined degree. The degree is also referred to as the
- * explicit connectivity and is encoded in smarts using {@code D<NUMBER>}. 
+ * explicit connectivity and is encoded in smarts using {@code D<NUMBER>}.
  *
  * @cdk.module smarts
  * @cdk.keyword SMARTS
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.isomorphism.matchers.smarts.ExplicitConnectionAtomTest")
 public final class ExplicitConnectionAtom extends SMARTSAtom {
 
     /** Number of explicit connections. */
@@ -49,7 +46,6 @@ public final class ExplicitConnectionAtom extends SMARTSAtom {
 
     /** @inheritDoc */
     @Override
-    @TestMethod("matches")
     public boolean matches(IAtom atom) {
         // XXX: this is incorrect but bug 824 expects this behaviour. The reason
         //      Daylight matches is because the explicit hydrogens are

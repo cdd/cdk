@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -27,8 +27,6 @@ package org.openscience.cdk.smiles;
 import com.google.common.collect.Maps;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
@@ -40,6 +38,7 @@ import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.interfaces.IStereoElement;
 import org.openscience.cdk.interfaces.ITetrahedralChirality;
 
+import org.openscience.cdk.stereo.ExtendedTetrahedral;
 import uk.ac.ebi.beam.Atom;
 import uk.ac.ebi.beam.AtomBuilder;
 import uk.ac.ebi.beam.Bond;
@@ -85,7 +84,6 @@ import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo.CLOCKW
  * @cdk.keyword SMILES
  * @see <a href="http://johnmay.github.io/Beam">Beam SMILES Toolkit</a>
  */
-@TestClass("org.openscience.cdk.smiles.CDKToBeamTest")
 final class CDKToBeam {
 
     /**
@@ -93,10 +91,10 @@ final class CDKToBeam {
      * Isomeric SMILES.
      */
     private final boolean isomeric;
-    
+
     /** Use aromatic flags. */
     private final boolean aromatic;
-    
+
     /** Set atom class data. */
     private final boolean atomClasses;
 
@@ -122,8 +120,8 @@ final class CDKToBeam {
     }
 
     CDKToBeam(boolean isomeric, boolean aromatic, boolean atomClasses) {
-        this.isomeric    = isomeric;
-        this.aromatic    = aromatic;
+        this.isomeric = isomeric;
+        this.aromatic = aromatic;
         this.atomClasses = atomClasses;
     }
 
@@ -135,12 +133,11 @@ final class CDKToBeam {
      * @param ac an atom container instance
      * @return the Beam ChemicalGraph for additional manipulation
      */
-    @TestMethod("adenine,benzene,imidazole")
     Graph toBeamGraph(IAtomContainer ac) throws CDKException {
 
         int order = ac.getAtomCount();
 
-        GraphBuilder        gb      = GraphBuilder.create(order);
+        GraphBuilder gb = GraphBuilder.create(order);
         Map<IAtom, Integer> indices = Maps.newHashMapWithExpectedSize(order);
 
         for (IAtom a : ac.atoms()) {
@@ -159,6 +156,8 @@ final class CDKToBeam {
                     addTetrahedralConfiguration((ITetrahedralChirality) se, gb, indices);
                 } else if (se instanceof IDoubleBondStereochemistry) {
                     addGeometricConfiguration((IDoubleBondStereochemistry) se, gb, indices);
+                } else if (se instanceof ExtendedTetrahedral) {
+                    addExtendedTetrahedralConfiguration((ExtendedTetrahedral) se, gb, indices);
                 }
             }
         }
@@ -177,31 +176,26 @@ final class CDKToBeam {
      * @throws NullPointerException the atom had an undefined symbol or implicit
      *                              hydrogen count
      */
-    @TestMethod("aliphaticAtom,aromaticAtom") Atom toBeamAtom(final IAtom a) {
+    Atom toBeamAtom(final IAtom a) {
 
         final boolean aromatic = this.aromatic && a.getFlag(CDKConstants.ISAROMATIC);
-        final Integer charge   = a.getFormalCharge();
-        final String  symbol   = checkNotNull(a.getSymbol(),
-                                              "An atom had an undefined symbol");
+        final Integer charge = a.getFormalCharge();
+        final String symbol = checkNotNull(a.getSymbol(), "An atom had an undefined symbol");
 
         Element element = Element.ofSymbol(symbol);
-        if (element == null)
-            element = Element.Unknown;
-        
-        AtomBuilder ab = aromatic ? AtomBuilder.aromatic(element)
-                                  : AtomBuilder.aliphatic(element);
-            
-        
+        if (element == null) element = Element.Unknown;
+
+        AtomBuilder ab = aromatic ? AtomBuilder.aromatic(element) : AtomBuilder.aliphatic(element);
+
         // CDK leaves nulls on pseudo atoms - we need to check this special case
         Integer hCount = a.getImplicitHydrogenCount();
         if (element == Element.Unknown) {
             ab.hydrogens(hCount != null ? hCount : 0);
         } else {
             ab.hydrogens(checkNotNull(hCount, "One or more atoms had an undefined number of implicit hydrogens"));
-        }        
+        }
 
-        if (charge != null)
-            ab.charge(charge);
+        if (charge != null) ab.charge(charge);
 
         // use the mass number to specify isotope?
         if (isomeric) {
@@ -210,9 +204,8 @@ final class CDKToBeam {
                 // XXX: likely causing some overhead but okay for now
                 try {
                     IsotopeFactory isotopes = Isotopes.getInstance();
-                    IIsotope       isotope  = isotopes.getMajorIsotope(a.getSymbol());
-                    if (isotope == null || !isotope.getMassNumber().equals(massNumber))
-                        ab.isotope(massNumber);        
+                    IIsotope isotope = isotopes.getMajorIsotope(a.getSymbol());
+                    if (isotope == null || !isotope.getMassNumber().equals(massNumber)) ab.isotope(massNumber);
                 } catch (IOException e) {
                     throw new InternalError("Isotope factory wouldn't load: " + e.getMessage());
                 }
@@ -221,7 +214,7 @@ final class CDKToBeam {
 
         Integer atomClass = a.getProperty(ATOM_ATOM_MAPPING);
         if (atomClasses && atomClass != null) {
-            ab.atomClass(atomClass);    
+            ab.atomClass(atomClass);
         }
 
         return ab.build();
@@ -237,11 +230,9 @@ final class CDKToBeam {
      *                                  unsupported order
      * @throws NullPointerException     the bond order was undefined
      */
-    @TestMethod("singleBond,doubleBond,tripleBond")
     Edge toBeamEdge(IBond b, Map<IAtom, Integer> indices) throws CDKException {
 
-        checkArgument(b.getAtomCount() == 2,
-                      "Invalid number of atoms on bond");
+        checkArgument(b.getAtomCount() == 2, "Invalid number of atoms on bond");
 
         int u = indices.get(b.getAtom(0));
         int v = indices.get(b.getAtom(1));
@@ -260,12 +251,10 @@ final class CDKToBeam {
      */
     private Bond toBeamEdgeLabel(IBond b) throws CDKException {
 
-        if (this.aromatic && b.getFlag(CDKConstants.ISAROMATIC))
-            return Bond.AROMATIC;
+        if (this.aromatic && b.getFlag(CDKConstants.ISAROMATIC)) return Bond.AROMATIC;
 
-        if (b.getOrder() == null)
-            throw new CDKException("A bond had undefined order, possible query bond?");
-        
+        if (b.getOrder() == null) throw new CDKException("A bond had undefined order, possible query bond?");
+
         IBond.Order order = b.getOrder();
 
         switch (order) {
@@ -289,16 +278,13 @@ final class CDKToBeam {
      * @param gb      the current graph builder
      * @param indices atom indices
      */
-    private void addGeometricConfiguration(IDoubleBondStereochemistry dbs,
-                                           GraphBuilder gb,
-                                           Map<IAtom, Integer> indices) {
+    private void addGeometricConfiguration(IDoubleBondStereochemistry dbs, GraphBuilder gb, Map<IAtom, Integer> indices) {
 
-        IBond   db = dbs.getStereoBond();
+        IBond db = dbs.getStereoBond();
         IBond[] bs = dbs.getBonds();
-        
+
         // don't try to set a configuration on aromatic bonds
-        if (this.aromatic && db.getFlag(CDKConstants.ISAROMATIC))
-            return;
+        if (this.aromatic && db.getFlag(CDKConstants.ISAROMATIC)) return;
 
         int u = indices.get(db.getAtom(0));
         int v = indices.get(db.getAtom(1));
@@ -321,25 +307,35 @@ final class CDKToBeam {
      * @param gb      the current graph builder
      * @param indices atom indices
      */
-    private void addTetrahedralConfiguration(ITetrahedralChirality tc,
-                                             GraphBuilder gb,
-                                             Map<IAtom, Integer> indices) {
+    private void addTetrahedralConfiguration(ITetrahedralChirality tc, GraphBuilder gb, Map<IAtom, Integer> indices) {
 
         IAtom[] ligands = tc.getLigands();
 
-        int u    = indices.get(tc.getChiralAtom());
-        int vs[] = new int[]{
-                indices.get(ligands[0]),
-                indices.get(ligands[1]),
-                indices.get(ligands[2]),
-                indices.get(ligands[3])
-        };
+        int u = indices.get(tc.getChiralAtom());
+        int vs[] = new int[]{indices.get(ligands[0]), indices.get(ligands[1]), indices.get(ligands[2]),
+                indices.get(ligands[3])};
 
-        gb.tetrahedral(u)
-          .lookingFrom(vs[0])
-          .neighbors(vs[1], vs[2], vs[3])
-          .winding(tc.getStereo() == CLOCKWISE ? Configuration.CLOCKWISE
-                                               : Configuration.ANTI_CLOCKWISE)
-          .build();
+        gb.tetrahedral(u).lookingFrom(vs[0]).neighbors(vs[1], vs[2], vs[3])
+                .winding(tc.getStereo() == CLOCKWISE ? Configuration.CLOCKWISE : Configuration.ANTI_CLOCKWISE).build();
+    }
+
+    /**
+     * Add extended tetrahedral stereo configuration to the Beam GraphBuilder.
+     *
+     * @param et      stereo element specifying tetrahedral configuration
+     * @param gb      the current graph builder
+     * @param indices atom indices
+     */
+    private void addExtendedTetrahedralConfiguration(ExtendedTetrahedral et, GraphBuilder gb,
+            Map<IAtom, Integer> indices) {
+
+        IAtom[] ligands = et.peripherals();
+
+        int u = indices.get(et.focus());
+        int vs[] = new int[]{indices.get(ligands[0]), indices.get(ligands[1]), indices.get(ligands[2]),
+                indices.get(ligands[3])};
+
+        gb.extendedTetrahedral(u).lookingFrom(vs[0]).neighbors(vs[1], vs[2], vs[3])
+                .winding(et.winding() == CLOCKWISE ? Configuration.CLOCKWISE : Configuration.ANTI_CLOCKWISE).build();
     }
 }

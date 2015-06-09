@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
+/* Copyright (C) 2007  Miguel Rojasch <miguelrojasch@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,47 +20,47 @@ package org.openscience.cdk.formula.rules;
 
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IMolecularFormula;
+
 /**
  * Interface which groups all method that validate a IMolecularFormula.
- * 
+ *
  * @cdk.module  formula
  * @author      miguelrojasch
  * @cdk.created 2007-11-20
  * @cdk.githash
  */
 public interface IRule {
-	    
-	    /** 
-	     * Sets the parameters for this rule. 
-	     *
-	     * Must be done before calling calculate as 
-	     * the parameters influence the validation outcome.
-	     *
-	     * @param params An array of Object containing the parameters for this rule
-	     * @throws       CDKException if invalid number of type of parameters are passed to it
-	     * @see          #getParameters
-	     */
-	    public void setParameters(Object[] params) throws CDKException;
-	    
-	    /** 
-	     * Returns the current parameter values.
-	     *
-	     * @return An array of Object containing the parameter values
-	     * @see    #setParameters
-	     * */
-	    public Object[] getParameters();
-	    
-	    /**
-	     * Analyze the validity for the given IMolecularFormula.
-	     *
-	     * @param  formula      An {@link IMolecularFormula} for which this rule
-	     *                      should be analyzed
-	     * @return              A double value between 0 and 1. 1 meaning 100% valid
-	     *                      and 0 not valid
-	     * @throws CDKException if an error occurs during the validation. See
-	     *                      documentation for individual rules
-	     */
-	    public double validate(IMolecularFormula formula) throws CDKException;
 
-	    
+    /**
+     * Sets the parameters for this rule.
+     *
+     * Must be done before calling calculate as
+     * the parameters influence the validation outcome.
+     *
+     * @param params An array of Object containing the parameters for this rule
+     * @throws       CDKException if invalid number of type of parameters are passed to it
+     * @see          #getParameters
+     */
+    public void setParameters(Object[] params) throws CDKException;
+
+    /**
+     * Returns the current parameter values.
+     *
+     * @return An array of Object containing the parameter values
+     * @see    #setParameters
+     * */
+    public Object[] getParameters();
+
+    /**
+     * Analyze the validity for the given IMolecularFormula.
+     *
+     * @param  formula      An {@link IMolecularFormula} for which this rule
+     *                      should be analyzed
+     * @return              A double value between 0 and 1. 1 meaning 100% valid
+     *                      and 0 not valid
+     * @throws CDKException if an error occurs during the validation. See
+     *                      documentation for individual rules
+     */
+    public double validate(IMolecularFormula formula) throws CDKException;
+
 }

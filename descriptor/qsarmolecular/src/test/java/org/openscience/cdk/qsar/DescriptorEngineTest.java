@@ -1,25 +1,20 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.qsar;
 
@@ -27,10 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.modeling.builder3d.ModelBuilder3D;
-import org.openscience.cdk.modeling.builder3d.TemplateHandler3D;
-import org.openscience.cdk.smiles.SmilesParser;
 
 /**
  * TestSuite that runs all tests for the DescriptorEngine.
@@ -39,22 +30,21 @@ import org.openscience.cdk.smiles.SmilesParser;
  */
 public class DescriptorEngineTest extends CDKTestCase {
 
-    public DescriptorEngineTest() {
-    }
+    public DescriptorEngineTest() {}
 
     @Test
     public void testConstructor() {
         DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+                DefaultChemObjectBuilder.getInstance());
         Assert.assertNotNull(engine);
     }
 
     @Test
     public void testLoadingOfMolecularDescriptors() {
-    	DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+        DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
+                DefaultChemObjectBuilder.getInstance());
         Assert.assertNotNull(engine);
-        int loadedDescriptors = engine.getDescriptorInstances().size(); 
+        int loadedDescriptors = engine.getDescriptorInstances().size();
         Assert.assertTrue("Could not load any descriptors", 0 != loadedDescriptors);
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorClassNames().size());
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorSpecifications().size());
@@ -62,10 +52,9 @@ public class DescriptorEngineTest extends CDKTestCase {
 
     @Test
     public void testLoadingOfAtomicDescriptors() {
-        DescriptorEngine engine = new DescriptorEngine(IAtomicDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+        DescriptorEngine engine = new DescriptorEngine(IAtomicDescriptor.class, DefaultChemObjectBuilder.getInstance());
         Assert.assertNotNull(engine);
-        int loadedDescriptors = engine.getDescriptorInstances().size(); 
+        int loadedDescriptors = engine.getDescriptorInstances().size();
         Assert.assertNotSame(0, loadedDescriptors);
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorClassNames().size());
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorSpecifications().size());
@@ -73,10 +62,9 @@ public class DescriptorEngineTest extends CDKTestCase {
 
     @Test
     public void testLoadingOfBondDescriptors() {
-        DescriptorEngine engine = new DescriptorEngine(IBondDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+        DescriptorEngine engine = new DescriptorEngine(IBondDescriptor.class, DefaultChemObjectBuilder.getInstance());
         Assert.assertNotNull(engine);
-        int loadedDescriptors = engine.getDescriptorInstances().size(); 
+        int loadedDescriptors = engine.getDescriptorInstances().size();
         Assert.assertNotSame(0, loadedDescriptors);
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorClassNames().size());
         Assert.assertEquals(loadedDescriptors, engine.getDescriptorSpecifications().size());
@@ -85,13 +73,12 @@ public class DescriptorEngineTest extends CDKTestCase {
     @Test
     public void testDictionaryType() {
         DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+                DefaultChemObjectBuilder.getInstance());
 
         String className = "org.openscience.cdk.qsar.descriptors.molecular.ZagrebIndexDescriptor";
         DescriptorSpecification specRef = new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#zagrebIndex",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#zagrebIndex", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
 
         Assert.assertEquals("molecularDescriptor", engine.getDictionaryType(className));
         Assert.assertEquals("molecularDescriptor", engine.getDictionaryType(specRef));
@@ -100,12 +87,11 @@ public class DescriptorEngineTest extends CDKTestCase {
     @Test
     public void testDictionaryClass() {
         DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+                DefaultChemObjectBuilder.getInstance());
 
         String className = "org.openscience.cdk.qsar.descriptors.molecular.TPSADescriptor";
         DescriptorSpecification specRef = new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#tpsa",
-                this.getClass().getName(),
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#tpsa", this.getClass().getName(),
                 "The Chemistry Development Kit");
 
         String[] dictClass = engine.getDictionaryClass(className);
@@ -122,20 +108,18 @@ public class DescriptorEngineTest extends CDKTestCase {
     @Test
     public void testAvailableClass() {
         DescriptorEngine engine = new DescriptorEngine(IMolecularDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
+                DefaultChemObjectBuilder.getInstance());
         String[] availClasses = engine.getAvailableDictionaryClasses();
         Assert.assertEquals(5, availClasses.length);
     }
 
     @Test
     public void testLoadingOfAtomPairDescriptors() {
-    	DescriptorEngine engine = new DescriptorEngine(IAtomicDescriptor.class,
-                                                       DefaultChemObjectBuilder.getInstance());
-    	Assert.assertNotNull(engine);
-    	int loadedDescriptors = engine.getDescriptorInstances().size(); 
-    	Assert.assertNotSame(0, loadedDescriptors);
-    	Assert.assertEquals(loadedDescriptors, engine.getDescriptorClassNames().size());
-    	Assert.assertEquals(loadedDescriptors, engine.getDescriptorSpecifications().size());
+        DescriptorEngine engine = new DescriptorEngine(IAtomicDescriptor.class, DefaultChemObjectBuilder.getInstance());
+        Assert.assertNotNull(engine);
+        int loadedDescriptors = engine.getDescriptorInstances().size();
+        Assert.assertNotSame(0, loadedDescriptors);
+        Assert.assertEquals(loadedDescriptors, engine.getDescriptorClassNames().size());
+        Assert.assertEquals(loadedDescriptors, engine.getDescriptorSpecifications().size());
     }
 }
-

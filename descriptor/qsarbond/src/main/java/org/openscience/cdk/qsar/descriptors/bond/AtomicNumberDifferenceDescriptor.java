@@ -1,6 +1,5 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2007-2008  Egon Willighagen <egonw@users.sf.net>
+ *                    2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -22,15 +21,12 @@ package org.openscience.cdk.qsar.descriptors.bond;
 
 import java.io.IOException;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.qsar.AbstractBondDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
@@ -48,82 +44,69 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:bondAtomicNumberImbalance
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.bond.AtomicNumberDifferenceDescriptorTest")
 public class AtomicNumberDifferenceDescriptor extends AbstractBondDescriptor implements IBondDescriptor {
 
-	private static IsotopeFactory factory = null;
-	
-	private final static String[] descriptorName = {"MNDiff"};
-	
+    private static IsotopeFactory factory = null;
+
+    private final static String[] NAMES = {"MNDiff"};
+
     public AtomicNumberDifferenceDescriptor() {
-    }	
-    
-    private void ensureIsotopeFactory(IChemObjectBuilder builder) {
-    	if (factory == null) {
-    		try {
-	            factory = Isotopes.getInstance();
-            } catch (IOException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-            }
-    	}
     }
 
-	@TestMethod("testGetSpecification")
+    private void ensureIsotopeFactory() {
+        if (factory == null) {
+            try {
+                factory = Isotopes.getInstance();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#bondAtomicNumberImbalance",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#bondAtomicNumberImbalance", this
+                .getClass().getName(), "The Chemistry Development Kit");
     }
 
-	@TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
     }
 
-	@TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return descriptorName;
+        return NAMES;
     }
 
-    @TestMethod(value="testCalculate_IBond_IAtomContainer,testDescriptor1," +
-        "testDescriptor2")
+    @Override
     public DescriptorValue calculate(IBond bond, IAtomContainer ac) {
-    	ensureIsotopeFactory(ac.getBuilder());
-    	if (bond.getAtomCount() != 2) {
-    		return new DescriptorValue(
-    			getSpecification(), getParameterNames(),
-    			getParameters(),
-    			new DoubleResult(Double.NaN),
-    			descriptorName, new CDKException("Only 2-center bonds are considered")
-    		);
-    	}
-    	
-    	IAtom[] atoms = BondManipulator.getAtomArray(bond);
+        ensureIsotopeFactory();
+        if (bond.getAtomCount() != 2) {
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    Double.NaN), NAMES, new CDKException("Only 2-center bonds are considered"));
+        }
 
-    	return new DescriptorValue(
-    		getSpecification(), getParameterNames(),
-    		getParameters(),
-    		new DoubleResult(
-    			Math.abs(factory.getElement(atoms[0].getSymbol()).getAtomicNumber() - 
-    					 factory.getElement(atoms[1].getSymbol()).getAtomicNumber())
-    		),
-    		descriptorName);
+        IAtom[] atoms = BondManipulator.getAtomArray(bond);
+
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                Math.abs(factory.getElement(atoms[0].getSymbol()).getAtomicNumber()
+                                 - factory.getElement(atoms[1].getSymbol()).getAtomicNumber())), NAMES);
     }
 
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
 
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

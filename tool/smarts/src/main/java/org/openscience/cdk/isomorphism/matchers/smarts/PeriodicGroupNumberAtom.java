@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author: egonw $
- *  $Date: 2008-07-25 02:46:55 -0400 (Fri, 25 Jul 2008) $
- *  $Revision: 11746 $
- *
- *  Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -42,34 +36,39 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  */
 
 public class PeriodicGroupNumberAtom extends SMARTSAtom {
+
     int groupNumber;
 
     /**
-	 * Creates a new instance
-	 *
-	 * @param groupNumber the periodic group number
-	 */
-	public PeriodicGroupNumberAtom(int groupNumber, IChemObjectBuilder builder) {
+     * Creates a new instance
+     *
+     * @param groupNumber the periodic group number
+     */
+    public PeriodicGroupNumberAtom(int groupNumber, IChemObjectBuilder builder) {
         super(builder);
-		this.groupNumber = groupNumber;
-	}
+        this.groupNumber = groupNumber;
+    }
 
-
-
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
-	 */
-	public boolean matches(IAtom atom) {
-		String symbol = atom.getSymbol();
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
+     */
+    @Override
+    public boolean matches(IAtom atom) {
+        String symbol = atom.getSymbol();
         int group = PeriodicTable.getGroup(symbol);
         return group == this.groupNumber;
     }
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.PseudoAtom#toString()
-	 */
-	public String toString() {
-		return ("PeriodicGroupNumberAtom(" + this.groupNumber + ")");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.openscience.cdk.PseudoAtom#toString()
+     */
+    @Override
+    public String toString() {
+        return ("PeriodicGroupNumberAtom(" + this.groupNumber + ")");
+    }
 
 }

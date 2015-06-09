@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -44,16 +42,16 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Egon Willighagen <egonw@sci.kun.nl>
  **/
 public class CMLHandler extends DefaultHandler {
-    
-    private ICMLModule conv;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CMLHandler.class);
-    private boolean debug = true;
-    
-    private Map<String,ICMLModule> userConventions;
 
-    private CMLStack xpath;
-    private CMLStack conventionStack;
+    private ICMLModule              conv;
+    private static ILoggingTool     logger = LoggingToolFactory.createLoggingTool(CMLHandler.class);
+    private boolean                 debug  = true;
+
+    private Map<String, ICMLModule> userConventions;
+
+    private CMLStack                xpath;
+    private CMLStack                conventionStack;
+    private CMLModuleStack          moduleStack;
 
     /**
      * Constructor for the CMLHandler.
@@ -62,13 +60,14 @@ public class CMLHandler extends DefaultHandler {
      **/
     public CMLHandler(IChemFile chemFile) {
         conv = new CMLCoreModule(chemFile);
-        userConventions = new Hashtable<String,ICMLModule>();
+        userConventions = new Hashtable<String, ICMLModule>();
         xpath = new CMLStack();
         conventionStack = new CMLStack();
+        moduleStack = new CMLModuleStack();
     }
 
     public void registerConvention(String convention, ICMLModule conv) {
-      userConventions.put(convention, conv);
+        userConventions.put(convention, conv);
     }
 
     /**
@@ -76,9 +75,10 @@ public class CMLHandler extends DefaultHandler {
      *
      * @param ch        characters to handle
      */
+    @Override
     public void characters(char ch[], int start, int length) {
-       if (debug) logger.debug(new String(ch, start, length));
-       conv.characterData(xpath, ch, start, length);
+        if (debug) logger.debug(new String(ch, start, length));
+        conv.characterData(xpath, ch, start, length);
     }
 
     public void doctypeDecl(String name, String publicId, String systemId) throws Exception {}
@@ -86,23 +86,29 @@ public class CMLHandler extends DefaultHandler {
     /**
      * Calling this procedure signals the end of the XML document.
      */
+    @Override
     public void endDocument() {
         conv.endDocument();
     }
 
+    @Override
     public void endElement(String uri, String local, String raw) {
         if (debug) logger.debug("</" + raw + ">");
         conv.endElement(xpath, uri, local, raw);
         xpath.pop();
         conventionStack.pop();
+        moduleStack.pop();
+        conv = moduleStack.current();
     }
 
+    @Override
     public void startDocument() {
         conv.startDocument();
         conventionStack.push("CML");
-
+        moduleStack.push(conv);
     }
 
+    @Override
     public void startElement(String uri, String local, String raw, Attributes atts) {
         xpath.push(local);
         if (debug) logger.debug("<", raw, "> -> ", xpath);
@@ -110,11 +116,13 @@ public class CMLHandler extends DefaultHandler {
         if (local.startsWith("reaction")) {
             // e.g. reactionList, reaction -> CRML module
             logger.info("Detected CRML module");
-            conv = new CMLReactionModule(conv);
-            conventionStack.push(conventionStack.current());
-        } else {
+            if (!conventionStack.current().equals("CMLR")) {
+                conv = new CMLReactionModule(conv);
+            }
+            conventionStack.push("CMLR");
+        } else if (uri == null || uri.length() == 0 || uri.startsWith("http://www.xml-cml.org/")) {
             // assume CML Core
-                
+
             // Detect conventions
             String convName = "";
             for (int i = 0; i < atts.getLength(); i++) {
@@ -128,10 +136,12 @@ public class CMLHandler extends DefaultHandler {
                 } else {
                     logger.info("New Convention: ", convName);
                     if (convName.equals("CML")) {
-                        /* Don't reset the convention handler to CMLCore,
-                           becuase all handlers should extend this handler,
-                           and use it for any content other then specifically
-                           put into the specific convention */
+                        /*
+                         * Don't reset the convention handler to CMLCore,
+                         * becuase all handlers should extend this handler, and
+                         * use it for any content other then specifically put
+                         * into the specific convention
+                         */
                     } else if (convName.equals("PDB")) {
                         conv = new PDBConvention(conv);
                     } else if (convName.equals("PMP")) {
@@ -144,10 +154,10 @@ public class CMLHandler extends DefaultHandler {
                     } else if (convName.equals("qsar:DescriptorValue")) {
                         conv = new QSARConvention(conv);
                     } else if (userConventions.containsKey(convName)) {
-                            //unknown convention. userConvention?
-                            ICMLModule newconv = (ICMLModule)userConventions.get(convName);
-                            newconv.inherit(conv);
-                            conv = newconv;
+                        //unknown convention. userConvention?
+                        ICMLModule newconv = (ICMLModule) userConventions.get(convName);
+                        newconv.inherit(conv);
+                        conv = newconv;
                     } else {
                         logger.warn("Detected unknown convention: ", convName);
                     }
@@ -157,7 +167,11 @@ public class CMLHandler extends DefaultHandler {
                 // no convention set/reset: take convention of parent
                 conventionStack.push(conventionStack.current());
             }
+        } else {
+            conv = new OtherNamespace();
+            conventionStack.push("Other");
         }
+        moduleStack.push(conv);
         if (debug) logger.debug("ConventionStack: ", conventionStack);
         conv.startElement(xpath, uri, local, raw, atts);
     }

@@ -22,8 +22,6 @@
  */
 package org.openscience.cdk.ringsearch;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -109,14 +107,13 @@ import java.util.Set;
  * @see AllRingsFinder
  * @see CyclicVertexSearch
  */
-@TestClass("org.openscience.cdk.ringsearch.RingSearchTest")
 public final class RingSearch {
 
     /* depending on molecule size, delegate the search to one of two sub-classes */
     private final CyclicVertexSearch searcher;
 
     /* input atom container */
-    private final IAtomContainer container;
+    private final IAtomContainer     container;
 
     /**
      * Create a new RingSearch for the specified container.
@@ -127,7 +124,6 @@ public final class RingSearch {
      *                                  references an atom which could not be
      *                                  found
      */
-    @TestMethod("testNull")
     public RingSearch(IAtomContainer container) {
         this(container, GraphUtil.toAdjList(container));
     }
@@ -142,7 +138,6 @@ public final class RingSearch {
      * @param graph     non-null adjacency list representation of the container
      * @throws NullPointerException if the container or graph was null
      */
-    @TestMethod("testNullContainer,testNullGraph")
     public RingSearch(IAtomContainer container, int[][] graph) {
         this(container, makeSearcher(graph));
     }
@@ -155,12 +150,9 @@ public final class RingSearch {
      * @param searcher  non-null adjacency list representation of the container
      * @throws NullPointerException if the container or searcher was null
      */
-    @TestMethod("testNullCyclicSearch")
     public RingSearch(IAtomContainer container, CyclicVertexSearch searcher) {
-        if (container == null)
-            throw new NullPointerException("container must not be null");
-        if (searcher == null)
-            throw new NullPointerException("searcher was null");
+        if (container == null) throw new NullPointerException("container must not be null");
+        if (searcher == null) throw new NullPointerException("searcher was null");
         this.searcher = searcher;
         this.container = container;
     }
@@ -175,19 +167,16 @@ public final class RingSearch {
      */
     private static CyclicVertexSearch makeSearcher(int[][] graph) {
 
-        if (graph == null)
-            throw new NullPointerException("graph[][] must not be null");
+        if (graph == null) throw new NullPointerException("graph[][] must not be null");
 
         // if the molecule has 64 or less atoms we can use single 64 bit long
         // values to represent our sets of vertices
         if (graph.length <= 64) {
             return new RegularCyclicVertexSearch(graph);
-        }
-        else {
+        } else {
             return new JumboCyclicVertexSearch(graph);
         }
     }
-
 
     /**
      * Determine whether the edge between the vertices <i>u</i> and <i>v</i> is
@@ -197,7 +186,6 @@ public final class RingSearch {
      * @param v another end point of the edge
      * @return whether the edge formed by the given end points is in a cycle
      */
-    @TestMethod("testCyclic_IntInt")
     public boolean cyclic(int u, int v) {
         return searcher.cyclic(u, v);
     }
@@ -220,11 +208,9 @@ public final class RingSearch {
      * @return whether the atom is in a ring
      * @throws NoSuchElementException the atom was not found
      */
-    @TestMethod("testCyclic_Atom")
     public boolean cyclic(IAtom atom) {
         int i = container.getAtomNumber(atom);
-        if (i < 0)
-            throw new NoSuchElementException("no such atom");
+        if (i < 0) throw new NoSuchElementException("no such atom");
         return cyclic(i);
     }
 
@@ -235,13 +221,11 @@ public final class RingSearch {
      * @param bond a bond of the container
      * @return whether the vertex at the given index is in a cycle
      */
-    @TestMethod("testCyclic_Bond")
     public boolean cyclic(IBond bond) {
         // XXX: linear search - but okay for now
         int u = container.getAtomNumber(bond.getAtom(0));
         int v = container.getAtomNumber(bond.getAtom(1));
-        if (u < 0 || v < 0)
-            throw new NoSuchElementException("atoms of the bond are not found in the container");
+        if (u < 0 || v < 0) throw new NoSuchElementException("atoms of the bond are not found in the container");
         return searcher.cyclic(u, v);
     }
 
@@ -263,7 +247,6 @@ public final class RingSearch {
      * @param i atom index
      * @return whether the vertex at the given index is in a cycle
      */
-    @TestMethod("testCyclic_Int")
     public boolean cyclic(int i) {
         return searcher.cyclic(i);
     }
@@ -273,7 +256,6 @@ public final class RingSearch {
      *
      * @return cyclic vertices
      */
-    @TestMethod("testCyclic")
     public int[] cyclic() {
         return searcher.cyclic();
     }
@@ -296,7 +278,6 @@ public final class RingSearch {
      * @return array of isolated fragments, defined by the vertices in the
      *         fragment
      */
-    @TestMethod("testIsolated")
     public int[][] isolated() {
         return searcher.isolated();
     }
@@ -320,7 +301,6 @@ public final class RingSearch {
      * @return array of fused fragments, defined by the vertices in the
      *         fragment
      */
-    @TestMethod("testFused")
     public int[][] fused() {
         return searcher.fused();
     }
@@ -333,7 +313,6 @@ public final class RingSearch {
      * @return a new container with only the cyclic atoms and bonds
      * @see org.openscience.cdk.graph.SpanningTree#getCyclicFragmentsContainer()
      */
-    @TestMethod("testRingFragments")
     public IAtomContainer ringFragments() {
 
         int[] vertices = cyclic();
@@ -356,13 +335,11 @@ public final class RingSearch {
             int v = container.getAtomNumber(other);
 
             // add the bond if the vertex colors match
-            if (searcher.cyclic(u, v))
-                bonds.add(bond);
+            if (searcher.cyclic(u, v)) bonds.add(bond);
         }
 
         IChemObjectBuilder builder = container.getBuilder();
-        IAtomContainer fragment = builder.newInstance(IAtomContainer.class,
-                                                      0, 0, 0, 0);
+        IAtomContainer fragment = builder.newInstance(IAtomContainer.class, 0, 0, 0, 0);
 
         fragment.setAtoms(atoms);
         fragment.setBonds(bonds.toArray(new IBond[bonds.size()]));
@@ -380,11 +357,9 @@ public final class RingSearch {
      * @param otherColor  other vertex color
      * @return whether the two vertex colours match
      */
-    @TestMethod("testMatch")
     static boolean match(int eitherColor, int otherColor) {
         return (eitherColor != -1 && otherColor != -1)
-                && (eitherColor == otherColor
-                || (eitherColor == 0 || otherColor == 0));
+                && (eitherColor == otherColor || (eitherColor == 0 || otherColor == 0));
     }
 
     /**
@@ -397,7 +372,6 @@ public final class RingSearch {
      * @return list of isolated ring fragments
      * @see #isolated()
      */
-    @TestMethod("testIsolatedRingFragments")
     public List<IAtomContainer> isolatedRingFragments() {
         return toFragments(isolated());
     }
@@ -411,7 +385,6 @@ public final class RingSearch {
      * @return list of fused ring fragments
      * @see #fused()
      */
-    @TestMethod("testFusedRingFragments")
     public List<IAtomContainer> fusedRingFragments() {
         return toFragments(fused());
     }
@@ -461,8 +434,7 @@ public final class RingSearch {
             }
         }
 
-        IAtomContainer fragment = container.getBuilder()
-                                           .newInstance(IAtomContainer.class, 0, 0, 0, 0);
+        IAtomContainer fragment = container.getBuilder().newInstance(IAtomContainer.class, 0, 0, 0, 0);
 
         fragment.setAtoms(atoms.toArray(new IAtom[n]));
         fragment.setBonds(bonds.toArray(new IBond[bonds.size()]));

@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.6-SNAPSHOT</version>
+        <version>1.5.11-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-bundle</artifactId>
@@ -288,6 +288,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>cdk-tautomer</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cdk-legacy</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

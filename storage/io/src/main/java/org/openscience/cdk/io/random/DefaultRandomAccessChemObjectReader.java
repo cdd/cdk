@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2003-2007  The Jmol Development Team
+/* Copyright (C) 2003-2007  The Jmol Development Team
  *                    2009  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -37,10 +35,9 @@ import org.openscience.cdk.io.setting.IOSetting;
  * @cdk.module  io
  * @cdk.githash
  */
-public abstract class DefaultRandomAccessChemObjectReader
-    implements IRandomAccessChemObjectReader<IChemObject> {
+public abstract class DefaultRandomAccessChemObjectReader implements IRandomAccessChemObjectReader<IChemObject> {
 
-    protected IChemObjectReader.Mode mode = IChemObjectReader.Mode.RELAXED;
+    protected IChemObjectReader.Mode    mode         = IChemObjectReader.Mode.RELAXED;
 
     /**
      * Holder of reader event listeners.

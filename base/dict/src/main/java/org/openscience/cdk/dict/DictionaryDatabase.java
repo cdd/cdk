@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -30,11 +25,10 @@ package org.openscience.cdk.dict;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
@@ -48,33 +42,26 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.keyword    dictionary
  * @cdk.module     dict
  */
-@TestClass("org.openscience.cdk.dict.DictDBTest")
 public class DictionaryDatabase {
 
-    public final static String DICTREFPROPERTYNAME = "org.openscience.cdk.dict";
-    
-    private ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(DictionaryDatabase.class);
-    
-    private String[] dictionaryNames = {
-        "chemical", "elements", "descriptor-algorithms","reaction-processes"
-    };
-    private String[] dictionaryTypes = {
-        "xml", "owl", "owl", "owl_React"
-    };
-    
-    private Hashtable<String, Dictionary> dictionaries;
+    public final static String      DICTREFPROPERTYNAME = "org.openscience.cdk.dict";
 
-    @TestMethod("testDictionaryDatabase")
+    private ILoggingTool            logger              = LoggingToolFactory
+                                                                .createLoggingTool(DictionaryDatabase.class);
+
+    private String[]                dictionaryNames     = {"chemical", "elements", "descriptor-algorithms",
+            "reaction-processes"                        };
+    private String[]                dictionaryTypes     = {"xml", "owl", "owl", "owl_React"};
+
+    private Map<String, Dictionary> dictionaries;
+
     public DictionaryDatabase() {
         // read dictionaries distributed with CDK
         dictionaries = new Hashtable<String, Dictionary>();
-        for (int i=0; i<dictionaryNames.length; i++) {
+        for (int i = 0; i < dictionaryNames.length; i++) {
             String name = dictionaryNames[i];
             String type = dictionaryTypes[i];
-            Dictionary dictionary = readDictionary(
-                "org/openscience/cdk/dict/data/" + name, type
-            );
+            Dictionary dictionary = readDictionary("org/openscience/cdk/dict/data/" + name, type);
             if (dictionary != null) {
                 dictionaries.put(name.toLowerCase(), dictionary);
                 logger.debug("Read dictionary: ", name);
@@ -85,14 +72,14 @@ public class DictionaryDatabase {
     private Dictionary readDictionary(String databaseLocator, String type) {
         Dictionary dictionary;
         // to distinguish between OWL: QSAR & REACT
-        if(type.contains("_React"))
-        	databaseLocator += "." + type.substring(0, type.length()-6);
+        if (type.contains("_React"))
+            databaseLocator += "." + type.substring(0, type.length() - 6);
         else
-        	databaseLocator += "." + type;
+            databaseLocator += "." + type;
         logger.info("Reading dictionary from ", databaseLocator);
         try {
-            InputStreamReader reader = new InputStreamReader(
-                this.getClass().getClassLoader().getResourceAsStream(databaseLocator));
+            InputStreamReader reader = new InputStreamReader(this.getClass().getClassLoader()
+                    .getResourceAsStream(databaseLocator));
             if (type.equals("owl")) {
                 dictionary = OWLFile.unmarshal(reader);
             } else if (type.equals("owl_React")) {
@@ -134,16 +121,14 @@ public class DictionaryDatabase {
      * Returns a String[] with the names of the known dictionaries.
      * @return The names of the dictionaries
      */
-    @TestMethod("testGetDictionaryNames")
     public String[] getDictionaryNames() {
         return dictionaryNames;
     }
 
-    @TestMethod("testOWLDictionary")
     public Dictionary getDictionary(String dictionaryName) {
-    	return dictionaries.get(dictionaryName);
+        return dictionaries.get(dictionaryName);
     }
-    
+
     /**
      * Returns a String[] with the id's of all entries in the specified database.
      * @return The entry names for the specified dictionary
@@ -158,9 +143,8 @@ public class DictionaryDatabase {
             // FIXME: dummy method that needs an implementation
             Entry[] entries = dictionary.getEntries();
             String[] entryNames = new String[entries.length];
-            logger.info("Found ", "" + entryNames.length, " entries in dictionary ", 
-              dictionaryName);
-            for (int i=0; i<entries.length; i++) {
+            logger.info("Found ", "" + entryNames.length, " entries in dictionary ", dictionaryName);
+            for (int i = 0; i < entries.length; i++) {
                 entryNames[i] = entries[i].getLabel();
             }
             return entryNames;
@@ -168,37 +152,35 @@ public class DictionaryDatabase {
     }
 
     public Entry[] getDictionaryEntry(String dictionaryName) {
-        Dictionary dictionary = (Dictionary)dictionaries.get(dictionaryName);
+        Dictionary dictionary = (Dictionary) dictionaries.get(dictionaryName);
         return dictionary.getEntries();
     }
-    
+
     /**
      * Returns true if the database contains the dictionary.
      */
-    @TestMethod("testHasDictionary")
     public boolean hasDictionary(String name) {
         return dictionaries.containsKey(name.toLowerCase());
     }
-    
+
     /**
      * Returns true if the database contains the dictionary.
      */
-    @TestMethod("testListDictionaries")
-    public Enumeration<String> listDictionaries() {
-        return dictionaries.keys();
+    public Iterator<String> listDictionaries() {
+        return dictionaries.keySet().iterator();
     }
-    
+
     /**
      * Returns true if the given dictionary contains the given
      * entry.
      */
     public boolean hasEntry(String dictName, String entryID) {
         if (hasDictionary(dictName)) {
-            Dictionary dictionary = (Dictionary)dictionaries.get(dictName);
+            Dictionary dictionary = (Dictionary) dictionaries.get(dictName);
             return dictionary.hasEntry(entryID.toLowerCase());
         } else {
             return false;
         }
     }
-    
+
 }

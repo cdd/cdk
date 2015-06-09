@@ -1,8 +1,8 @@
 /* Copyright (C) 1997-2007  The Chemistry Development Kit (CKD) project
  *               2009,2011  Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -11,15 +11,15 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.fingerprint;
 
@@ -29,9 +29,6 @@ import org.junit.Test;
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
-import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
-
-import java.util.BitSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
  */
 public class SubstructureFingerprinterTest extends AbstractFixedLengthFingerprinterTest {
 
+    @Override
     public IFingerprinter getBitFingerprinter() {
         return new SubstructureFingerprinter();
     }
@@ -51,27 +49,27 @@ public class SubstructureFingerprinterTest extends AbstractFixedLengthFingerprin
         Assert.assertEquals(307, fp.getSize());
     }
 
-    @Test public void testBug706786() throws Exception {
+    @Test
+    @Override
+    public void testBug706786() throws Exception {
 
         IAtomContainer superStructure = bug706786_1();
-        IAtomContainer subStructure   = bug706786_2();
+        IAtomContainer subStructure = bug706786_2();
 
         addImplicitHydrogens(superStructure);
         addImplicitHydrogens(subStructure);
 
         IFingerprinter fpr = getBitFingerprinter();
         IBitFingerprint superBits = fpr.getBitFingerprint(superStructure);
-        IBitFingerprint subBits   = fpr.getBitFingerprint(subStructure);
+        IBitFingerprint subBits = fpr.getBitFingerprint(subStructure);
 
         assertThat(superBits.asBitSet(),
-                   is(asBitSet(0, 11, 13, 17, 40, 48, 136, 273, 274, 278, 286, 294, 299, 301, 304, 306)));
-        assertThat(subBits.asBitSet(),
-                   is(asBitSet(1, 17, 273, 274, 278, 294, 306)));
+                is(asBitSet(0, 11, 13, 17, 40, 48, 136, 273, 274, 278, 286, 294, 299, 301, 304, 306)));
+        assertThat(subBits.asBitSet(), is(asBitSet(1, 17, 273, 274, 278, 294, 306)));
     }
 
-    
-
-    @Test public void testUserFunctionalGroups() throws Exception {
+    @Test
+    public void testUserFunctionalGroups() throws Exception {
         String[] smarts = {"c1ccccc1", "[CX4H3][#6]", "[CX2]#[CX2]"};
         IFingerprinter printer = new SubstructureFingerprinter(smarts);
         Assert.assertEquals(3, printer.getSize());
@@ -79,7 +77,7 @@ public class SubstructureFingerprinterTest extends AbstractFixedLengthFingerprin
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol1 = sp.parseSmiles("c1ccccc1CCC");
         IBitFingerprint fp = printer.getBitFingerprint(mol1);
-		Assert.assertNotNull(fp);
+        Assert.assertNotNull(fp);
 
         Assert.assertTrue(fp.get(0));
         Assert.assertTrue(fp.get(1));
@@ -87,7 +85,7 @@ public class SubstructureFingerprinterTest extends AbstractFixedLengthFingerprin
 
         mol1 = sp.parseSmiles("C=C=C");
         fp = printer.getBitFingerprint(mol1);
-		Assert.assertNotNull(fp);
+        Assert.assertNotNull(fp);
         Assert.assertFalse(fp.get(0));
         Assert.assertFalse(fp.get(1));
         Assert.assertFalse(fp.get(2));
@@ -127,9 +125,8 @@ public class SubstructureFingerprinterTest extends AbstractFixedLengthFingerprin
 
     @Test
     public void testGetSubstructure() throws Exception {
-    	String[] smarts = {"c1ccccc1", "[CX4H3][#6]", "[CX2]#[CX2]"};
-    	SubstructureFingerprinter printer = new SubstructureFingerprinter(smarts);
-    	Assert.assertEquals(printer.getSubstructure(1), smarts[1]);
+        String[] smarts = {"c1ccccc1", "[CX4H3][#6]", "[CX2]#[CX2]"};
+        SubstructureFingerprinter printer = new SubstructureFingerprinter(smarts);
+        Assert.assertEquals(printer.getSubstructure(1), smarts[1]);
     }
 }
-

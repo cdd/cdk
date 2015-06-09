@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -29,7 +27,6 @@ import org.junit.Test;
 import org.openscience.cdk.interfaces.IChemObject;
 
 import java.io.InputStream;
-
 
 /**
  * TestCase for CDK IO classes.
@@ -45,7 +42,8 @@ public abstract class SimpleChemObjectReaderTest extends ChemObjectReaderTest {
         SimpleChemObjectReaderTest.chemObjectIO = aSimpelChemObjectReader;
     }
 
-    @Test public void testRead_IChemObject() throws Exception {
+    @Test
+    public void testRead_IChemObject() throws Exception {
         Assert.assertNotNull("No test file has been set!", testFile);
 
         boolean read = false;
@@ -55,8 +53,7 @@ public abstract class SimpleChemObjectReaderTest extends ChemObjectReaderTest {
                 chemObjectIO.setReader(ins);
                 IChemObject readObject = chemObjectIO.read(object);
                 chemObjectIO.close();
-                Assert.assertNotNull("Failed attempt to read the file as " +
-                    object.getClass().getName(), readObject);
+                Assert.assertNotNull("Failed attempt to read the file as " + object.getClass().getName(), readObject);
                 read = true;
             }
         }

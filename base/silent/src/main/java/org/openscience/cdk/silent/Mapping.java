@@ -1,21 +1,21 @@
 /* Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
- * 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 package org.openscience.cdk.silent;
 
@@ -47,11 +47,11 @@ public class Mapping extends ChemObject implements java.io.Serializable, Cloneab
      * of this class is incompatible with the old version. See Sun docs
      * for <a href=http://java.sun.com/products/jdk/1.1/docs/guide
      * /serialization/spec/version.doc.html>details</a>.
-	 */
-	private static final long serialVersionUID = -6541914644492043503L;
+     */
+    private static final long serialVersionUID = -6541914644492043503L;
 
-	private IChemObject[] relation;
-    
+    private IChemObject[]     relation;
+
     /**
      * Constructs an unconnected lone pair.
      *
@@ -70,14 +70,17 @@ public class Mapping extends ChemObject implements java.io.Serializable, Cloneab
      *
      * @return An Iterable to two IChemObjects that define the mapping
      */
+    @Override
     public Iterable<IChemObject> relatedChemObjects() {
-    	return new Iterable<IChemObject>(){
+        return new Iterable<IChemObject>() {
+
+            @Override
             public Iterator<IChemObject> iterator() {
                 return new ChemObjectIterator();
             }
         };
     }
-    
+
     /**
      * The inner Iterator class.
      *
@@ -85,47 +88,50 @@ public class Mapping extends ChemObject implements java.io.Serializable, Cloneab
     private class ChemObjectIterator implements Iterator<IChemObject> {
 
         private int pointer = 0;
-    	
+
+        @Override
         public boolean hasNext() {
             return pointer < 2;
         }
 
+        @Override
         public IChemObject next() {
             return relation[pointer++];
         }
 
+        @Override
         public void remove() {}
-    	
+
     }
-    
+
     /**
      * Retrieves the first or second of the related IChemObjects.
-     * 
+     *
      * @param   pos  The position of the IChemObject.
      * @return  The IChemObject to retrieve.
      */
+    @Override
     public IChemObject getChemObject(int pos) {
-    	return relation[pos];
+        return relation[pos];
     }
-    
-	/**
-	 * Clones this <code>Mapping</code> and the mapped <code>IChemObject</code>s.
-	 *
-	 * @return  The cloned object
-	 */
-	public Object clone() throws CloneNotSupportedException {
-		Mapping clone = (Mapping)super.clone();
+
+    /**
+     * Clones this <code>Mapping</code> and the mapped <code>IChemObject</code>s.
+     *
+     * @return  The cloned object
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Mapping clone = (Mapping) super.clone();
         // clone the related IChemObject's
         if (relation != null) {
-		    clone.relation = new IChemObject[relation.length];
+            clone.relation = new IChemObject[relation.length];
             for (int f = 0; f < relation.length; f++) {
                 if (relation[f] != null) {
-                    clone.relation[f] = (IChemObject)relation[f].clone();
+                    clone.relation[f] = (IChemObject) relation[f].clone();
                 }
             }
         }
-		return clone;
-	}
+        return clone;
+    }
 }
-
-

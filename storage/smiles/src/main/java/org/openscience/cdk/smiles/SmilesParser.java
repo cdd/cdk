@@ -23,16 +23,12 @@
  */
 package org.openscience.cdk.smiles;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.interfaces.IReaction;
-import org.openscience.cdk.tools.ILoggingTool;
-import org.openscience.cdk.tools.LoggingToolFactory;
 import uk.ac.ebi.beam.Graph;
 
 import java.io.IOException;
@@ -83,23 +79,23 @@ import java.util.StringTokenizer;
  * <li>octahedral stereochemistry</li> </il>
  *
  * <b>Atom Class</b><p/>
- * 
+ *
  * The atom class is stored as the {@link org.openscience.cdk.CDKConstants#ATOM_ATOM_MAPPING}
  * property.
- * 
+ *
  * <blockquote><pre>
- * 
+ *
  * SmilesParser   sp  = new SmilesParser(SilentChemObjectBuilder.getInstance());
  * IAtomContainer m   = sp.parseSmiles("c1[cH:5]cccc1");
  * Integer        c1  = m.getAtom(1)
  *                       .getProperty(CDKConstants.ATOM_ATOM_MAPPING); // 5
  * Integer        c2  = m.getAtom(2)
  *                       .getProperty(CDKConstants.ATOM_ATOM_MAPPING); // null
- * 
+ *
  * </pre>
  * </blockquote><p/>
- * 
- * 
+ *
+ *
  * @author Christoph Steinbeck
  * @author Egon Willighagen
  * @author John May
@@ -107,11 +103,7 @@ import java.util.StringTokenizer;
  * @cdk.githash
  * @cdk.created 2002-04-29
  * @cdk.keyword SMILES, parser
- * @cdk.bug 1579230
- * @cdk.bug 1579235
- * @cdk.bug 1579244
  */
-@TestClass("org.openscience.cdk.smiles.SmilesParserTest")
 public final class SmilesParser {
 
     /**
@@ -122,16 +114,16 @@ public final class SmilesParser {
     /**
      * Direct converter from Beam to CDK.
      */
-    private final BeamToCDK beamToCDK;
+    private final BeamToCDK          beamToCDK;
 
     /**
-     * Kekulise the molecule on load. Generally this is a good idea as a 
+     * Kekulise the molecule on load. Generally this is a good idea as a
      * lower-case symbols in a SMILES do not really mean 'aromatic' but rather
      * 'conjugated'. Loading with kekulise 'on' will automatically assign
-     * bond orders (if possible) using an efficient algorithm from the 
+     * bond orders (if possible) using an efficient algorithm from the
      * underlying Beam library (soon to be added to CDK).
      */
-    private boolean kekulise = true;
+    private boolean                  kekulise = true;
 
     /**
      * Create a new SMILES parser which will create {@link IAtomContainer}s with
@@ -140,7 +132,7 @@ public final class SmilesParser {
      * @param builder used to create the CDK domain objects
      */
     public SmilesParser(final IChemObjectBuilder builder) {
-        this.builder   = builder;
+        this.builder = builder;
         this.beamToCDK = new BeamToCDK(builder);
     }
 
@@ -152,29 +144,35 @@ public final class SmilesParser {
      * @throws InvalidSmilesException if the string cannot be parsed
      * @see #parseSmiles(String)
      */
-    @TestMethod("testReaction,testReactionWithAgents")
     public IReaction parseReactionSmiles(String smiles) throws InvalidSmilesException {
-        StringTokenizer tokenizer = new StringTokenizer(smiles, ">");
-        String reactantSmiles = tokenizer.nextToken();
-        String agentSmiles = "";
-        String productSmiles = tokenizer.nextToken();
-        if (tokenizer.hasMoreTokens()) {
-            agentSmiles = productSmiles;
-            productSmiles = tokenizer.nextToken();
-        }
+
+        if (!smiles.contains(">"))
+            throw new InvalidSmilesException("Not a reaction SMILES: " + smiles);
+
+        final int first  = smiles.indexOf('>');
+        final int second = smiles.indexOf('>', first + 1);
+
+        if (second < 0)
+            throw new InvalidSmilesException("Invalid reaction SMILES:" + smiles);
+
+        final String reactants = smiles.substring(0, first);
+        final String agents = smiles.substring(first + 1, second);
+        final String products = smiles.substring(second + 1, smiles.length());
 
         IReaction reaction = builder.newInstance(IReaction.class);
 
         // add reactants
-        IAtomContainer reactantContainer = parseSmiles(reactantSmiles);
-        IAtomContainerSet reactantSet = ConnectivityChecker.partitionIntoMolecules(reactantContainer);
-        for (int i = 0; i < reactantSet.getAtomContainerCount(); i++) {
-            reaction.addReactant(reactantSet.getAtomContainer(i));
+        if (!reactants.isEmpty()) {
+            IAtomContainer reactantContainer = parseSmiles(reactants);
+            IAtomContainerSet reactantSet = ConnectivityChecker.partitionIntoMolecules(reactantContainer);
+            for (int i = 0; i < reactantSet.getAtomContainerCount(); i++) {
+                reaction.addReactant(reactantSet.getAtomContainer(i));
+            }
         }
 
-        // add reactants
-        if (agentSmiles.length() > 0) {
-            IAtomContainer agentContainer = parseSmiles(agentSmiles);
+        // add agents
+        if (!agents.isEmpty()) {
+            IAtomContainer agentContainer = parseSmiles(agents);
             IAtomContainerSet agentSet = ConnectivityChecker.partitionIntoMolecules(agentContainer);
             for (int i = 0; i < agentSet.getAtomContainerCount(); i++) {
                 reaction.addAgent(agentSet.getAtomContainer(i));
@@ -182,15 +180,16 @@ public final class SmilesParser {
         }
 
         // add products
-        IAtomContainer productContainer = parseSmiles(productSmiles);
-        IAtomContainerSet productSet = ConnectivityChecker.partitionIntoMolecules(productContainer);
-        for (int i = 0; i < productSet.getAtomContainerCount(); i++) {
-            reaction.addProduct(productSet.getAtomContainer(i));
+        if (!products.isEmpty()) {
+            IAtomContainer productContainer = parseSmiles(products);
+            IAtomContainerSet productSet = ConnectivityChecker.partitionIntoMolecules(productContainer);
+            for (int i = 0; i < productSet.getAtomContainerCount(); i++) {
+                reaction.addProduct(productSet.getAtomContainer(i));
+            }
         }
 
         return reaction;
     }
-
 
     /**
      * Parses a SMILES string and returns a structure ({@link IAtomContainer}).
@@ -199,12 +198,11 @@ public final class SmilesParser {
      * @return A structure representing the provided SMILES
      * @throws InvalidSmilesException thrown when the SMILES string is invalid
      */
-    @TestMethod("testAromaticSmiles,testSFBug1296113")
     public IAtomContainer parseSmiles(String smiles) throws InvalidSmilesException {
-        try {                                                                     
+        try {
             // create the Beam object from the SMILES
             Graph g = Graph.fromSmiles(smiles);
-            
+
             // convert the Beam object model to the CDK - note exception thrown
             // if a kekule structure could not be assigned.
             return beamToCDK.toAtomContainer(kekulise ? g.kekule() : g);
@@ -220,7 +218,7 @@ public final class SmilesParser {
      *
      * @param preservingAromaticity boolean to indicate if aromaticity is to be
      *                              preserved.
-     * @see #kekulise                              
+     * @see #kekulise
      */
     @Deprecated
     public void setPreservingAromaticity(boolean preservingAromaticity) {
@@ -239,15 +237,14 @@ public final class SmilesParser {
     }
 
     /**
-     * Indicated whether structures should be automatically kekulised if they 
+     * Indicated whether structures should be automatically kekulised if they
      * are provided as aromatic. Kekulisation is on by default but can be
      * turned off if it is believed the structures can be handled without
-     * assigned bond orders (not recommended). 
-     * 
+     * assigned bond orders (not recommended).
+     *
      * @param kekulise should structures be kekulised
      */
     public void kekulise(boolean kekulise) {
         this.kekulise = kekulise;
     }
 }
-

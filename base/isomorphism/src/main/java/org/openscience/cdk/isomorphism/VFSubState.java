@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.isomorphism;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
@@ -46,7 +44,6 @@ import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
  * @author John May
  * @cdk.module isomorphism
  */
-@TestClass("org.openscience.cdk.isomorphism.VFSubStateTest")
 final class VFSubState extends AbstractVFState {
 
     /** The query (container1) and target (container2) of the subgraph matching. */
@@ -56,13 +53,13 @@ final class VFSubState extends AbstractVFState {
      * Lookup for the query bonds (bonds1) and target bonds (bonds2) of the
      * subgraph matching.
      */
-    private final EdgeToBondMap bonds1, bonds2;
+    private final EdgeToBondMap  bonds1, bonds2;
 
     /** Defines how atoms are matched. */
-    private final AtomMatcher atomMatcher;
+    private final AtomMatcher    atomMatcher;
 
     /** Defines how bonds are matched. */
-    private final BondMatcher bondMatcher;
+    private final BondMatcher    bondMatcher;
 
     /**
      * Create a VF state for matching subgraph-monomorphism. The query is passed
@@ -79,14 +76,8 @@ final class VFSubState extends AbstractVFState {
      * @param bondMatcher what semantic attributes (order/aromatic, query)
      *                    determines bonds to be compatible
      */
-    VFSubState(IAtomContainer container1,
-               IAtomContainer container2,
-               int[][] g1,
-               int[][] g2,
-               EdgeToBondMap bonds1,
-               EdgeToBondMap bonds2,
-               AtomMatcher atomMatcher,
-               BondMatcher bondMatcher) {
+    VFSubState(IAtomContainer container1, IAtomContainer container2, int[][] g1, int[][] g2, EdgeToBondMap bonds1,
+            EdgeToBondMap bonds2, AtomMatcher atomMatcher, BondMatcher bondMatcher) {
         super(g1, g2);
         this.container1 = container1;
         this.container2 = container2;
@@ -117,19 +108,18 @@ final class VFSubState extends AbstractVFState {
      * @param m a candidate vertex from g2
      * @return the mapping is feasible
      */
-    @TestMethod("infeasibleAtoms,infeasibleBonds")
+    @Override
     boolean feasible(int n, int m) {
 
         // verify atom semantic feasibility
-        if (!atomMatcher.matches(container1.getAtom(n), container2.getAtom(m)))
-            return false;
+        if (!atomMatcher.matches(container1.getAtom(n), container2.getAtom(m))) return false;
 
         // unmapped terminal vertices n and m are adjacent to
         int nTerminal1 = 0, nTerminal2 = 0;
-        // unmapped non-terminal (remaining) vertices n and m are adjacent to  
+        // unmapped non-terminal (remaining) vertices n and m are adjacent to
         int nRemain1 = 0, nRemain2 = 0;
 
-        // 0-look-ahead: check each adjacent edge for being mapped, and count 
+        // 0-look-ahead: check each adjacent edge for being mapped, and count
         // terminal or remaining
         for (int n_prime : g1[n]) {
             int m_prime = m1[n_prime];
@@ -140,10 +130,8 @@ final class VFSubState extends AbstractVFState {
                 if (bond2 == null) // the bond is not present in the target
                     return false;
                 // verify bond semantic feasibility
-                if (!bondMatcher.matches(bonds1.get(n, n_prime), bond2))
-                    return false;
-            }
-            else {
+                if (!bondMatcher.matches(bonds1.get(n, n_prime), bond2)) return false;
+            } else {
                 if (t1[n_prime] > 0)
                     nTerminal1++;
                 else
@@ -164,14 +152,13 @@ final class VFSubState extends AbstractVFState {
 
         // 1-look-ahead : the mapping {n, m} is feasible iff the number of
         // terminal vertices (t1) adjacent to n is less than or equal to the
-        // number of terminal vertices (t2) adjacent to m. 
-        // 
+        // number of terminal vertices (t2) adjacent to m.
+        //
         // 2-look-ahead: the mapping {n, m} is feasible iff the number of
         // vertices adjacent to n that are neither in m1 or t1 is less than or
         // equal to the number of the number of vertices adjacent to m that
-        // are neither in m2 or t2. To allow mapping of monomorphisms we add the        
+        // are neither in m2 or t2. To allow mapping of monomorphisms we add the
         // number of adjacent terminal vertices.
-        return nTerminal1 <= nTerminal2
-                && (nRemain1 + nTerminal1) <= (nRemain2 + nTerminal2);
+        return nTerminal1 <= nTerminal2 && (nRemain1 + nTerminal1) <= (nRemain2 + nTerminal2);
     }
 }

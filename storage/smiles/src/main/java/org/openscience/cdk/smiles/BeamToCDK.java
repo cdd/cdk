@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -24,9 +24,6 @@
 
 package org.openscience.cdk.smiles;
 
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -48,6 +45,7 @@ import static org.openscience.cdk.CDKConstants.ATOM_ATOM_MAPPING;
 import static org.openscience.cdk.CDKConstants.ISAROMATIC;
 import static org.openscience.cdk.interfaces.IDoubleBondStereochemistry.Conformation;
 import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo;
+import static uk.ac.ebi.beam.Configuration.Type.ExtendedTetrahedral;
 import static uk.ac.ebi.beam.Configuration.Type.Tetrahedral;
 
 /**
@@ -71,7 +69,6 @@ import static uk.ac.ebi.beam.Configuration.Type.Tetrahedral;
  * @cdk.module smiles
  * @see <a href="http://johnmay.github.io/beam">Beam SMILES Toolkit</a>
  */
-@TestClass("org.openscience.cdk.smiles.BeamToCDKTest")
 final class BeamToCDK {
 
     /** The builder used to create the CDK objects. */
@@ -79,17 +76,17 @@ final class BeamToCDK {
 
     /** Base atom objects for cloning - SMILES is very efficient and noticeable
      *  lag is seen using the IChemObjectBuilders. */
-    private final IAtom templateAtom;
+    private final IAtom              templateAtom;
 
     /** Base atom objects for cloning - SMILES is very efficient and noticeable
      *  lag is seen using the IChemObjectBuilders. */
-    private final IBond templateBond;
+    private final IBond              templateBond;
 
     /**
      * Base atom container for cloning - SMILES is very efficient and noticeable
      * lag is seen using the IChemObjectBuilders.
      */
-    private final IAtomContainer emptyContainer;
+    private final IAtomContainer     emptyContainer;
 
     /**
      * Create a new converter for the Beam SMILES toolkit. The converter needs
@@ -115,7 +112,7 @@ final class BeamToCDK {
      *                                  happens use the Beam Functions.expand()
      *                                  to
      */
-    @TestMethod("benzene,imidazole") IAtomContainer toAtomContainer(Graph g) {
+    IAtomContainer toAtomContainer(Graph g) {
 
         IAtomContainer ac = emptyContainer();
         IAtom[] atoms = new IAtom[g.order()];
@@ -136,9 +133,11 @@ final class BeamToCDK {
 
                 IStereoElement se = newTetrahedral(u, g.neighbors(u), atoms, c);
 
-                // currently null if implicit H or lone pair
-                if (se != null)
-                    ac.addStereoElement(se);
+                if (se != null) ac.addStereoElement(se);
+            } else if (c.type() == ExtendedTetrahedral) {
+                IStereoElement se = newExtendedTetrahedral(u, g, atoms);
+
+                if (se != null) ac.addStereoElement(se);
             }
         }
 
@@ -162,8 +161,7 @@ final class BeamToCDK {
 
         for (final Edge e : g.edges()) {
 
-            if (e.bond() != Bond.DOUBLE)
-                continue;
+            if (e.bond() != Bond.DOUBLE) continue;
 
             int u = e.either();
             int v = e.other(u);
@@ -174,31 +172,22 @@ final class BeamToCDK {
 
             // if either atom is not incident to a directional label there
             // is no configuration
-            if (first == null || second == null)
-                continue;
+            if (first == null || second == null) continue;
 
             // if the directions (relative to the double bond) are the
             // same then they are on the same side - otherwise they
             // are opposite
-            Conformation conformation = first.bond(u) == second.bond(v)
-                                        ? Conformation.TOGETHER
-                                        : Conformation.OPPOSITE;
+            Conformation conformation = first.bond(u) == second.bond(v) ? Conformation.TOGETHER : Conformation.OPPOSITE;
 
             // get the stereo bond and build up the ligands for the
             // stereo-element - linear search could be improved with
             // map or API change to double bond element
             IBond db = ac.getBond(ac.getAtom(u), ac.getAtom(v));
 
-            IBond[] ligands = new IBond[]{
-                    ac.getBond(ac.getAtom(u),
-                               ac.getAtom(first.other(u))),
-                    ac.getBond(ac.getAtom(v),
-                               ac.getAtom(second.other(v)))
-            };
+            IBond[] ligands = new IBond[]{ac.getBond(ac.getAtom(u), ac.getAtom(first.other(u))),
+                    ac.getBond(ac.getAtom(v), ac.getAtom(second.other(v)))};
 
-            ac.addStereoElement(new DoubleBondStereochemistry(db,
-                                                              ligands,
-                                                              conformation));
+            ac.addStereoElement(new DoubleBondStereochemistry(db, ligands, conformation));
 
         }
     }
@@ -214,8 +203,7 @@ final class BeamToCDK {
     private Edge findDirectionalEdge(Graph g, int u) {
         for (Edge e : g.edges(u)) {
             Bond b = e.bond();
-            if (b == Bond.UP || b == Bond.DOWN)
-                return e;
+            if (b == Bond.UP || b == Bond.DOWN) return e;
         }
         return null;
     }
@@ -231,16 +219,14 @@ final class BeamToCDK {
      *              are given
      * @return tetrahedral stereo element for addition to an atom container
      */
-    private IStereoElement newTetrahedral(int u, int[] vs, IAtom[] atoms,
-                                          Configuration c) {
+    private IStereoElement newTetrahedral(int u, int[] vs, IAtom[] atoms, Configuration c) {
 
         // no way to handle tetrahedral configurations with implicit
         // hydrogen or lone pair at the moment
         if (vs.length != 4) {
 
             // sanity check
-            if (vs.length != 3)
-                return null;
+            if (vs.length != 3) return null;
 
             // there is an implicit hydrogen (or lone-pair) we insert the
             // central atom in sorted position
@@ -248,17 +234,33 @@ final class BeamToCDK {
         }
 
         // @TH1/@TH2 = anti-clockwise and clockwise respectively
-        Stereo stereo = c == Configuration.TH1 ? Stereo.ANTI_CLOCKWISE
-                                               : Stereo.CLOCKWISE;
+        Stereo stereo = c == Configuration.TH1 ? Stereo.ANTI_CLOCKWISE : Stereo.CLOCKWISE;
 
-        return new TetrahedralChirality(atoms[u],
-                                        new IAtom[]{
-                                                atoms[vs[0]],
-                                                atoms[vs[1]],
-                                                atoms[vs[2]],
-                                                atoms[vs[3]]
-                                        },
-                                        stereo);
+        return new TetrahedralChirality(atoms[u], new IAtom[]{atoms[vs[0]], atoms[vs[1]], atoms[vs[2]], atoms[vs[3]]},
+                stereo);
+    }
+
+    private IStereoElement newExtendedTetrahedral(int u, Graph g, IAtom[] atoms) {
+
+        int[] terminals = g.neighbors(u);
+        int[] xs = new int[]{-1, terminals[0], -1, terminals[1]};
+
+        int n = 0;
+        for (Edge e : g.edges(terminals[0])) {
+            if (e.bond().order() == 1) xs[n++] = e.other(terminals[0]);
+        }
+        n = 2;
+        for (Edge e : g.edges(terminals[1])) {
+            if (e.bond().order() == 1) xs[n++] = e.other(terminals[1]);
+        }
+
+        Arrays.sort(xs);
+
+        Stereo stereo = g.configurationOf(u).shorthand() == Configuration.CLOCKWISE ? Stereo.CLOCKWISE
+                : Stereo.ANTI_CLOCKWISE;
+
+        return new org.openscience.cdk.stereo.ExtendedTetrahedral(atoms[u], new IAtom[]{atoms[xs[0]], atoms[xs[1]],
+                atoms[xs[2]], atoms[xs[3]]}, stereo);
     }
 
     /**
@@ -270,14 +272,14 @@ final class BeamToCDK {
      */
     private static int[] insert(int v, int[] vs) {
 
-        final int   n  = vs.length;
+        final int n = vs.length;
         final int[] ws = Arrays.copyOf(vs, n + 1);
         ws[n] = v;
-        
+
         // insert 'u' in to sorted position
         for (int i = n; i > 0 && ws[i] < ws[i - 1]; i--) {
-            int tmp   = ws[i];
-            ws[i]     = ws[i - 1];
+            int tmp = ws[i];
+            ws[i] = ws[i - 1];
             ws[i - 1] = tmp;
         }
 
@@ -288,10 +290,9 @@ final class BeamToCDK {
      * Create a new CDK {@link IAtom} from the Beam Atom.
      *
      * @param beamAtom an Atom from the Beam ChemicalGraph
-     * @param hCount   hydrogen count for the atom                
+     * @param hCount   hydrogen count for the atom
      * @return the CDK atom to have it's properties set
      */
-    @TestMethod("methaneAtom,waterAtom,oxidanide,azaniumAtom")
     IAtom toCDKAtom(Atom beamAtom, int hCount) {
 
         IAtom cdkAtom = newCDKAtom(beamAtom);
@@ -299,14 +300,11 @@ final class BeamToCDK {
         cdkAtom.setImplicitHydrogenCount(hCount);
         cdkAtom.setFormalCharge(beamAtom.charge());
 
-        if (beamAtom.isotope() >= 0)
-            cdkAtom.setMassNumber(beamAtom.isotope());
+        if (beamAtom.isotope() >= 0) cdkAtom.setMassNumber(beamAtom.isotope());
 
-        if (beamAtom.aromatic())
-            cdkAtom.setFlag(ISAROMATIC, true);
+        if (beamAtom.aromatic()) cdkAtom.setFlag(ISAROMATIC, true);
 
-        if (beamAtom.atomClass() > 0)
-            cdkAtom.setProperty(ATOM_ATOM_MAPPING, beamAtom.atomClass());
+        if (beamAtom.atomClass() > 0) cdkAtom.setProperty(ATOM_ATOM_MAPPING, beamAtom.atomClass());
 
         return cdkAtom;
     }
@@ -318,13 +316,11 @@ final class BeamToCDK {
      * @param atom an Atom from the Beam Graph
      * @return the CDK atom to have it's properties set
      */
-    @TestMethod("newUnknownAtom,newCarbonAtom,newNitrogenAtom")
     IAtom newCDKAtom(Atom atom) {
         Element element = atom.element();
         boolean unknown = element == Element.Unknown;
         if (unknown) {
-            IPseudoAtom pseudoAtom = builder.newInstance(IPseudoAtom.class,
-                                                         element.symbol());
+            IPseudoAtom pseudoAtom = builder.newInstance(IPseudoAtom.class, element.symbol());
             pseudoAtom.setSymbol(element.symbol());
             pseudoAtom.setLabel(atom.label());
             return pseudoAtom;
@@ -340,15 +336,12 @@ final class BeamToCDK {
      * @param atoms the already converted atoms
      * @return new bond instance
      */
-    @TestMethod("singleBondEdge,aromaticBondEdge,doubleBondEdge")
     IBond toCDKBond(Edge edge, IAtom[] atoms) {
 
         int u = edge.either();
         int v = edge.other(u);
 
-        IBond bond = createBond(atoms[u],
-                                atoms[v],
-                                toCDKBondOrder(edge));
+        IBond bond = createBond(atoms[u], atoms[v], toCDKBondOrder(edge));
 
         // switch on the edge label to set aromatic flags
         switch (edge.bond()) {
@@ -385,9 +378,9 @@ final class BeamToCDK {
             case SINGLE:
             case UP:
             case DOWN:
-            case IMPLICIT:              // single/aromatic - aromatic ~ single atm.
-            case IMPLICIT_AROMATIC:  
-            case AROMATIC:              // we will also set the flag
+            case IMPLICIT: // single/aromatic - aromatic ~ single atm.
+            case IMPLICIT_AROMATIC:
+            case AROMATIC: // we will also set the flag
                 return IBond.Order.SINGLE;
             case DOUBLE:
             case DOUBLE_AROMATIC:
@@ -397,8 +390,8 @@ final class BeamToCDK {
             case QUADRUPLE:
                 return IBond.Order.QUADRUPLE;
             default:
-                throw new IllegalArgumentException("Edge label " + edge
-                        .bond() + "cannot be converted to a CDK bond order");
+                throw new IllegalArgumentException("Edge label " + edge.bond()
+                        + "cannot be converted to a CDK bond order");
         }
     }
 
@@ -418,7 +411,7 @@ final class BeamToCDK {
      * Create a new atom for the provided symbol. The atom is created by cloning
      * an existing 'template'. Unfortunately IChemObjectBuilders really show a
      * slow down when SMILES processing.
-     * 
+     *
      * @param element Beam element
      * @return new atom with configured symbol and atomic number
      */
@@ -441,8 +434,8 @@ final class BeamToCDK {
      *
      * @param either an atom of the bond
      * @param other another atom of the bond
-     * @param order the order of the bond              
-     *               
+     * @param order the order of the bond
+     *
      * @return new bond instance
      */
     private IBond createBond(IAtom either, IAtom other, IBond.Order order) {
@@ -453,7 +446,7 @@ final class BeamToCDK {
             return bond;
         } catch (CloneNotSupportedException e) {
             // clone is always supported if overridden but just in case  :-)
-            return builder.newInstance(IBond.class, either, other, order);       
+            return builder.newInstance(IBond.class, either, other, order);
         }
     }
 }

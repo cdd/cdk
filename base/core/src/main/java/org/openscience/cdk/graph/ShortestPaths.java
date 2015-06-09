@@ -23,8 +23,6 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -72,29 +70,27 @@ import java.util.Arrays;
  * @see AllPairsShortestPaths
  * @see org.openscience.cdk.graph.matrix.TopologicalMatrix
  */
-@TestClass("org.openscience.cdk.graph.ShortestPathsTest")
 public final class ShortestPaths {
 
     /* empty path when no valid path was found */
-    private static final int[] EMPTY_PATH = new int[0];
+    private static final int[]   EMPTY_PATH  = new int[0];
 
     /* empty paths when no valid path was found */
     private static final int[][] EMPTY_PATHS = new int[0][];
 
     /* route to each vertex */
-    private final Route[] routeTo;
+    private final Route[]        routeTo;
 
     /* distance to each vertex */
-    private final int[] distTo;
+    private final int[]          distTo;
 
     /* number of paths to each vertex */
-    private final int[] nPathsTo;
+    private final int[]          nPathsTo;
 
     /* low order paths */
-    private final boolean[] precedes;
+    private final boolean[]      precedes;
 
-
-    private final int start;
+    private final int            start, limit;
     private final IAtomContainer container;
 
     /**
@@ -107,12 +103,9 @@ public final class ShortestPaths {
      *                  computed
      * @see AllPairsShortestPaths
      */
-    @TestMethod("testConstructor_Container_Empty,testConstructor_Container_Null,testConstructor_Container_MissingAtom")
     public ShortestPaths(IAtomContainer container, IAtom start) {
-        this(GraphUtil.toAdjList(container), container, container
-                .getAtomNumber(start));
+        this(GraphUtil.toAdjList(container), container, container.getAtomNumber(start));
     }
-
 
     /**
      * Internal constructor for use by {@link AllPairsShortestPaths}. This
@@ -139,13 +132,29 @@ public final class ShortestPaths {
      * @param start     the start atom index of the shortest paths
      * @param ordering  vertex ordering for preceding path (null = don't use)
      */
-    ShortestPaths(int[][] adjacent, IAtomContainer container, int start,
-                  int[] ordering) {
+    ShortestPaths(int[][] adjacent, IAtomContainer container, int start, int[] ordering) {
+        this(adjacent, container, start, adjacent.length, ordering);
+    }
+
+    /**
+     * Create a new shortest paths search for the given graph from the {@literal
+     * start} vertex. The ordering for use by {@link #isPrecedingPathTo(int)}
+     * can also be specified.
+     *
+     * @param adjacent  adjacency list representation - built from {@link
+     *                  GraphUtil#toAdjList(IAtomContainer)}
+     * @param container container used to access atoms and their indices
+     * @param start     the start atom index of the shortest paths
+     * @param limit     the maximum length path to find
+     * @param ordering  vertex ordering for preceding path (null = don't use)
+     */
+    ShortestPaths(int[][] adjacent, IAtomContainer container, int start, int limit, int[] ordering) {
 
         int n = adjacent.length;
 
         this.container = container;
         this.start = start;
+        this.limit = limit;
 
         this.distTo = new int[n];
         this.routeTo = new Route[n];
@@ -153,10 +162,8 @@ public final class ShortestPaths {
         this.precedes = new boolean[n];
 
         // skip computation for empty molecules
-        if (n == 0)
-            return;
-        if (start == -1)
-            throw new IllegalArgumentException("invalid vertex start - atom not found container");
+        if (n == 0) return;
+        if (start == -1) throw new IllegalArgumentException("invalid vertex start - atom not found container");
 
         for (int i = 0; i < n; i++) {
             distTo[i] = Integer.MAX_VALUE;
@@ -168,7 +175,7 @@ public final class ShortestPaths {
         nPathsTo[start] = 1;
         precedes[start] = true;
 
-        if(ordering != null) {
+        if (ordering != null) {
             compute(adjacent, ordering);
         } else {
             compute(adjacent);
@@ -194,15 +201,16 @@ public final class ShortestPaths {
             int dist = distTo[v] + 1;
             for (int w : adjacent[v]) {
 
+                if (dist > limit) continue;
+
                 // distance is less then the current closest distance
                 if (dist < distTo[w]) {
-                    distTo[w]   = dist;
-                    routeTo[w]  = new SequentialRoute(routeTo[v], w);
+                    distTo[w] = dist;
+                    routeTo[w] = new SequentialRoute(routeTo[v], w);
                     nPathsTo[w] = nPathsTo[v];
                     queue[n++] = w;
                 } else if (distTo[w] == dist) {
-                    routeTo[w] = new Branch(routeTo[w],
-                                            new SequentialRoute(routeTo[v], w));
+                    routeTo[w] = new Branch(routeTo[w], new SequentialRoute(routeTo[v], w));
                     nPathsTo[w] += nPathsTo[v];
                 }
             }
@@ -243,8 +251,7 @@ public final class ShortestPaths {
                     // already a preceding path
                     if (precedes[v] && ordering[w] < ordering[start]) {
                         if (precedes[w]) {
-                            routeTo[w] = new Branch(routeTo[w],
-                                                    new SequentialRoute(routeTo[v], w));
+                            routeTo[w] = new Branch(routeTo[w], new SequentialRoute(routeTo[v], w));
                             nPathsTo[w] += nPathsTo[v];
                         } else {
                             precedes[w] = true;
@@ -256,7 +263,6 @@ public final class ShortestPaths {
         }
 
     }
-
 
     /**
      * Reconstruct a shortest path to the provided <i>end</i> vertex. The path
@@ -285,19 +291,12 @@ public final class ShortestPaths {
      * @see #atomsTo(int)
      * @see #atomsTo(org.openscience.cdk.interfaces.IAtom)
      */
-    @TestMethod("testPathTo_Int_Simple,testPathTo_Int_Benzene,testPathTo_Int_Norbornane," +
-                        "testPathTo_Int_Spiroundecane,testPathTo_Int_Pentadecaspiro," +
-                        "testPathTo_Int_OutOfBoundsIndex,testPathTo_Int_NegativeIndex," +
-                        "testPathTo_Int_Disconnected")
     public int[] pathTo(int end) {
 
-        if (end < 0 || end >= routeTo.length)
-            return EMPTY_PATH;
+        if (end < 0 || end >= routeTo.length) return EMPTY_PATH;
 
-        return routeTo[end] != null ? routeTo[end].toPath(distTo[end] + 1)
-                                    : EMPTY_PATH;
+        return routeTo[end] != null ? routeTo[end].toPath(distTo[end] + 1) : EMPTY_PATH;
     }
-
 
     /**
      * Reconstruct a shortest path to the provided <i>end</i> atom. The path is
@@ -327,10 +326,6 @@ public final class ShortestPaths {
      * @see #atomsTo(int)
      * @see #pathTo(int)
      */
-    @TestMethod("testPathTo_Atom_Simple,testPathTo_Atom_Benzene,testPathTo_Atom_Norbornane," +
-                        "testPathTo_Atom_Spiroundecane,testPathTo_Atom_Pentadecaspiro," +
-                        "testPathTo_Atom_MissingAtom,testPathTo_Atom_Null," +
-                        "testPathTo_Atom_Disconnected")
     public int[] pathTo(IAtom end) {
         return pathTo(container.getAtomNumber(end));
     }
@@ -345,7 +340,6 @@ public final class ShortestPaths {
      * @return whether the path to the <i>end</i> only passed through vertices
      *         preceding the <i>start</i>
      */
-    @TestMethod("testIsPrecedingPathTo_OutOfBounds,testIsPrecedingPathTo")
     public boolean isPrecedingPathTo(int end) {
         return (end >= 0 || end < routeTo.length) && precedes[end];
     }
@@ -380,18 +374,12 @@ public final class ShortestPaths {
      * @param end the end vertex
      * @return all shortest paths from the start to the end vertex
      */
-    @TestMethod("testPathsTo_Int_Simple,testPathsTo_Int_Benzene,testPathsTo_Int_Spiroundecane," +
-                        "testPathsTo_Int_Norbornane,testPathsTo_Int_OutOfBoundsIndex," +
-                        "testPathsTo_Int_NegativeIndex,testPathsTo_Int_Disconnected")
     public int[][] pathsTo(int end) {
 
-        if (end < 0 || end >= routeTo.length)
-            return EMPTY_PATHS;
+        if (end < 0 || end >= routeTo.length) return EMPTY_PATHS;
 
-        return routeTo[end] != null ? routeTo[end].toPaths(distTo[end] + 1)
-                                    : EMPTY_PATHS;
+        return routeTo[end] != null ? routeTo[end].toPaths(distTo[end] + 1) : EMPTY_PATHS;
     }
-
 
     /**
      * Reconstruct all shortest paths to the provided <i>end</i> vertex. The
@@ -424,14 +412,9 @@ public final class ShortestPaths {
      * @param end the end atom
      * @return all shortest paths from the start to the end vertex
      */
-    @TestMethod("testPathsTo_Atom_Simple,testPathsTo_Atom_Benzene,testPathsTo_Atom_Spiroundecane," +
-                        "testPathsTo_Atom_Norbornane,testPathsTo_Atom_Pentadecaspiro," +
-                        "testPathsTo_Atom_MissingAtom,testPathsTo_Atom_Null," +
-                        "testPathsTo_Atom_Disconnected")
     public int[][] pathsTo(IAtom end) {
         return pathsTo(container.getAtomNumber(end));
     }
-
 
     /**
      * Reconstruct a shortest path to the provided <i>end</i> vertex. The path
@@ -461,8 +444,6 @@ public final class ShortestPaths {
      * @see #pathTo(int)
      * @see #pathTo(org.openscience.cdk.interfaces.IAtom)
      */
-    @TestMethod("testAtomsTo_Int_Simple,testAtomsTo_Int_Benzene,testAtomsTo_Int_Disconnected," +
-                        "testAtomsTo_Int_OutOfBoundsIndex,testAtomsTo_Int_NegativeIndex")
     public IAtom[] atomsTo(int end) {
 
         int[] path = pathTo(end);
@@ -475,7 +456,6 @@ public final class ShortestPaths {
         return atoms;
 
     }
-
 
     /**
      * Reconstruct a shortest path to the provided <i>end</i> atom. The path is
@@ -507,12 +487,9 @@ public final class ShortestPaths {
      * @see #pathTo(int)
      * @see #pathTo(org.openscience.cdk.interfaces.IAtom)
      */
-    @TestMethod("testAtomsTo_Atom_Simple,testAtomsTo_Atom_Benzene,testAtomsTo_Atom_Disconnected," +
-                        "testAtomsTo_Atom_MissingAtom,testAtomsTo_Atom_Null")
     public IAtom[] atomsTo(IAtom end) {
         return atomsTo(container.getAtomNumber(end));
     }
-
 
     /**
      * Access the number of possible paths to the <i>end</i> vertex. When there
@@ -532,14 +509,9 @@ public final class ShortestPaths {
      *            returned
      * @return the number of paths to the end vertex
      */
-    @TestMethod("testNPathsTo_Int_Simple,testNPathsTo_Int_Benzene,testNPathsTo_Int_Norbornane," +
-                        "testNPathsTo_Int_Spiroundecane,testNPathsTo_Int_Pentadecaspiro," +
-                        "testNPathsTo_Int_Disconnected," +
-                        "testNPathsTo_Int_OutOfBoundIndex,testNPathsTo_Int_NegativeIndex")
     public int nPathsTo(int end) {
         return (end < 0 || end >= nPathsTo.length) ? 0 : nPathsTo[end];
     }
-
 
     /**
      * Access the number of possible paths to the <i>end</i> atom. When there is
@@ -561,14 +533,9 @@ public final class ShortestPaths {
      *            returned
      * @return the number of paths to the end vertex
      */
-    @TestMethod("testNPathsTo_Atom_Simple,testNPathsTo_Atom_Benzene,testNPathsTo_Atom_Norbornane," +
-                        "testNPathsTo_Atom_Spiroundecane,testNPathsTo_Atom_Pentadecaspiro," +
-                        "testNPathsTo_Atom_Disconnected," +
-                        "testNPathsTo_Atom_MissingAtom,testNPathsTo_Atom_Null")
     public int nPathsTo(IAtom end) {
         return nPathsTo(container.getAtomNumber(end));
     }
-
 
     /**
      * Access the distance to the provided <i>end</i> vertex. If the two are not
@@ -605,15 +572,9 @@ public final class ShortestPaths {
      * @return distance to this vertex
      * @see #distanceTo(org.openscience.cdk.interfaces.IAtom)
      */
-    @TestMethod("testDistanceTo_Int_Simple,testDistanceTo_Int_OutOfBoundIndex," +
-                        "testDistanceTo_Int_NegativeIndex,testDistanceTo_Int_Disconnected," +
-                        "testDistanceTo_Int_Benzene,testDistanceTo_Int_Spiroundecane," +
-                        "testDistanceTo_Int_Pentadecaspiro")
     public int distanceTo(int end) {
-        return (end < 0 || end >= nPathsTo.length) ? Integer.MAX_VALUE
-                                                   : distTo[end];
+        return (end < 0 || end >= nPathsTo.length) ? Integer.MAX_VALUE : distTo[end];
     }
-
 
     /**
      * Access the distance to the provided <i>end</i> atom. If the two are not
@@ -651,13 +612,9 @@ public final class ShortestPaths {
      * @return distance to the given atom
      * @see #distanceTo(int)
      */
-    @TestMethod("testDistanceTo_Atom_Simple,testDistanceTo_Atom_MissingAtom,testDistanceTo_Atom_Null," +
-                        "testDistanceTo_Atom_Disconnected,testDistanceTo_Atom_Benzene," +
-                        "testDistanceTo_Atom_Spiroundecane,testDistanceTo_Atom_Pentadecaspiro")
     public int distanceTo(IAtom end) {
         return distanceTo(container.getAtomNumber(end));
     }
-
 
     /** Helper class for building a route to the shortest path */
     private static interface Route {
@@ -719,7 +676,7 @@ public final class ShortestPaths {
     /** A sequential route is vertex appended to a parent route. */
     private class SequentialRoute implements Route {
 
-        private final int v;
+        private final int   v;
         private final Route parent;
 
         /**
@@ -789,8 +746,7 @@ public final class ShortestPaths {
             int[][] rightPaths = right.toPaths(n);
 
             // expand the left paths to a capacity which can also accommodate the right paths
-            int[][] paths = Arrays
-                    .copyOf(leftPaths, leftPaths.length + rightPaths.length);
+            int[][] paths = Arrays.copyOf(leftPaths, leftPaths.length + rightPaths.length);
 
             // copy the right paths in to the expanded left paths
             System.arraycopy(rightPaths, 0, paths, leftPaths.length, rightPaths.length);

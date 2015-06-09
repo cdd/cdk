@@ -7,15 +7,15 @@ import org.openscience.cdk.interfaces.IReaction;
  * @cdk.githash
  */
 
-public class SmilesReactionCanoniser 
-    extends AbstractReactionLabeller implements ICanonicalReactionLabeller {
-    
+public class SmilesReactionCanoniser extends AbstractReactionLabeller implements ICanonicalReactionLabeller {
+
     private CanonicalLabellingAdaptor labeller = new CanonicalLabellingAdaptor();
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public IReaction getCanonicalReaction(IReaction reaction) {
-        return super.labelReaction(reaction, labeller); 
+        return super.labelReaction(reaction, labeller);
     }
 }

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2001-2003  Jmol Project
+/* Copyright (C) 2001-2003  Jmol Project
  * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -46,38 +41,37 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @author  Egon Willighagen <egonw@sci.kun.nl>
  */
 public class ChemObjectIOInstantionTests extends CDKTestCase {
-    
-    private final static String IO_FORMATS_LIST = "io-formats.set";
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(ChemObjectIOInstantionTests.class);
+    private final static String      IO_FORMATS_LIST = "io-formats.set";
 
-    private static List<IChemFormat> formats = null;
+    private static ILoggingTool      logger          = LoggingToolFactory
+                                                             .createLoggingTool(ChemObjectIOInstantionTests.class);
+
+    private static List<IChemFormat> formats         = null;
 
     private void loadFormats() {
         if (formats == null) {
             formats = new ArrayList<IChemFormat>();
             try {
                 logger.debug("Starting loading Formats...");
-                BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    this.getClass().getClassLoader().getResourceAsStream(IO_FORMATS_LIST)
-                ));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader()
+                        .getResourceAsStream(IO_FORMATS_LIST)));
                 int formatCount = 0;
                 while (reader.ready()) {
                     // load them one by one
                     String formatName = reader.readLine();
                     formatCount++;
                     try {
-                        IResourceFormat format = (IResourceFormat)this.getClass().getClassLoader().
-                            loadClass(formatName).newInstance();
+                        IResourceFormat format = (IResourceFormat) this.getClass().getClassLoader()
+                                .loadClass(formatName).newInstance();
                         if (format instanceof IChemFormat) {
-                        	formats.add((IChemFormat)format);
-                        	logger.info("Loaded IChemFormat: " + format.getClass().getName());
+                            formats.add((IChemFormat) format);
+                            logger.info("Loaded IChemFormat: " + format.getClass().getName());
                         }
                     } catch (ClassNotFoundException exception) {
                         logger.error("Could not find this IResourceFormat: ", formatName);
                         logger.debug(exception);
-                    } catch (Exception exception) {
+                    } catch (InstantiationException | IllegalAccessException exception) {
                         logger.error("Could not load this IResourceFormat: ", formatName);
                         logger.debug(exception);
                     }
@@ -90,24 +84,25 @@ public class ChemObjectIOInstantionTests extends CDKTestCase {
         }
     }
 
-    @Test public void testInstantion() {
-    	loadFormats();
-    	
-    	IChemFormat format = null;
-    	Iterator<IChemFormat> formatIter = formats.iterator();
-    	while (formatIter.hasNext()) {
-            format = (IChemFormat)formatIter.next();
+    @Test
+    public void testInstantion() {
+        loadFormats();
+
+        IChemFormat format = null;
+        Iterator<IChemFormat> formatIter = formats.iterator();
+        while (formatIter.hasNext()) {
+            format = (IChemFormat) formatIter.next();
             if (format.getReaderClassName() != null) {
-            	tryToInstantiate(format.getReaderClassName());
+                tryToInstantiate(format.getReaderClassName());
             }
             if (format.getWriterClassName() != null) {
-            	tryToInstantiate(format.getWriterClassName());
+                tryToInstantiate(format.getWriterClassName());
             }
         }
     }
-    
+
     private void tryToInstantiate(String className) {
-    	try {
+        try {
             // make a new instance of this class
             Object instance = this.getClass().getClassLoader().loadClass(className).newInstance();
             Assert.assertNotNull(instance);
@@ -115,8 +110,8 @@ public class ChemObjectIOInstantionTests extends CDKTestCase {
         } catch (ClassNotFoundException exception) {
             logger.debug("Could not find this class: " + className);
             // but that's not error, it can mean that it is a Jmol based IO class, and no Jmol is in the classpath
-        } catch (Exception exception) {
-        	logger.debug(exception);
+        } catch (InstantiationException | IllegalAccessException exception) {
+            logger.debug(exception);
             Assert.fail("Could not instantiate this class: " + className);
         }
     }

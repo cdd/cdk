@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.isomorphism;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
@@ -36,7 +34,6 @@ import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
  * @author John May
  * @cdk.module isomorphism
  */
-@TestClass("org.openscience.cdk.isomorphism.AtomMatcherTest")
 public abstract class AtomMatcher {
 
     /**
@@ -51,19 +48,17 @@ public abstract class AtomMatcher {
     /**
      * Atoms are always compatible.
      *
-     * @return a matcher for which all atoms match 
+     * @return a matcher for which all atoms match
      */
-    @TestMethod("anyMatch")
     public static AtomMatcher forAny() {
         return new AnyMatcher();
     }
-    
+
     /**
      * Atoms are compatible if they are the same element.
      *
      * @return a matcher which checks element compatibility
      */
-    @TestMethod("elementMatch")
     public static AtomMatcher forElement() {
         return new ElementMatcher();
     }
@@ -74,7 +69,6 @@ public abstract class AtomMatcher {
      *
      * @return a matcher which checks query atom compatibility
      */
-    @TestMethod("queryMatch")
     public static AtomMatcher forQuery() {
         return new QueryMatcher();
     }
@@ -83,11 +77,11 @@ public abstract class AtomMatcher {
     private static final class AnyMatcher extends AtomMatcher {
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom1, IAtom atom2) {
+        @Override
+        public boolean matches(IAtom atom1, IAtom atom2) {
             return true;
         }
     }
-
 
     /**
      * A matcher to use when all atoms are {@link IQueryAtom}s. {@code atom1} is
@@ -96,7 +90,8 @@ public abstract class AtomMatcher {
     private static final class QueryMatcher extends AtomMatcher {
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom1, IAtom atom2) {
+        @Override
+        public boolean matches(IAtom atom1, IAtom atom2) {
             return ((IQueryAtom) atom1).matches(atom2);
         }
     }
@@ -108,7 +103,8 @@ public abstract class AtomMatcher {
     private static final class ElementMatcher extends AtomMatcher {
 
         /** @inheritDoc */
-        @Override public boolean matches(IAtom atom1, IAtom atom2) {
+        @Override
+        public boolean matches(IAtom atom1, IAtom atom2) {
             return atomicNumber(atom1) == atomicNumber(atom2);
         }
 
@@ -120,10 +116,8 @@ public abstract class AtomMatcher {
          */
         private int atomicNumber(IAtom atom) {
             Integer elem = atom.getAtomicNumber();
-            if (elem != null)
-                return elem;
-            if (atom instanceof IPseudoAtom)
-                return 0;
+            if (elem != null) return elem;
+            if (atom instanceof IPseudoAtom) return 0;
             throw new NullPointerException("an atom had unset atomic number");
         }
     }

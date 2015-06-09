@@ -1,9 +1,5 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) Project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) Project
+ *                    2014  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,11 +24,14 @@
  */
 package org.openscience.cdk.tools;
 
-import org.openscience.cdk.*;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAminoAcid;
 import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IBioPolymer;
 import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.interfaces.IStrand;
 import org.openscience.cdk.templates.AminoAcids;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
@@ -42,14 +41,13 @@ import java.util.Map;
  * Class that facilitates building protein structures. Building DNA and RNA
  * is done by a complementary class <code>NucleicAcidBuilderTool</code> (to be
  * written).
- * 
+ *
  * @cdk.module pdb
  * @cdk.githash
  */
 public class ProteinBuilderTool {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(ProteinBuilderTool.class);
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(ProteinBuilderTool.class);
 
     /**
      * Builds a protein by connecting a new amino acid at the N-terminus of the
@@ -59,18 +57,16 @@ public class ProteinBuilderTool {
      * @param aaToAdd amino acid to add to the strand of the protein
      * @param strand  strand to which the protein is added
      */
-    public static BioPolymer addAminoAcidAtNTerminus(
-        BioPolymer protein, AminoAcid aaToAdd, Strand strand, AminoAcid aaToAddTo)
-    {
+    public static IBioPolymer addAminoAcidAtNTerminus(IBioPolymer protein, IAminoAcid aaToAdd, IStrand strand,
+            IAminoAcid aaToAddTo) {
         // then add the amino acid
         addAminoAcid(protein, aaToAdd, strand);
         // Now think about the protein back bone connection
         if (protein.getMonomerCount() == 0) {
-            // make the connection between that aminoAcid's C-terminus and the 
+            // make the connection between that aminoAcid's C-terminus and the
             // protein's N-terminus
-            protein.addBond(
-                new Bond(aaToAddTo.getNTerminus(), aaToAdd.getCTerminus(), IBond.Order.SINGLE)
-            );
+            protein.addBond(aaToAdd.getBuilder().newInstance(IBond.class, aaToAddTo.getNTerminus(),
+                    aaToAdd.getCTerminus(), IBond.Order.SINGLE));
         } // else : no current N-terminus, so nothing special to do
         return protein;
     }
@@ -85,48 +81,67 @@ public class ProteinBuilderTool {
      * @param aaToAdd amino acid to add to the strand of the protein
      * @param strand  strand to which the protein is added
      */
-    public static BioPolymer addAminoAcidAtCTerminus(
-        BioPolymer protein, AminoAcid aaToAdd, Strand strand, AminoAcid aaToAddTo)
-    {
+    public static IBioPolymer addAminoAcidAtCTerminus(IBioPolymer protein, IAminoAcid aaToAdd, IStrand strand,
+            IAminoAcid aaToAddTo) {
         // then add the amino acid
         addAminoAcid(protein, aaToAdd, strand);
         // Now think about the protein back bone connection
         if ((protein.getMonomerCount() != 0) && (aaToAddTo != null)) {
-            // make the connection between that aminoAcid's N-terminus and the 
+            // make the connection between that aminoAcid's N-terminus and the
             // protein's C-terminus
-            protein.addBond(
-                new Bond(aaToAddTo.getCTerminus(), aaToAdd.getNTerminus(), IBond.Order.SINGLE)
-            );
+            protein.addBond(aaToAdd.getBuilder().newInstance(IBond.class, aaToAddTo.getCTerminus(),
+                    aaToAdd.getNTerminus(), IBond.Order.SINGLE));
         } // else : no current C-terminus, so nothing special to do
         return protein;
     }
 
     /**
      * Creates a BioPolymer from a sequence of amino acid as identified by a
-     * the sequence of their one letter codes.
+     * the sequence of their one letter codes. It uses the {@link DefaultChemObjectBuilder}
+     * to create a data model.
      *
      * <p>For example:
      * <pre>
      * BioPolymer protein = ProteinBuilderTool.createProtein("GAGA");
      * </pre>
+     *
+     * @see #createProtein(String)
      */
-    public static BioPolymer createProtein(String sequence) throws CDKException {
-        Map<String,IAminoAcid> templates = AminoAcids.getHashMapBySingleCharCode();
-        BioPolymer protein = new BioPolymer();
-        Strand strand = new Strand();
-        AminoAcid previousAA = null;
-        for (int i=0; i<sequence.length(); i++) {
+    public static IBioPolymer createProtein(String sequence) throws CDKException {
+        return createProtein(sequence, DefaultChemObjectBuilder.getInstance());
+    }
+
+    /**
+     * Creates a BioPolymer from a sequence of amino acid as identified by a
+     * the sequence of their one letter codes. It uses the given {@link IChemObjectBuilder}
+     * to create a data model.
+     *
+     * <p>For example:
+     * <pre>
+     * BioPolymer protein = ProteinBuilderTool.createProtein(
+     *     "GAGA", SilentChemObjectBuilder.getInstance()
+     * );
+     * </pre>
+     *
+     * @see #createProtein(String)
+     */
+    public static IBioPolymer createProtein(String sequence, IChemObjectBuilder builder) throws CDKException {
+        Map<String, IAminoAcid> templates = AminoAcids.getHashMapBySingleCharCode();
+        IBioPolymer protein = builder.newInstance(IBioPolymer.class);
+        IStrand strand = builder.newInstance(IStrand.class);
+        IAminoAcid previousAA = null;
+        for (int i = 0; i < sequence.length(); i++) {
             String aminoAcidCode = "" + sequence.charAt(i);
             logger.debug("Adding AA: " + aminoAcidCode);
             if (aminoAcidCode.equals(" ")) {
                 // fine, just skip spaces
             } else {
-                AminoAcid aminoAcid = (AminoAcid)templates.get(aminoAcidCode);
+                IAminoAcid aminoAcid = (IAminoAcid) templates.get(aminoAcidCode);
                 if (aminoAcid == null) {
                     throw new CDKException("Cannot build sequence! Unknown amino acid: " + aminoAcidCode);
                 }
                 try {
-                    aminoAcid = (AminoAcid)aminoAcid.clone();
+                    aminoAcid = (IAminoAcid) aminoAcid.clone();
                 } catch (CloneNotSupportedException e) {
                     throw new CDKException("Cannot build sequence! Clone exception: " + e.getMessage(), e);
                 }
@@ -138,10 +153,10 @@ public class ProteinBuilderTool {
             }
         }
         // add the last oxygen of the protein
-        Atom oxygen = new Atom("O");
+        IAtom oxygen = builder.newInstance(IAtom.class, "O");
         // ... to amino acid
         previousAA.addAtom(oxygen);
-        Bond bond = new Bond(oxygen, previousAA.getCTerminus(), IBond.Order.SINGLE);
+        IBond bond = builder.newInstance(IBond.class, oxygen, previousAA.getCTerminus(), IBond.Order.SINGLE);
         previousAA.addBond(bond);
         // ... and to protein
         protein.addAtom(oxygen, previousAA, strand);
@@ -149,9 +164,11 @@ public class ProteinBuilderTool {
         return protein;
     }
 
-    private static BioPolymer addAminoAcid(BioPolymer protein, AminoAcid aaToAdd, Strand strand) {
-        for (IAtom atom : AtomContainerManipulator.getAtomArray(aaToAdd)) protein.addAtom(atom, aaToAdd, strand);
-        for (IBond bond : AtomContainerManipulator.getBondArray(aaToAdd)) protein.addBond(bond);
+    private static IBioPolymer addAminoAcid(IBioPolymer protein, IAminoAcid aaToAdd, IStrand strand) {
+        for (IAtom atom : AtomContainerManipulator.getAtomArray(aaToAdd))
+            protein.addAtom(atom, aaToAdd, strand);
+        for (IBond bond : AtomContainerManipulator.getBondArray(aaToAdd))
+            protein.addBond(bond);
         return protein;
     }
 }

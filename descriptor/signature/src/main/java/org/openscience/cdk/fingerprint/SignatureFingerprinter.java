@@ -25,8 +25,6 @@ package org.openscience.cdk.fingerprint;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -39,7 +37,6 @@ import org.openscience.cdk.signature.AtomSignature;
  * @cdk.keyword fingerprint
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.fingerprint.SignatureFingerprinterTest")
 public class SignatureFingerprinter implements IFingerprinter {
 
     private int signatureDepth;
@@ -48,7 +45,7 @@ public class SignatureFingerprinter implements IFingerprinter {
      * Initialize the fingerprinter with a defult signature depth of 1.
      */
     public SignatureFingerprinter() {
-    	this(1);
+        this(1);
     }
 
     /**
@@ -60,37 +57,33 @@ public class SignatureFingerprinter implements IFingerprinter {
         this.signatureDepth = depth;
     }
 
-    @TestMethod("testBitFingerprint")
+    @Override
     public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) throws CDKException {
-    		return new IntArrayFingerprint(getRawFingerprint(atomContainer));
+        return new IntArrayFingerprint(getRawFingerprint(atomContainer));
     }
 
-    @TestMethod("testGetRawFingerprint")
+    @Override
     public Map<String, Integer> getRawFingerprint(IAtomContainer atomContainer) throws CDKException {
-    	Map<String, Integer> map = new HashMap<String,Integer>();
-    	for (IAtom atom : atomContainer.atoms()) {
-            String signature = new AtomSignature(
-            	atom, signatureDepth, atomContainer
-            ).toCanonicalString();
+        Map<String, Integer> map = new HashMap<String, Integer>();
+        for (IAtom atom : atomContainer.atoms()) {
+            String signature = new AtomSignature(atom, signatureDepth, atomContainer).toCanonicalString();
             if (map.containsKey(signature)) {
-            	map.put(signature, map.get(signature)+1);
+                map.put(signature, map.get(signature) + 1);
             } else {
-            	map.put(signature, 1);
+                map.put(signature, 1);
             }
         }
         return map;
     }
 
-    @TestMethod("testGetSize")
+    @Override
     public int getSize() {
         return -1;
     }
 
-	@Override
-	@TestMethod("testGetCountFingerprint")
-	public ICountFingerprint getCountFingerprint(IAtomContainer container)
-			throws CDKException {
-		return new IntArrayCountFingerprint(getRawFingerprint(container));
-	}
+    @Override
+    public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException {
+        return new IntArrayCountFingerprint(getRawFingerprint(container));
+    }
 
 }

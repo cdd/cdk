@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -30,11 +28,11 @@ import java.util.List;
 /**
  * Analyses a molecular formula given in String format and builds
  * an AtomContainer with the Atoms in the molecular formula.
- * 
- * About implict H handling: By default the methods to calculate formula, natural and canonical mass
- * use the explicit Hs and only the explicit Hs if there is at least one in the molecule, implicit Hs are 
- * ignored. If there is no explicit H and only then the implicit Hs are used. If you use the constructor 
- * MFAnalyser(IAtomContainer ac, boolean useboth) and set useboth to true, all explicit Hs and all implicit Hs are used, 
+ *
+ * About implicit H handling: By default the methods to calculate formula, natural and canonical mass
+ * use the explicit Hs and only the explicit Hs if there is at least one in the molecule, implicit Hs are
+ * ignored. If there is no explicit H and only then the implicit Hs are used. If you use the constructor
+ * MFAnalyser(IAtomContainer ac, boolean useboth) and set useboth to true, all explicit Hs and all implicit Hs are used,
  * the implicit ones also on atoms with explicit Hs.
  *
  * @author         egonw
@@ -44,44 +42,42 @@ import java.util.List;
  */
 public class HOSECodeAnalyser {
 
-	public static List<String> getElements(String code) {
-		List<String> elementList = new ArrayList<String>();
-		
-		if (code.length() == 0) {
-			return elementList;
-		}
+    public static List<String> getElements(String code) {
+        List<String> elementList = new ArrayList<String>();
 
-		String currentSymbol = null;
-		for (int f = 0; f < code.length(); f++) {
-			char currentChar = code.charAt(f);
-			if (currentChar >= 'A' && currentChar <= 'Z') {
-				currentSymbol = "" + currentChar;
-				if (f < code.length()) {
-					currentChar = code.charAt(f+1);
-					if (currentChar >= 'a' && currentChar <= 'z') {
-						currentSymbol += currentChar;
-					}
-				}
-			} else {
-				currentSymbol = null;
-			}
-			if (currentSymbol != null) {
-				if (!elementList.contains(currentSymbol)) {
-					// reverse HOSECodeGenerator.getElementSymbol translations
-					if (currentSymbol.equals("Y")) {
-						currentSymbol = "Br";
-					} else if (currentSymbol.equals("X")) {
-						currentSymbol = "Cl";
-					} else if (currentSymbol.equals("Q")) {
-						currentSymbol = "Si";
-					}
-					elementList.add(currentSymbol);
-				}
-			}
-		}
-		return elementList;
-	}
+        if (code.length() == 0) {
+            return elementList;
+        }
+
+        String currentSymbol = null;
+        for (int f = 0; f < code.length(); f++) {
+            char currentChar = code.charAt(f);
+            if (currentChar >= 'A' && currentChar <= 'Z') {
+                currentSymbol = "" + currentChar;
+                if (f < code.length()) {
+                    currentChar = code.charAt(f + 1);
+                    if (currentChar >= 'a' && currentChar <= 'z') {
+                        currentSymbol += currentChar;
+                    }
+                }
+            } else {
+                currentSymbol = null;
+            }
+            if (currentSymbol != null) {
+                if (!elementList.contains(currentSymbol)) {
+                    // reverse HOSECodeGenerator.getElementSymbol translations
+                    if (currentSymbol.equals("Y")) {
+                        currentSymbol = "Br";
+                    } else if (currentSymbol.equals("X")) {
+                        currentSymbol = "Cl";
+                    } else if (currentSymbol.equals("Q")) {
+                        currentSymbol = "Si";
+                    }
+                    elementList.add(currentSymbol);
+                }
+            }
+        }
+        return elementList;
+    }
 
 }
-
-

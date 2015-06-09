@@ -20,8 +20,6 @@
 
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.fragment.MurckoFragmenter;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -54,12 +52,9 @@ import org.openscience.cdk.qsar.result.IDescriptorResult;
  * @cdk.githash
  * @see org.openscience.cdk.fragment.MurckoFragmenter
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.FMFDescriptorTest")
 public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    public FMFDescriptor() {
-    }
-
+    public FMFDescriptor() {}
 
     /**
      * Calculates the FMF descriptor value for the given {@link IAtomContainer}.
@@ -69,7 +64,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @return An object of {@link org.openscience.cdk.qsar.DescriptorValue} that contains the
      *         calculated FMF descriptor value as well as specification details
      */
-    @TestMethod("testCarbinoxamine,testIsamoltane,testPirenperone")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         MurckoFragmenter fragmenter = new MurckoFragmenter(true, 3);
         DoubleResult result;
@@ -81,7 +76,8 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
                 result = new DoubleResult(framework[0].getAtomCount() / (double) container.getAtomCount());
             } else if (framework.length == 0 && ringSystems.length == 1) {
                 result = new DoubleResult(ringSystems[0].getAtomCount() / (double) container.getAtomCount());
-            } else result = new DoubleResult(0.0);
+            } else
+                result = new DoubleResult(0.0);
         } catch (CDKException e) {
             result = new DoubleResult(Double.NaN);
         }
@@ -107,6 +103,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      *
      * @return an instance of the {@link org.openscience.cdk.qsar.result.DoubleResultType}
      */
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleResultType();
     }
@@ -126,11 +123,10 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      *
      * @return An object containing the descriptor specification
      */
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#fmf",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#fmf",
+                this.getClass().getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -140,6 +136,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      *
      * @return null, since there are no parameters
      */
+    @Override
     public String[] getParameterNames() {
         return null;
     }
@@ -152,6 +149,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @param name The name of the parameter whose type is requested
      * @return null, since this descriptor has no parameters
      */
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
@@ -166,8 +164,8 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      *          if invalid number of type of parameters are passed to it
      * @see #getParameters
      */
-    public void setParameters(Object[] params) throws CDKException {
-    }
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
     /**
      * Returns the current parameter values.
@@ -176,6 +174,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      * @return null, since there are no parameters
      * @see #setParameters
      */
+    @Override
     public Object[] getParameters() {
         return null;
     }
@@ -187,6 +186,7 @@ public class FMFDescriptor extends AbstractMolecularDescriptor implements IMolec
      * viz., "FMF"
      * @return A 1-element string array, with the value "FMF"
      */
+    @Override
     public String[] getDescriptorNames() {
         return new String[]{"FMF"};
     }

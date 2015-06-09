@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,17 +10,20 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.io.formats;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @cdk.module test-ioformats
@@ -30,7 +31,12 @@ package org.openscience.cdk.io.formats;
 public class MOPAC93FormatTest extends ChemFormatMatcherTest {
 
     public MOPAC93FormatTest() {
-        super.setChemFormatMatcher((IChemFormatMatcher)MOPAC93Format.getInstance());
+        super.setChemFormatMatcher((IChemFormatMatcher) MOPAC93Format.getInstance());
     }
-    
+
+    @Test
+    public void testMatchesMopac93() throws Exception {
+        Assert.assertTrue(((MOPAC93Format) MOPAC93Format.getInstance()).matches(0,
+                "*                   MOPAC  93.00               CALC'D. Mon May 31 20:29:07 2004"));
+    }
 }

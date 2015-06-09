@@ -22,8 +22,6 @@
  */
 package org.openscience.cdk.geometry.cip;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -32,7 +30,7 @@ import org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo;
 
 /**
  * Stereochemistry specification for quadrivalent atoms to be used for the CIP algorithm only.
- * 
+ *
  * <p>The data model defines the central, chiral {@link IAtom},
  * and its four {@link ILigand}s, each of which has an ligand {@link IAtom}, directly bonded to the chiral atom via
  * an {@link IBond}. The ordering of the four ligands is important, and defines together with the {@link STEREO}
@@ -43,11 +41,10 @@ import org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo;
  * @cdk.module cip
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.geometry.cip.LigancyFourChiralityTest")
 class LigancyFourChirality {
 
-    private IAtom chiralAtom;
-    private ILigand[] ligands;
+    private IAtom                        chiralAtom;
+    private ILigand[]                    ligands;
     private ITetrahedralChirality.Stereo stereo;
 
     /**
@@ -59,7 +56,6 @@ class LigancyFourChirality {
      *
      * @see ITetrahedralChirality.Stereo
      */
-    @TestMethod("testConstructor")
     public LigancyFourChirality(IAtom chiralAtom, ILigand[] ligands, ITetrahedralChirality.Stereo stereo) {
         this.chiralAtom = chiralAtom;
         this.ligands = ligands;
@@ -67,20 +63,19 @@ class LigancyFourChirality {
     }
 
     /**
-     * Creates a new data model for chirality for the CIP rules based on a chirality defination
+     * Creates a new data model for chirality for the CIP rules based on a chirality definition
      * in the CDK data model with {@link ITetrahedralChirality}.
      *
      * @param container    {@link IAtomContainer} to which the chiral atom belongs.
      * @param cdkChirality {@link ITetrahedralChirality} object specifying the chirality.
      */
-    @TestMethod("testConstructor_ILigancyFourChirality")
     public LigancyFourChirality(IAtomContainer container, ITetrahedralChirality cdkChirality) {
         this.chiralAtom = cdkChirality.getChiralAtom();
         IAtom[] ligandAtoms = cdkChirality.getLigands();
         this.ligands = new ILigand[ligandAtoms.length];
         VisitedAtoms visitedAtoms = new VisitedAtoms();
-        for (int i=0; i<ligandAtoms.length; i++) {
-            // ITetrahedralChirality stores a impl hydrogen as the central atom 
+        for (int i = 0; i < ligandAtoms.length; i++) {
+            // ITetrahedralChirality stores a impl hydrogen as the central atom
             if (ligandAtoms[i] == chiralAtom) {
                 this.ligands[i] = new ImplicitHydrogenLigand(container, visitedAtoms, chiralAtom);
             } else {
@@ -93,9 +88,8 @@ class LigancyFourChirality {
     /**
      * Returns the four ligands for this chirality.
      *
-     * @return An array of gour {@link ILigand}s.
+     * @return An array of four {@link ILigand}s.
      */
-    @TestMethod("testConstructor")
     public ILigand[] getLigands() {
         return ligands;
     }
@@ -105,7 +99,6 @@ class LigancyFourChirality {
      *
      * @return The chiral {@link IAtom}.
      */
-    @TestMethod("testConstructor")
     public IAtom getChiralAtom() {
         return chiralAtom;
     }
@@ -115,7 +108,6 @@ class LigancyFourChirality {
      *
      * @return A {@link ITetrahedralChirality.Stereo} value.
      */
-    @TestMethod("testConstructor")
     public ITetrahedralChirality.Stereo getStereo() {
         return stereo;
     }
@@ -126,7 +118,6 @@ class LigancyFourChirality {
      * @param newOrder new order of atoms
      * @return the chirality following the new atom order
      */
-    @TestMethod("testProject_TwoChanges,testProject_OneChange,testProject")
     public LigancyFourChirality project(ILigand[] newOrder) {
         ITetrahedralChirality.Stereo newStereo = this.stereo;
         // copy the current ordering, and work with that
@@ -134,11 +125,11 @@ class LigancyFourChirality {
         System.arraycopy(this.ligands, 0, newAtoms, 0, 4);
 
         // now move atoms around to match the newOrder
-        for (int i=0; i<3; i++) {
+        for (int i = 0; i < 3; i++) {
             if (newAtoms[i].getLigandAtom() != newOrder[i].getLigandAtom()) {
                 // OK, not in the right position
                 // find the incorrect, old position
-                for (int j=i; j<4; j++) {
+                for (int j = i; j < 4; j++) {
                     if (newAtoms[j].getLigandAtom() == newOrder[i].getLigandAtom()) {
                         // found the incorrect position
                         swap(newAtoms, i, j);
@@ -156,7 +147,7 @@ class LigancyFourChirality {
     }
 
     private void swap(ILigand[] ligands, int first, int second) {
-        ILigand tmpLigand= ligands[first];
+        ILigand tmpLigand = ligands[first];
         ligands[first] = ligands[second];
         ligands[second] = tmpLigand;
     }

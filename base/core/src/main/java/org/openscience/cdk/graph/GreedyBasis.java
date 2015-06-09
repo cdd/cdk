@@ -23,9 +23,6 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -35,24 +32,23 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
 
 /**
  * Greedily compute a cycle basis from a provided set of initial cycles using
- * gaussian elimination.
+ * Gaussian elimination.
  *
  * @author John May
  * @cdk.module core
  * @cdk.githash
  * @see RelevantCycles
  */
-@TestClass("org.openscience.cdk.graph.GreedyBasisTest")
 final class GreedyBasis {
 
     /** Cycles which are members of the basis */
     private final List<Cycle> basis;
 
     /** Edges of the current basis. */
-    private final BitSet edgesOfBasis;
+    private final BitSet      edgesOfBasis;
 
     /** Number of edges */
-    private final int m;
+    private final int         m;
 
     /**
      * Create a new basis for the <i>potential</i> number of cycles and the
@@ -75,7 +71,6 @@ final class GreedyBasis {
      *
      * @return cycles ordered by length
      */
-    @TestMethod("unmodifiableMembers")
     final List<Cycle> members() {
         return Collections.unmodifiableList(basis);
     }
@@ -85,7 +80,6 @@ final class GreedyBasis {
      *
      * @return number of cycles in the basis
      */
-    @TestMethod("size")
     final int size() {
         return members().size();
     }
@@ -95,7 +89,6 @@ final class GreedyBasis {
      *
      * @param cycle new basis member
      */
-    @TestMethod("add")
     final void add(final Cycle cycle) {
         basis.add(cycle);
         edgesOfBasis.or(cycle.edgeVector());
@@ -106,7 +99,6 @@ final class GreedyBasis {
      *
      * @param cycles new members of the basis
      */
-    @TestMethod("addAll")
     final void addAll(final Iterable<Cycle> cycles) {
         for (final Cycle cycle : cycles)
             add(cycle);
@@ -119,7 +111,6 @@ final class GreedyBasis {
      * @param cycle an initial cycle
      * @return any edges of the basis are present
      */
-    @TestMethod("subsetOfBasis")
     final boolean isSubsetOfBasis(final Cycle cycle) {
         final BitSet edgeVector = cycle.edgeVector();
         final int intersect = and(edgesOfBasis, edgeVector).cardinality();
@@ -133,12 +124,10 @@ final class GreedyBasis {
      * @param candidate a cycle not in currently in the basis
      * @return the candidate is independent
      */
-    @TestMethod("independence")
     final boolean isIndependent(final Cycle candidate) {
 
         // simple checks for independence
-        if (basis.isEmpty() || !isSubsetOfBasis(candidate))
-            return true;
+        if (basis.isEmpty() || !isSubsetOfBasis(candidate)) return true;
 
         final BitMatrix matrix = BitMatrix.from(basis, candidate);
 

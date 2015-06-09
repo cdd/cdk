@@ -1,9 +1,4 @@
-/* $RCSfile$    
- * $Author$    
- * $Date$    
- * $Revision$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -40,7 +35,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 public interface IAtomTypeConfigurator {
 
     /**
-     * Sets the file containing the config data.
+     * Sets the file containing the configuration data.
      *
      * @param ins InputStream from which the atom type definitions are to be read
      */

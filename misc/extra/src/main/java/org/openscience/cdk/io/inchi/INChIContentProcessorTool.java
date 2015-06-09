@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sf.net
  *
@@ -40,11 +35,9 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  */
 public class INChIContentProcessorTool {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(INChIContentProcessorTool.class);;
-    
-    public INChIContentProcessorTool() {
-    }
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(INChIContentProcessorTool.class); ;
+
+    public INChIContentProcessorTool() {}
 
     /**
      * Processes the content from the formula field of the INChI.
@@ -70,8 +63,8 @@ public class INChIContentProcessorTool {
                         occurence = Integer.parseInt(occurenceStr);
                     }
                     logger.debug("  occurence: ", occurence);
-                    for (int i=1; i<=occurence; i++) {
-                        parsedContent.addAtom(parsedContent.getBuilder().newInstance(IAtom.class,symbol));
+                    for (int i = 1; i <= occurence; i++) {
+                        parsedContent.addAtom(parsedContent.getBuilder().newInstance(IAtom.class, symbol));
                     }
                 }
                 remainder = matcher.group(3);
@@ -96,8 +89,7 @@ public class INChIContentProcessorTool {
      *
      * @see   #processFormula
      */
-    public void processConnections(String bondsEncoding, 
-                     IAtomContainer container, int source){
+    public void processConnections(String bondsEncoding, IAtomContainer container, int source) {
         logger.debug("Parsing bond data: ", bondsEncoding);
 
         IBond bondToAdd = null;
@@ -108,8 +100,8 @@ public class INChIContentProcessorTool {
             if (remainder.charAt(0) == '(') {
                 String branch = chopBranch(remainder);
                 processConnections(branch, container, source);
-                if (branch.length()+2 <= remainder.length()) {
-                    remainder = remainder.substring(branch.length()+2);
+                if (branch.length() + 2 <= remainder.length()) {
+                    remainder = remainder.substring(branch.length() + 2);
                 } else {
                     remainder = "";
                 }
@@ -121,10 +113,11 @@ public class INChIContentProcessorTool {
                     int target = Integer.parseInt(targetStr);
                     logger.debug("Source atom: ", source);
                     logger.debug("Target atom: ", targetStr);
-                    IAtom targetAtom = container.getAtom(target-1);
+                    IAtom targetAtom = container.getAtom(target - 1);
                     if (source != -1) {
-                    	IAtom sourceAtom = container.getAtom(source-1);
-                        bondToAdd = container.getBuilder().newInstance(IBond.class,sourceAtom, targetAtom, IBond.Order.SINGLE);
+                        IAtom sourceAtom = container.getAtom(source - 1);
+                        bondToAdd = container.getBuilder().newInstance(IBond.class, sourceAtom, targetAtom,
+                                IBond.Order.SINGLE);
                         container.addBond(bondToAdd);
                     }
                     remainder = matcher.group(2);
@@ -146,7 +139,7 @@ public class INChIContentProcessorTool {
         boolean doChop = false;
         int branchLevel = 0;
         StringBuffer choppedString = new StringBuffer();
-        for (int i=0; i<remainder.length(); i++) {
+        for (int i = 0; i < remainder.length(); i++) {
             char currentChar = remainder.charAt(i);
             if (currentChar == '(') {
                 if (doChop) choppedString.append(currentChar);

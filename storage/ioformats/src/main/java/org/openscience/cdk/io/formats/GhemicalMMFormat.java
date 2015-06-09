@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,66 +18,64 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * See <a href="http://www.uku.fi/~thassine/ghemical/">here</a>.
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.GhemicalMMFormatTest")
 public class GhemicalMMFormat extends SimpleChemFormatMatcher implements IChemFormatMatcher {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public GhemicalMMFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new GhemicalMMFormat();
-    	return myself;
+        if (myself == null) myself = new GhemicalMMFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "Ghemical Quantum/Molecular Mechanics Model";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"gpr"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { 
-        return "org.openscience.cdk.io.GhemicalMMReader"; 
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return "org.openscience.cdk.io.GhemicalMMReader";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
         if (line.startsWith("!Header gpr")) {
             return true;
@@ -90,21 +83,21 @@ public class GhemicalMMFormat extends SimpleChemFormatMatcher implements IChemFo
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

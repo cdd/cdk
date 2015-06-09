@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -30,29 +28,29 @@ import org.openscience.cdk.tools.LoggingToolFactory;
 
 /**
  * Debugging data class.
- * 
+ *
  * @author     Miguel Rojas
  * @cdk.module datadebug
  * @cdk.githash
  */
-public class DebugPDBPolymer extends PDBPolymer  implements IBioPolymer {
+public class DebugPDBPolymer extends PDBPolymer implements IBioPolymer {
 
-	private static final long serialVersionUID = -8485559594520919850L;
-	
-	ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(DebugAtomContainer.class);
-	
-    /** {@inheritDoc} */ @Override
+    private static final long serialVersionUID = -8485559594520919850L;
+
+    ILoggingTool              logger           = LoggingToolFactory.createLoggingTool(DebugAtomContainer.class);
+
+    /** {@inheritDoc} */
+    @Override
     public Collection<IPDBStructure> getStructures() {
-    	logger.debug("Getting Structure: ", super.getStructures());
-		return super.getStructures();
+        logger.debug("Getting Structure: ", super.getStructures());
+        return super.getStructures();
     }
 
-    /** {@inheritDoc} */ @Override
+    /** {@inheritDoc} */
+    @Override
     public void addStructure(IPDBStructure structure) {
-    	logger.debug("Adding Structure: ", structure);
-		super.addStructure(structure);
+        logger.debug("Adding Structure: ", structure);
+        super.addStructure(structure);
     }
-	
-	
+
 }

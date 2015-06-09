@@ -1,22 +1,20 @@
-/* $Revision: 11023 $ $Author: miguelrojasch $ $Date: 2008-05-19 13:56:27 +0200 (Mon, 19 May 2008) $
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  *
- * Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.charges;
 
@@ -36,38 +34,43 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 *
 * @cdk.module test-charges
 */
-public class StabilizationChargesTest  extends CDKTestCase{
+public class StabilizationChargesTest extends CDKTestCase {
 
-	private IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
+    private IChemObjectBuilder      builder = SilentChemObjectBuilder.getInstance();
     private LonePairElectronChecker lpcheck = new LonePairElectronChecker();
-	/**
-	 * Constructor of the StabilizationChargesTest.
-	 */
-	public StabilizationChargesTest() {
+
+    /**
+     * Constructor of the StabilizationChargesTest.
+     */
+    public StabilizationChargesTest() {
         super();
     }
-	/**
-	 * A unit test suite for JUnit.
-	 *
-	 * @return    The test suite
-	 */
-    @Test public void testStabilizationCharges()	{
-    	
-		Assert.assertNotNull(new StabilizationCharges());
-	}
+
     /**
-	 * A unit test suite for JUnit.
-	 *
-	 *  @cdk.inchi InChI=1/C4H8/c1-3-4-2/h3H,1,4H2,2H3
-	 *  
-	 * @return    The test suite
-     * @throws Exception 
-	 */
-    @Test public void testCalculatePositive_IAtomContainer_IAtom() throws Exception	{
-    	
-		StabilizationCharges sc = new StabilizationCharges();
-		
-		IAtomContainer molecule = builder.newInstance(IAtomContainer.class);
+     * A unit test suite for JUnit.
+     *
+     * @return    The test suite
+     */
+    @Test
+    public void testStabilizationCharges() {
+
+        Assert.assertNotNull(new StabilizationCharges());
+    }
+
+    /**
+     * A unit test suite for JUnit.
+     *
+     *  @cdk.inchi InChI=1/C4H8/c1-3-4-2/h3H,1,4H2,2H3
+     *
+     * @return    The test suite
+     * @throws Exception
+     */
+    @Test
+    public void testCalculatePositive_IAtomContainer_IAtom() throws Exception {
+
+        StabilizationCharges sc = new StabilizationCharges();
+
+        IAtomContainer molecule = builder.newInstance(IAtomContainer.class);
         molecule.addAtom(new Atom("C"));
         molecule.addAtom(new Atom("C"));
         molecule.addBond(0, 1, IBond.Order.SINGLE);
@@ -76,17 +79,17 @@ public class StabilizationChargesTest  extends CDKTestCase{
         molecule.addBond(1, 2, IBond.Order.SINGLE);
         molecule.addAtom(new Atom("C"));
         molecule.addBond(2, 3, IBond.Order.DOUBLE);
-        
-		addExplicitHydrogens(molecule);
-		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
-		lpcheck.saturate(molecule);
-        
-        for(int i = 0 ; i < molecule.getAtomCount(); i++){
-        	if(i==1)
-        		Assert.assertNotSame(0.0, sc.calculatePositive(molecule, molecule.getAtom(i)));
-        	else
-        		Assert.assertEquals(0.0, sc.calculatePositive(molecule, molecule.getAtom(i)),0.001);
-        		
+
+        addExplicitHydrogens(molecule);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(molecule);
+        lpcheck.saturate(molecule);
+
+        for (int i = 0; i < molecule.getAtomCount(); i++) {
+            if (i == 1)
+                Assert.assertNotSame(0.0, sc.calculatePositive(molecule, molecule.getAtom(i)));
+            else
+                Assert.assertEquals(0.0, sc.calculatePositive(molecule, molecule.getAtom(i)), 0.001);
+
         }
-	}
+    }
 }

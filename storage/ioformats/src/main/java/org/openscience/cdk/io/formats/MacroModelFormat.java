@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,78 +18,78 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
- *  
+ *
  * @author Miguel Rojas
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.MacroModelFormatTest")
 public class MacroModelFormat extends AbstractResourceFormat implements IChemFormat {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public MacroModelFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new MacroModelFormat();
-    	return myself;
+        if (myself == null) myself = new MacroModelFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "MacroModel";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return "chemical/x-macromodel-input";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
-        return new String[]{"mmd","mmod"};
+        return new String[]{"mmd", "mmod"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { return null; }
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return null;
+    }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

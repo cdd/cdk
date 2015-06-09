@@ -1,22 +1,20 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
- * 
+/* Copyright (C) 2007  Egon Willighagen <egonw@users.sf.net>
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.tools.manipulator;
 
@@ -29,28 +27,28 @@ import org.openscience.cdk.interfaces.IAtomType;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.silent.Atom;
 import org.openscience.cdk.silent.AtomType;
-import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * @cdk.module test-standard
  */
 public class AtomTypeManipulatorTest extends CDKTestCase {
-    
+
     public AtomTypeManipulatorTest() {
         super();
     }
 
     @Test
     public void testConfigure_IAtom_IAtomType() {
-		IAtom atom = new Atom(Elements.CARBON);
-		IAtomType atomType = new AtomType(Elements.CARBON);
-		atomType.setFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR, true);
-		AtomTypeManipulator.configure(atom, atomType);
-		Assert.assertEquals(
-			atomType.getFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR),
-			atom.getFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR)
-		);
-	}
+        IAtom atom = new Atom(Elements.CARBON);
+        IAtomType atomType = new AtomType(Elements.CARBON);
+        atomType.setFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR, true);
+        AtomTypeManipulator.configure(atom, atomType);
+        Assert.assertEquals(atomType.getFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR),
+                atom.getFlag(CDKConstants.IS_HYDROGENBOND_ACCEPTOR));
+    }
 
     @Test
     public void testConfigureUnsetProperties_DontOverwriterSetProperties() {
@@ -77,7 +75,14 @@ public class AtomTypeManipulatorTest extends CDKTestCase {
         IAtomType atomType = null;
         AtomTypeManipulator.configure(atom, atomType);
     }
-	
+
+    @Test
+    public void unknownAtomTypeDoesNotModifyProperties() {
+        IAtom atom = new Atom(Elements.CARBON);
+        IAtomType atomType = new AtomType(Elements.Unknown.toIElement());
+        atomType.setAtomTypeName("X");
+        AtomTypeManipulator.configure(atom, atomType);
+        assertThat(atom.getSymbol(), is("C"));
+        assertThat(atom.getAtomicNumber(), is(6));
+    }
 }
-
-

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2009  Gilleain Torrance <gilleain.torrance@gmail.com>
+/* Copyright (C) 2009  Gilleain Torrance <gilleain.torrance@gmail.com>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -28,9 +26,7 @@ import java.util.Map;
 
 import javax.vecmath.Point2d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.ISingleElectron;
@@ -43,62 +39,55 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator.Scale;
 
 /**
  * Generate the symbols for radicals.
- * 
+ *
  * @author maclean
  * @cdk.module renderextra
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.generators.RadicalGeneratorTest")
 public class RadicalGenerator implements IGenerator<IAtomContainer> {
-    
+
     public RadicalGenerator() {}
 
-	/** {@inheritDoc} */
-	@Override
-    @TestMethod("testEmptyContainer")
+    /** {@inheritDoc} */
+    @Override
     public IRenderingElement generate(IAtomContainer container, RendererModel model) {
         ElementGroup group = new ElementGroup();
-        
+
         // TODO : put into RendererModel
         final double SCREEN_RADIUS = 2.0;
         final Color RADICAL_COLOR = Color.BLACK;
-        
+
         // XXX : is this the best option?
-        final double ATOM_RADIUS =
-            ((AtomRadius)model.getParameter(AtomRadius.class)).
-            getValue()/ model.getParameter(Scale.class).getValue();
-        
-        double modelRadius = SCREEN_RADIUS /
-            model.getParameter(Scale.class).getValue();
+        final double ATOM_RADIUS = ((AtomRadius) model.getParameter(AtomRadius.class)).getValue()
+                / model.getParameter(Scale.class).getValue();
+
+        double modelRadius = SCREEN_RADIUS / model.getParameter(Scale.class).getValue();
         double modelSpacing = modelRadius * 2.5;
-        Map<IAtom,Integer> singleElectronsPerAtom = new HashMap<IAtom, Integer>();
+        Map<IAtom, Integer> singleElectronsPerAtom = new HashMap<IAtom, Integer>();
         for (ISingleElectron electron : container.singleElectrons()) {
             IAtom atom = electron.getAtom();
-            if(singleElectronsPerAtom.get(atom)==null)
-                singleElectronsPerAtom.put(atom,0);
+            if (singleElectronsPerAtom.get(atom) == null) singleElectronsPerAtom.put(atom, 0);
             Point2d point = atom.getPoint2d();
-            int align = GeometryTools.getBestAlignmentForLabelXY(container, atom);
+            int align = GeometryUtil.getBestAlignmentForLabelXY(container, atom);
             double xRadius = point.x;
             double yRadius = point.y;
             if (align == 1) {
-                xRadius += ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
+                xRadius += ATOM_RADIUS * 4 + singleElectronsPerAtom.get(atom) * modelSpacing;
             } else if (align == -1) {
-                xRadius -= ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
+                xRadius -= ATOM_RADIUS * 4 + singleElectronsPerAtom.get(atom) * modelSpacing;
             } else if (align == 2) {
-                yRadius += ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
+                yRadius += ATOM_RADIUS * 4 + singleElectronsPerAtom.get(atom) * modelSpacing;
             } else if (align == -2) {
-                yRadius -= ATOM_RADIUS*4+singleElectronsPerAtom.get(atom)*modelSpacing;
+                yRadius -= ATOM_RADIUS * 4 + singleElectronsPerAtom.get(atom) * modelSpacing;
             }
-            singleElectronsPerAtom.put(atom, singleElectronsPerAtom.get(atom)+1);
-            group.add(
-                    new OvalElement(xRadius, yRadius, modelRadius, true, RADICAL_COLOR));
+            singleElectronsPerAtom.put(atom, singleElectronsPerAtom.get(atom) + 1);
+            group.add(new OvalElement(xRadius, yRadius, modelRadius, true, RADICAL_COLOR));
         }
         return group;
     }
 
-	/** {@inheritDoc} */
-	@Override
-	@TestMethod("testGetParameters")
+    /** {@inheritDoc} */
+    @Override
     public List<IGeneratorParameter<?>> getParameters() {
         return Collections.emptyList();
     }

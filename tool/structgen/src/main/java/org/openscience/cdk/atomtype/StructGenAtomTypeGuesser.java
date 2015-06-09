@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -37,8 +35,8 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
  * This atom type matcher takes into account formal charge and number of
  * implicit hydrogens, and requires bond orders to be given.
  *
- * <p>This class uses the <b>cdk/config/data/structgen_atomtypes.xml</b> 
- * list. If there is not an atom type defined for the tested atom, then null 
+ * <p>This class uses the <b>cdk/config/data/structgen_atomtypes.xml</b>
+ * list. If there is not an atom type defined for the tested atom, then null
  * is returned.
  *
  * @author         egonw
@@ -48,31 +46,29 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
  */
 public class StructGenAtomTypeGuesser implements IAtomTypeGuesser {
 
-	private static AtomTypeFactory factory = null;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(StructGenAtomTypeGuesser.class);
-    
-	/**
-	 * Constructor for the StructGenMatcher object.
-	 */
-	public StructGenAtomTypeGuesser() {
-	}
+    private static AtomTypeFactory factory = null;
+    private static ILoggingTool    logger  = LoggingToolFactory.createLoggingTool(StructGenAtomTypeGuesser.class);
 
+    /**
+     * Constructor for the StructGenMatcher object.
+     */
+    public StructGenAtomTypeGuesser() {}
 
-	/**
-	 * Finds the AtomType matching the Atom's element symbol, formal charge and 
+    /**
+     * Finds the AtomType matching the Atom's element symbol, formal charge and
      * hybridization state.
-	 *
-	 * @param  atomContainer  AtomContainer
-	 * @param  atom            the target atom
-	 * @exception CDKException Exception thrown if something goed wrong
-	 * @return                 the matching AtomType
-	 */
-	public List<IAtomType> possibleAtomTypes(IAtomContainer atomContainer, IAtom atom) throws CDKException {
+     *
+     * @param  atomContainer  AtomContainer
+     * @param  atom            the target atom
+     * @exception CDKException Exception thrown if something goes wrong
+     * @return                 the matching AtomType
+     */
+    @Override
+    public List<IAtomType> possibleAtomTypes(IAtomContainer atomContainer, IAtom atom) throws CDKException {
         if (factory == null) {
             try {
                 factory = AtomTypeFactory.getInstance("org/openscience/cdk/config/data/structgen_atomtypes.xml",
-                          atom.getBuilder());
+                        atom.getBuilder());
             } catch (Exception ex1) {
                 logger.error(ex1.getMessage());
                 logger.debug(ex1);
@@ -80,23 +76,22 @@ public class StructGenAtomTypeGuesser implements IAtomTypeGuesser {
             }
         }
 
-		double bondOrderSum = atomContainer.getBondOrderSum(atom);
-		IBond.Order maxBondOrder = atomContainer.getMaximumBondOrder(atom);
-		int charge = atom.getFormalCharge();
-		int hcount = atom.getImplicitHydrogenCount();
+        double bondOrderSum = atomContainer.getBondOrderSum(atom);
+        IBond.Order maxBondOrder = atomContainer.getMaximumBondOrder(atom);
+        int charge = atom.getFormalCharge();
+        int hcount = atom.getImplicitHydrogenCount();
 
-		List<IAtomType> matchingTypes = new ArrayList<IAtomType>();
+        List<IAtomType> matchingTypes = new ArrayList<IAtomType>();
         IAtomType[] types = factory.getAtomTypes(atom.getSymbol());
         for (IAtomType type : types) {
             logger.debug("   ... matching atom ", atom, " vs ", type);
-            if (bondOrderSum - charge + hcount <= type.getBondOrderSum() &&
-                !BondManipulator.isHigherOrder(maxBondOrder, type.getMaxBondOrder())) {
+            if (bondOrderSum - charge + hcount <= type.getBondOrderSum()
+                    && !BondManipulator.isHigherOrder(maxBondOrder, type.getMaxBondOrder())) {
                 matchingTypes.add(type);
             }
         }
         logger.debug("    No Match");
-        
-        return matchingTypes;
-	}
-}
 
+        return matchingTypes;
+    }
+}

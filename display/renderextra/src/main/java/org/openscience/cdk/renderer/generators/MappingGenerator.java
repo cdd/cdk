@@ -25,8 +25,6 @@ import java.util.List;
 
 import javax.vecmath.Point2d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IMapping;
 import org.openscience.cdk.interfaces.IReaction;
@@ -44,53 +42,54 @@ import org.openscience.cdk.renderer.generators.parameter.AbstractGeneratorParame
  * @cdk.module renderextra
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.generators.MappingGeneratorTest")
 public class MappingGenerator implements IGenerator<IReaction> {
 
-	/**
-	 * The width on screen of an atom-atom mapping line.
-	 */
-    public static class AtomAtomMappingLineColor extends
-    AbstractGeneratorParameter<Color> {
-    	/** {@inheritDoc} */
-    	public Color getDefault() {
-    		return Color.gray;
-    	}
+    /**
+     * The width on screen of an atom-atom mapping line.
+     */
+    public static class AtomAtomMappingLineColor extends AbstractGeneratorParameter<Color> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Color getDefault() {
+            return Color.gray;
+        }
     }
-    private IGeneratorParameter<Color> atomAtomMappingLineColor =
-    	new AtomAtomMappingLineColor();
+
+    private IGeneratorParameter<Color> atomAtomMappingLineColor = new AtomAtomMappingLineColor();
 
     /**
-	 * The width on screen of an atom-atom mapping line.
-	 */
-    public static class MappingLineWidth extends
-    AbstractGeneratorParameter<Double> {
-    	/** {@inheritDoc} */
-    	public Double getDefault() {
-    		return 1.0;
-    	}
+     * The width on screen of an atom-atom mapping line.
+     */
+    public static class MappingLineWidth extends AbstractGeneratorParameter<Double> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Double getDefault() {
+            return 1.0;
+        }
     }
-    private IGeneratorParameter<Double> mappingLineWidth =
-    	new MappingLineWidth();
+
+    private IGeneratorParameter<Double> mappingLineWidth = new MappingLineWidth();
 
     /** Boolean by which atom-atom mapping depiction can be temporarily disabled. */
-    public static class ShowAtomAtomMapping extends
-    AbstractGeneratorParameter<Boolean> {
-    	/** {@inheritDoc} */
-    	public Boolean getDefault() {
-    		return Boolean.TRUE;
-    	}
+    public static class ShowAtomAtomMapping extends AbstractGeneratorParameter<Boolean> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Boolean getDefault() {
+            return Boolean.TRUE;
+        }
     }
-    private IGeneratorParameter<Boolean> showAtomAtomMapping =
-    	new ShowAtomAtomMapping();
-	
+
+    private IGeneratorParameter<Boolean> showAtomAtomMapping = new ShowAtomAtomMapping();
+
     public MappingGenerator() {}
 
-	/** {@inheritDoc} */
-	@Override
-    @TestMethod("testEmptyReaction")
+    /** {@inheritDoc} */
+    @Override
     public IRenderingElement generate(IReaction reaction, RendererModel model) {
-		if(!showAtomAtomMapping.getValue()) return null;
+        if (!showAtomAtomMapping.getValue()) return null;
         ElementGroup elementGroup = new ElementGroup();
         Color mappingColor = atomAtomMappingLineColor.getValue();
         for (IMapping mapping : reaction.mappings()) {
@@ -100,35 +99,29 @@ public class MappingGenerator implements IGenerator<IReaction> {
             IAtom endPointB = (IAtom) mapping.getChemObject(1);
             Point2d pointA = endPointA.getPoint2d();
             Point2d pointB = endPointB.getPoint2d();
-            elementGroup.add(
-                    new LineElement(pointA.x, pointA.y, pointB.x, pointB.y, getWidthForMappingLine(model), mappingColor));
+            elementGroup.add(new LineElement(pointA.x, pointA.y, pointB.x, pointB.y, getWidthForMappingLine(model),
+                    mappingColor));
         }
         return elementGroup;
     }
-    
-	/**
-	 * Determine the width of an atom atom mapping, returning the width defined
-	 * in the model. Note that this will be scaled
-	 * to the space of the model.
-	 *
-	 * @param model the renderer model
-	 * @return a double in chem-model space
-	 */
-	private double getWidthForMappingLine(RendererModel model) {
-		double scale = model.getParameter(Scale.class).getValue();
-		return mappingLineWidth.getValue() / scale;
-	}
 
-	/** {@inheritDoc} */
-	@Override
-	@TestMethod("testGetParameters")
-	public List<IGeneratorParameter<?>> getParameters() {
-        return Arrays.asList(
-            new IGeneratorParameter<?>[] {
-            	showAtomAtomMapping,
-            	mappingLineWidth,
-            	atomAtomMappingLineColor
-            }
-        );
+    /**
+     * Determine the width of an atom atom mapping, returning the width defined
+     * in the model. Note that this will be scaled
+     * to the space of the model.
+     *
+     * @param model the renderer model
+     * @return a double in chem-model space
+     */
+    private double getWidthForMappingLine(RendererModel model) {
+        double scale = model.getParameter(Scale.class).getValue();
+        return mappingLineWidth.getValue() / scale;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<IGeneratorParameter<?>> getParameters() {
+        return Arrays.asList(new IGeneratorParameter<?>[]{showAtomAtomMapping, mappingLineWidth,
+                atomAtomMappingLineColor});
     }
 }

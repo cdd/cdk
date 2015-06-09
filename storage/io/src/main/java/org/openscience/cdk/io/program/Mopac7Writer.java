@@ -1,8 +1,8 @@
 /* Copyright (C) 2005-2006  Ideaconsult Ltd.
  *               2012       Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -11,12 +11,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -36,8 +36,6 @@ import java.util.Locale;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -54,20 +52,19 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 /**
  * Prepares input file for running MOPAC.
- * Optimization is switched on if there are no coordinates. 
- * 
+ * Optimization is switched on if there are no coordinates.
+ *
  * @author      Nina Jeliazkova <nina@acad.bg>
  * @cdk.githash
  * @cdk.module  io
  */
-@TestClass("org.openscience.cdk.io.program.Mopac7WriterTest")
 public class Mopac7Writer extends DefaultChemObjectWriter {
-    private BufferedWriter writer;
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(Mopac7Writer.class);
 
-    private final static char BLANK = ' ';
-    private NumberFormat numberFormat;
+    private BufferedWriter      writer;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(Mopac7Writer.class);
+
+    private final static char   BLANK  = ' ';
+    private NumberFormat        numberFormat;
 
     /**
      * Creates a writer to serialize a molecule as Mopac7 input.
@@ -102,48 +99,47 @@ public class Mopac7Writer extends DefaultChemObjectWriter {
         writer = new BufferedWriter(out);
         initIOSettings();
     }
-    
-    @Override /** {@inheritDoc} */
-    @TestMethod("testWrite")
-    public synchronized void  write(IChemObject arg0) throws CDKException {
-    	customizeJob();
+
+    @Override
+    /** {@inheritDoc} */
+    public synchronized void write(IChemObject arg0) throws CDKException {
+        customizeJob();
         if (arg0 instanceof IAtomContainer)
-	        try {
-	            IAtomContainer container = (IAtomContainer) arg0;
-	            writer.write(mopacCommands.getSetting());
-	            int formalCharge = AtomContainerManipulator.getTotalFormalCharge(container);
-	            if (formalCharge != 0)
-	            	writer.write(" CHARGE=" + formalCharge);
-	            writer.newLine();
-	            if (container.getProperty("Names") != null)
-	                writer.write(container.getProperty("Names").toString());
-	            writer.newLine();
-	            writer.write(getTitle());
-	            writer.newLine();
-	            
-	            
-	            for (int i=0; i < container.getAtomCount();i++) {
-	                IAtom atom = container.getAtom(i);
-	    			if (atom.getPoint3d() != null) {
-	    				Point3d point = atom.getPoint3d();
-	    			    writeAtom(atom,point.x,point.y,point.z,optimize.isSet() ? 1 : 0);
-	    			} else if (atom.getPoint2d() != null) {
-	    				Point2d point = atom.getPoint2d();
-	    			    writeAtom(atom,point.x,point.y,0,optimize.isSet() ? 1 : 0);
-	    			} else
-	    			    writeAtom(atom,0,0,0,1);
-	            }
-	            writer.write("0");
-	            writer.newLine();
-	                
-	        } catch (IOException ioException) {
-	            logger.error(ioException);
-	            throw new CDKException(ioException.getMessage(), ioException);
-	        }
-	    else throw new CDKException("Unsupported object!\t"+arg0.getClass().getName());    
+            try {
+                IAtomContainer container = (IAtomContainer) arg0;
+                writer.write(mopacCommands.getSetting());
+                int formalCharge = AtomContainerManipulator.getTotalFormalCharge(container);
+                if (formalCharge != 0) writer.write(" CHARGE=" + formalCharge);
+                writer.newLine();
+                if (container.getProperty("Names") != null) writer.write(container.getProperty("Names").toString());
+                writer.newLine();
+                writer.write(getTitle());
+                writer.newLine();
+
+                for (int i = 0; i < container.getAtomCount(); i++) {
+                    IAtom atom = container.getAtom(i);
+                    if (atom.getPoint3d() != null) {
+                        Point3d point = atom.getPoint3d();
+                        writeAtom(atom, point.x, point.y, point.z, optimize.isSet() ? 1 : 0);
+                    } else if (atom.getPoint2d() != null) {
+                        Point2d point = atom.getPoint2d();
+                        writeAtom(atom, point.x, point.y, 0, optimize.isSet() ? 1 : 0);
+                    } else
+                        writeAtom(atom, 0, 0, 0, 1);
+                }
+                writer.write("0");
+                writer.newLine();
+
+            } catch (IOException ioException) {
+                logger.error(ioException);
+                throw new CDKException(ioException.getMessage(), ioException);
+            }
+        else
+            throw new CDKException("Unsupported object!\t" + arg0.getClass().getName());
     }
-    private void writeAtom(IAtom atom, double xCoord, double yCoord, double zCoord, int optimize) throws  IOException {
- 
+
+    private void writeAtom(IAtom atom, double xCoord, double yCoord, double zCoord, int optimize) throws IOException {
+
         writer.write(atom.getSymbol());
         writer.write(BLANK);
         writer.write(numberFormat.format(xCoord));
@@ -160,44 +156,44 @@ public class Mopac7Writer extends DefaultChemObjectWriter {
         writer.write(BLANK);
         writer.newLine();
     }
- 
-    @Override /** {@inheritDoc} */
-    @TestMethod("testClose")
+
+    @Override
+    /** {@inheritDoc} */
     public void close() throws IOException {
         writer.close();
     }
-    
-    @Override /** {@inheritDoc} */
-    @TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IAtomContainer.class.equals(interfaces[i])) return true;
-		}
-		if (IAtomContainer.class.equals(classObject)) return true;
-	    Class superClass = classObject.getSuperclass();
-	    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
 
-    @Override /** {@inheritDoc} */
-    @TestMethod("testGetFormat")
+    @Override
+    /** {@inheritDoc} */
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IAtomContainer.class.equals(interfaces[i])) return true;
+        }
+        if (IAtomContainer.class.equals(classObject)) return true;
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
+
+    @Override
+    /** {@inheritDoc} */
     public IResourceFormat getFormat() {
         return MOPAC7InputFormat.getInstance();
     }
 
-    @Override /** {@inheritDoc} */
-    @TestMethod("testSetWriter_Writer")
+    @Override
+    /** {@inheritDoc} */
     public void setWriter(OutputStream writer) throws CDKException {
         setWriter(new OutputStreamWriter(writer));
     }
 
-    @Override /** {@inheritDoc} */
-    @TestMethod("testSetWriter_OutputStream")
+    @Override
+    /** {@inheritDoc} */
     public void setWriter(Writer writer) throws CDKException {
         if (this.writer != null) {
             try {
-            this.writer.close();
+                this.writer.close();
             } catch (IOException exception) {
                 logger.error(exception);
             }
@@ -205,36 +201,34 @@ public class Mopac7Writer extends DefaultChemObjectWriter {
         }
         this.writer = new BufferedWriter(writer);
     }
+
     private String getTitle() {
-    	return "Generated by "+getClass().getName() + " at " + new Date(System.currentTimeMillis());
+        return "Generated by " + getClass().getName() + " at " + new Date(System.currentTimeMillis());
     }
-    
-    private StringIOSetting mopacCommands;
+
+    private StringIOSetting  mopacCommands;
     private BooleanIOSetting optimize;
-    
+
     private void initIOSettings() {
-    	optimize = addSetting(new BooleanIOSetting("Optimize", IOSetting.Importance.MEDIUM,
-    		"Should the structure be optimized?", 
-    		"true"
-    	));
-    	mopacCommands = addSetting(new StringIOSetting("Commands", IOSetting.Importance.LOW,
-    		"What Mopac commands should be used (overwrites other choices)?", 
-    		"PM3 NOINTER NOMM BONDS MULLIK PRECISE"
-    	));
+        optimize = addSetting(new BooleanIOSetting("Optimize", IOSetting.Importance.MEDIUM,
+                "Should the structure be optimized?", "true"));
+        mopacCommands = addSetting(new StringIOSetting("Commands", IOSetting.Importance.LOW,
+                "What Mopac commands should be used (overwrites other choices)?",
+                "PM3 NOINTER NOMM BONDS MULLIK PRECISE"));
     }
-    
+
     private void customizeJob() {
         fireIOSettingQuestion(optimize);
-    	try {
-    		if (optimize.isSet()) {
-				mopacCommands.setSetting("PM3 NOINTER NOMM BONDS MULLIK PRECISE");
-    		} else {
-    			mopacCommands.setSetting("PM3 NOINTER NOMM BONDS MULLIK XYZ 1SCF");
-    		}
-		} catch (CDKException exception) {
-			throw new IllegalArgumentException(exception);
-		}
+        try {
+            if (optimize.isSet()) {
+                mopacCommands.setSetting("PM3 NOINTER NOMM BONDS MULLIK PRECISE");
+            } else {
+                mopacCommands.setSetting("PM3 NOINTER NOMM BONDS MULLIK XYZ 1SCF");
+            }
+        } catch (CDKException exception) {
+            throw new IllegalArgumentException(exception);
+        }
         fireIOSettingQuestion(mopacCommands);
     }
-    
+
 }

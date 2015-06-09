@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -25,7 +25,6 @@
 package org.openscience.cdk.isomorphism;
 
 import org.junit.Test;
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IPseudoAtom;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
@@ -41,7 +40,8 @@ import static org.mockito.Mockito.when;
  */
 public class AtomMatcherTest {
 
-    @Test public void anyMatch() throws Exception {
+    @Test
+    public void anyMatch() throws Exception {
         AtomMatcher matcher = AtomMatcher.forAny();
         IAtom atom1 = mock(IAtom.class);
         IAtom atom2 = mock(IAtom.class);
@@ -57,8 +57,9 @@ public class AtomMatcherTest {
         assertTrue(matcher.matches(atom1, null));
         assertTrue(matcher.matches(null, null));
     }
-    
-    @Test public void elementMatch() throws Exception {
+
+    @Test
+    public void elementMatch() throws Exception {
         AtomMatcher matcher = AtomMatcher.forElement();
         IAtom atom1 = mock(IAtom.class);
         IAtom atom2 = mock(IAtom.class);
@@ -68,7 +69,8 @@ public class AtomMatcherTest {
         assertTrue(matcher.matches(atom2, atom1));
     }
 
-    @Test public void elementMismatch() throws Exception {
+    @Test
+    public void elementMismatch() throws Exception {
         AtomMatcher matcher = AtomMatcher.forElement();
         IAtom atom1 = mock(IAtom.class);
         IAtom atom2 = mock(IAtom.class);
@@ -78,7 +80,8 @@ public class AtomMatcherTest {
         assertFalse(matcher.matches(atom2, atom1));
     }
 
-    @Test public void elementPsuedo() throws Exception {
+    @Test
+    public void elementPseudo() throws Exception {
         AtomMatcher matcher = AtomMatcher.forElement();
         IAtom atom1 = mock(IPseudoAtom.class);
         IAtom atom2 = mock(IPseudoAtom.class);
@@ -96,7 +99,8 @@ public class AtomMatcherTest {
         matcher.matches(atom1, atom2);
     }
 
-    @Test public void queryMatch() throws Exception {
+    @Test
+    public void queryMatch() throws Exception {
         AtomMatcher matcher = AtomMatcher.forQuery();
         IQueryAtom atom1 = mock(IQueryAtom.class);
         IAtom atom2 = mock(IAtom.class);

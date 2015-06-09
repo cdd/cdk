@@ -19,14 +19,14 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
+import java.io.IOException;
+
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IMolecularFormula;
@@ -87,23 +87,17 @@ import Jama.Matrix;
  * @cdk.dictref      qsar-descriptors:momentOfInertia
  * @cdk.keyword      moment of inertia
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.MomentOfInertiaDescriptorTest")
 public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(MomentOfInertiaDescriptor.class);
+    private static ILoggingTool   logger = LoggingToolFactory.createLoggingTool(MomentOfInertiaDescriptor.class);
 
-    private static final String[] names = {
-            "MOMI-X", "MOMI-Y", "MOMI-Z",
-            "MOMI-XY", "MOMI-XZ", "MOMI-YZ", "MOMI-R"
-    };
+    private static final String[] NAMES  = {"MOMI-X", "MOMI-Y", "MOMI-Z", "MOMI-XY", "MOMI-XZ", "MOMI-YZ", "MOMI-R"};
 
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#momentOfInertia",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#momentOfInertia", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -113,7 +107,7 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      * @throws CDKException Description of the Exception
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
@@ -124,15 +118,15 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      * @return The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // no parameters to return
         return (null);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     /**
@@ -140,12 +134,11 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
         return (null);
     }
-
 
     /**
      * Gets the parameterType attribute of the MomentOfInertiaDescriptor object.
@@ -153,7 +146,7 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      * @param name Description of the Parameter
      * @return The parameterType value
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return (null);
     }
@@ -161,9 +154,10 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
     private DescriptorValue getDummyDescriptorValue(Exception e) {
         int ndesc = getDescriptorNames().length;
         DoubleArrayResult results = new DoubleArrayResult(ndesc);
-        for (int i = 0; i < ndesc; i++) results.add(Double.NaN);
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), results, getDescriptorNames(), e);
+        for (int i = 0; i < ndesc; i++)
+            results.add(Double.NaN);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
+                getDescriptorNames(), e);
     }
 
     /**
@@ -175,32 +169,29 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      * @return An ArrayList containing 7 elements in the order described above
      */
 
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
-        if (!GeometryTools.has3DCoordinates(container))
+        if (!GeometryUtil.has3DCoordinates(container))
             return getDummyDescriptorValue(new CDKException("Molecule must have 3D coordinates"));
 
         IAtomContainer clone;
         IsotopeFactory factory;
         try {
-            clone = (IAtomContainer)container.clone();
+            clone = (IAtomContainer) container.clone();
             factory = Isotopes.getInstance();
             factory.configureAtoms(clone);
-        } catch (Exception e) {
+        } catch (CloneNotSupportedException | IOException e) {
             logger.debug(e);
             return getDummyDescriptorValue(e);
         }
-
 
         DoubleArrayResult retval = new DoubleArrayResult(7);
 
         double ccf = 1.000138;
         double eps = 1e-5;
 
-
-        
         double[][] imat = new double[3][3];
-        Point3d centerOfMass = GeometryTools.get3DCentreOfMass(clone);
+        Point3d centerOfMass = GeometryUtil.get3DCentreOfMass(clone);
 
         double xdif;
         double ydif;
@@ -247,8 +238,10 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
         eval[0] = eval[2];
         eval[2] = etmp;
 
-        if (Math.abs(eval[1]) > 1e-3) retval.add(eval[0] / eval[1]);
-        else retval.add(1000);
+        if (Math.abs(eval[1]) > 1e-3)
+            retval.add(eval[0] / eval[1]);
+        else
+            retval.add(1000);
 
         if (Math.abs(eval[2]) > 1e-3) {
             retval.add(eval[0] / eval[2]);
@@ -261,14 +254,14 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
         // finally get the radius of gyration
         double pri;
         IMolecularFormula formula = MolecularFormulaManipulator.getMolecularFormula(clone);
-        if (Math.abs(eval[2]) > eps) pri = Math.pow(eval[0] * eval[1] * eval[2], 1.0 / 3.0);
-        else pri = Math.sqrt(eval[0] * ccf / MolecularFormulaManipulator.getTotalExactMass(formula));
+        if (Math.abs(eval[2]) > eps)
+            pri = Math.pow(eval[0] * eval[1] * eval[2], 1.0 / 3.0);
+        else
+            pri = Math.sqrt(eval[0] * ccf / MolecularFormulaManipulator.getTotalExactMass(formula));
         retval.add(Math.sqrt(Math.PI * 2 * pri * ccf / MolecularFormulaManipulator.getTotalExactMass(formula)));
 
-
-
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     /**
@@ -282,10 +275,8 @@ public class MomentOfInertiaDescriptor extends AbstractMolecularDescriptor imple
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(7);
     }
 }
-    
-

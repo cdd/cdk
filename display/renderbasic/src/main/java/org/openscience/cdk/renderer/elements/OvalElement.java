@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2008  Arvid Berg <goglepox@users.sf.net>
+/* Copyright (C) 2008  Arvid Berg <goglepox@users.sf.net>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -22,48 +20,44 @@ package org.openscience.cdk.renderer.elements;
 
 import java.awt.Color;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * An oval element (should) have both a width and a height.
- * 
+ *
  * @cdk.module renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.elements.OvalElementTest")
 public class OvalElement implements IRenderingElement {
 
     /** The x-coordinate of the center of the oval. **/
-    public final double xCoord;
+    public final double  xCoord;
 
     /** The y-coordinate of the center of the oval. **/
-    public final double yCoord;
+    public final double  yCoord;
 
     /** The radius of the oval. **/
-    public final double radius;        // TODO : width AND height
+    public final double  radius; // TODO : width AND height
 
     /** If true, draw the oval as filled. **/
     public final boolean fill;
 
     /** The color to draw the oval. **/
-    public final Color color;
+    public final Color   color;
 
     /**
      * Make an oval with a default radius of 10.
-     * 
+     *
      * @param xCoord the x-coordinate of the center of the oval
      * @param yCoord the y-coordinate of the center of the oval
      * @param color the color of the oval
      */
-    @TestMethod("testConstructor")
     public OvalElement(double xCoord, double yCoord, Color color) {
         this(xCoord, yCoord, 10, color);
     }
 
     /**
      * Make an oval with the supplied radius.
-     * 
+     *
      * @param xCoord the x-coordinate of the center of the oval
      * @param yCoord the y-coordinate of the center of the oval
      * @param radius the radius of the oval
@@ -75,7 +69,7 @@ public class OvalElement implements IRenderingElement {
 
     /**
      * Make an oval with a particular fill and color.
-     * 
+     *
      * @param xCoord the x-coordinate of the center of the oval
      * @param yCoord the y-coordinate of the center of the oval
      * @param radius the radius of the oval
@@ -91,7 +85,7 @@ public class OvalElement implements IRenderingElement {
     }
 
     /** {@inheritDoc} **/
-	@TestMethod("testAccept")
+    @Override
     public void accept(IRenderingVisitor visitor) {
         visitor.visit(this);
     }

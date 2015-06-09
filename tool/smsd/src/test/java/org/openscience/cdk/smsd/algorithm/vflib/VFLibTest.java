@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -33,12 +32,11 @@ import org.junit.Test;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smsd.algorithm.vflib.builder.TargetProperties;
 import org.openscience.cdk.smsd.algorithm.vflib.interfaces.IMapper;
 import org.openscience.cdk.smsd.algorithm.vflib.interfaces.INode;
@@ -59,9 +57,9 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 public class VFLibTest extends CDKTestCase {
 
     private static IAtomContainer hexane;
-    private static IQuery hexaneQuery;
+    private static IQuery         hexaneQuery;
     private static IAtomContainer benzene;
-    private static IQuery benzeneQuery;
+    private static IQuery         benzeneQuery;
 
     @BeforeClass
     public static void setUp() throws CDKException {
@@ -69,13 +67,13 @@ public class VFLibTest extends CDKTestCase {
         Assert.assertEquals(6, hexane.getAtomCount());
         ExtAtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(hexane);
         hexane = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(hexane);
-        CDKHueckelAromaticityDetector.detectAromaticity(hexane);
+        Aromaticity.cdkLegacy().apply(hexane);
         hexaneQuery = new QueryCompiler(hexane, true).compile();
         Assert.assertEquals(6, hexaneQuery.countNodes());
         benzene = createBenzene();
         ExtAtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(benzene);
         hexane = ExtAtomContainerManipulator.removeHydrogensExceptSingleAndPreserveAtomID(benzene);
-        CDKHueckelAromaticityDetector.detectAromaticity(benzene);
+        Aromaticity.cdkLegacy().apply(benzene);
         benzeneQuery = new QueryCompiler(benzene, true).compile();
     }
 
@@ -203,7 +201,7 @@ public class VFLibTest extends CDKTestCase {
     }
 
     /**
-     * 
+     *
      */
     @Test
     public void testItShouldMatchHexaneToHexaneWhenUsingMolecule() {
@@ -238,7 +236,6 @@ public class VFLibTest extends CDKTestCase {
         IBond bond3 = new Bond(c3, c4, IBond.Order.SINGLE);
         IBond bond4 = new Bond(c4, c5, IBond.Order.SINGLE);
         IBond bond5 = new Bond(c5, c6, IBond.Order.SINGLE);
-
 
         result.addBond(bond1);
         result.addBond(bond2);
@@ -281,14 +278,12 @@ public class VFLibTest extends CDKTestCase {
         IBond bond5 = new Bond(c5, c6, IBond.Order.SINGLE);
         IBond bond6 = new Bond(c6, c1, IBond.Order.DOUBLE);
 
-
         result.addBond(bond1);
         result.addBond(bond2);
         result.addBond(bond3);
         result.addBond(bond4);
         result.addBond(bond5);
         result.addBond(bond6);
-
 
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(result);
         return result;

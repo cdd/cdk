@@ -23,8 +23,6 @@
 
 package org.openscience.cdk.hash.stereo;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -45,9 +43,7 @@ import java.util.Set;
  * @author John May
  * @cdk.module hash
  */
-@TestClass("org.openscience.cdk.hash.stereo.GeometricCumulativeDoubleBondFactoryTest")
-public class GeometricCumulativeDoubleBondFactory
-        implements StereoEncoderFactory {
+public class GeometricCumulativeDoubleBondFactory implements StereoEncoderFactory {
 
     /**
      * Create a stereo encoder for cumulative double bonds.
@@ -56,7 +52,6 @@ public class GeometricCumulativeDoubleBondFactory
      * @param graph     adjacency list representation of the container
      * @return a stereo encoder
      */
-    @TestMethod("testCreate")
     @Override
     public StereoEncoder create(IAtomContainer container, int[][] graph) {
 
@@ -65,11 +60,9 @@ public class GeometricCumulativeDoubleBondFactory
 
         List<StereoEncoder> encoders = new ArrayList<StereoEncoder>(1);
 
-
         // index double bonds by their atoms
         for (IBond bond : container.bonds()) {
-            if (isDoubleBond(bond))
-                map.add(bond);
+            if (isDoubleBond(bond)) map.add(bond);
         }
 
         Set<IAtom> visited = new HashSet<IAtom>(n);
@@ -121,8 +114,8 @@ public class GeometricCumulativeDoubleBondFactory
                     //   s = = = = e
                     //  /           \
                     if (isOdd(size)) {
-                        StereoEncoder encoder = GeometricDoubleBondEncoderFactory
-                                .newEncoder(container, s, sParent, e, eParent, graph);
+                        StereoEncoder encoder = GeometricDoubleBondEncoderFactory.newEncoder(container, s, sParent, e,
+                                eParent, graph);
                         if (encoder != null) {
                             encoders.add(encoder);
                         }
@@ -136,8 +129,7 @@ public class GeometricCumulativeDoubleBondFactory
             }
         }
 
-        return encoders.isEmpty() ? StereoEncoder.EMPTY
-                                  : new MultiStereoEncoder(encoders);
+        return encoders.isEmpty() ? StereoEncoder.EMPTY : new MultiStereoEncoder(encoders);
     }
 
     /**
@@ -149,14 +141,12 @@ public class GeometricCumulativeDoubleBondFactory
      * @param end       end of the cumulated system
      * @return an encoder or null if there are no coordinated
      */
-    @TestMethod("testAxialEncoder_Empty")
     static StereoEncoder axialEncoder(IAtomContainer container, IAtom start, IAtom end) {
 
         List<IBond> startBonds = container.getConnectedBondsList(start);
         List<IBond> endBonds = container.getConnectedBondsList(end);
 
-        if (startBonds.size() < 2 || endBonds.size() < 2)
-            return null;
+        if (startBonds.size() < 2 || endBonds.size() < 2) return null;
 
         if (has2DCoordinates(startBonds) && has2DCoordinates(endBonds)) {
             return axial2DEncoder(container, start, startBonds, end, endBonds);
@@ -178,13 +168,14 @@ public class GeometricCumulativeDoubleBondFactory
      * @param endBonds   bonds connected to the end
      * @return an encoder
      */
-    private static StereoEncoder axial2DEncoder(IAtomContainer container, IAtom start, List<IBond> startBonds, IAtom end, List<IBond> endBonds) {
+    private static StereoEncoder axial2DEncoder(IAtomContainer container, IAtom start, List<IBond> startBonds,
+            IAtom end, List<IBond> endBonds) {
 
         Point2d[] ps = new Point2d[4];
         int[] es = new int[4];
 
-        PermutationParity perm = new CombinedPermutationParity(fill2DCoordinates(container, start, startBonds, ps, es, 0),
-                                                               fill2DCoordinates(container, end, endBonds, ps, es, 2));
+        PermutationParity perm = new CombinedPermutationParity(fill2DCoordinates(container, start, startBonds, ps, es,
+                0), fill2DCoordinates(container, end, endBonds, ps, es, 2));
 
         GeometricParity geom = new Tetrahedral2DParity(ps, es);
 
@@ -205,12 +196,13 @@ public class GeometricCumulativeDoubleBondFactory
      * @param endBonds   bonds connected to the end
      * @return an encoder
      */
-    private static StereoEncoder axial3DEncoder(IAtomContainer container, IAtom start, List<IBond> startBonds, IAtom end, List<IBond> endBonds) {
+    private static StereoEncoder axial3DEncoder(IAtomContainer container, IAtom start, List<IBond> startBonds,
+            IAtom end, List<IBond> endBonds) {
 
         Point3d[] coordinates = new Point3d[4];
 
-        PermutationParity perm = new CombinedPermutationParity(fill3DCoordinates(container, start, startBonds, coordinates, 0),
-                                                               fill3DCoordinates(container, end, endBonds, coordinates, 2));
+        PermutationParity perm = new CombinedPermutationParity(fill3DCoordinates(container, start, startBonds,
+                coordinates, 0), fill3DCoordinates(container, end, endBonds, coordinates, 2));
 
         GeometricParity geom = new Tetrahedral3DParity(coordinates);
 
@@ -234,10 +226,8 @@ public class GeometricCumulativeDoubleBondFactory
      * @param offset      current location in the offset array
      * @return the permutation parity
      */
-    private static PermutationParity fill2DCoordinates(IAtomContainer container,
-                                                       IAtom a, List<IBond> connected,
-                                                       Point2d[] coordinates, int[] elevations,
-                                                       int offset) {
+    private static PermutationParity fill2DCoordinates(IAtomContainer container, IAtom a, List<IBond> connected,
+            Point2d[] coordinates, int[] elevations, int offset) {
 
         int i = 0;
         coordinates[offset + 1] = a.getPoint2d();
@@ -275,10 +265,8 @@ public class GeometricCumulativeDoubleBondFactory
      * @param offset      current location in the offset array
      * @return the permutation parity
      */
-    private static PermutationParity fill3DCoordinates(IAtomContainer container,
-                                                       IAtom a, List<IBond> connected,
-                                                       Point3d[] coordinates,
-                                                       int offset) {
+    private static PermutationParity fill3DCoordinates(IAtomContainer container, IAtom a, List<IBond> connected,
+            Point3d[] coordinates, int offset) {
 
         int i = 0;
         int[] indices = new int[2];
@@ -310,9 +298,7 @@ public class GeometricCumulativeDoubleBondFactory
      */
     private static boolean has2DCoordinates(List<IBond> bonds) {
         for (IBond bond : bonds) {
-            if (bond.getAtom(0).getPoint2d() == null
-                    || bond.getAtom(1).getPoint2d() == null)
-                return false;
+            if (bond.getAtom(0).getPoint2d() == null || bond.getAtom(1).getPoint2d() == null) return false;
         }
         return true;
     }
@@ -326,9 +312,7 @@ public class GeometricCumulativeDoubleBondFactory
      */
     private static boolean has3DCoordinates(List<IBond> bonds) {
         for (IBond bond : bonds) {
-            if (bond.getAtom(0).getPoint3d() == null
-                    || bond.getAtom(1).getPoint3d() == null)
-                return false;
+            if (bond.getAtom(0).getPoint3d() == null || bond.getAtom(1).getPoint3d() == null) return false;
         }
         return true;
     }
@@ -343,10 +327,8 @@ public class GeometricCumulativeDoubleBondFactory
      * @param a    an atom
      * @return elevation of bond
      */
-    @TestMethod("testElevation_Atom_Up,testElevation_Atom_Down")
     static int elevation(IBond bond, IAtom a) {
-        return bond.getAtom(0).equals(a) ? elevation(bond)
-                                         : elevation(bond) * -1;
+        return bond.getAtom(0).equals(a) ? elevation(bond) : elevation(bond) * -1;
     }
 
     /**
@@ -356,11 +338,9 @@ public class GeometricCumulativeDoubleBondFactory
      * @return +1 above the plane, 0 in the plane (default) or -1 below the
      *         plane
      */
-    @TestMethod("testElevation_null,testElevation_Up,testElevation_Down")
     static int elevation(IBond bond) {
         IBond.Stereo stereo = bond.getStereo();
-        if(stereo == null)
-            return 0;
+        if (stereo == null) return 0;
         switch (stereo) {
             case UP:
             case DOWN_INVERTED:
@@ -418,7 +398,7 @@ public class GeometricCumulativeDoubleBondFactory
          */
         public List<IBond> bonds(IAtom a) {
             List<IBond> bs = bonds.get(a);
-            return bs != null ? bs : Collections.<IBond>emptyList();
+            return bs != null ? bs : Collections.<IBond> emptyList();
         }
 
         /**
@@ -466,5 +446,3 @@ public class GeometricCumulativeDoubleBondFactory
     }
 
 }
-
-

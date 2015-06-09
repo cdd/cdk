@@ -19,8 +19,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.PathTools;
 import org.openscience.cdk.graph.matrix.ConnectionMatrix;
@@ -34,12 +32,11 @@ import org.openscience.cdk.qsar.result.DoubleArrayResultType;
 import org.openscience.cdk.qsar.result.IDescriptorResult;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
-
 /**
- * This descriptor calculates the Wiener numbers. This includes the Wiener Path number 
+ * This descriptor calculates the Wiener numbers. This includes the Wiener Path number
  * and the Wiener Polarity Number.
  * <BR>
- * Further information is given in   
+ * Further information is given in
  * Wiener path number: half the sum of all the distance matrix entries; Wiener
  * polarity number: half the sum of all the distance matrix entries with a
  * value of 3. For more information see {@cdk.cite Wiener1947,TOD2000}.
@@ -54,9 +51,9 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * <li>WPATH - weiner path number
  * <li>WPOL - weiner polarity number
  * </ol>
- * 
+ *
  * <p>This descriptor does not have any parameters.
- * 
+ *
  * @author         mfe4
  * @cdk.created        December 7, 2004
  * @cdk.created    2004-11-03
@@ -66,26 +63,25 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.dictref    qsar-descriptors:wienerNumbers
  * @cdk.keyword    Wiener number
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.WienerNumbersDescriptorTest")
 public class WienerNumbersDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static final String[] names = {"WPATH", "WPOL"};
+    private static final String[] NAMES            = {"WPATH", "WPOL"};
 
-    double[][] matr = null;
-    DoubleArrayResult wienerNumbers = null;
-    ConnectionMatrix connectionMatrix = new ConnectionMatrix();
-    AtomContainerManipulator atm =  new AtomContainerManipulator();
+    double[][]                    matr             = null;
+    DoubleArrayResult             wienerNumbers    = null;
+    ConnectionMatrix              connectionMatrix = new ConnectionMatrix();
+    AtomContainerManipulator      atm              = new AtomContainerManipulator();
 
     /**
      *  Constructor for the WienerNumbersDescriptor object.
      */
-    public WienerNumbersDescriptor() { 
+    public WienerNumbersDescriptor() {
 
     }
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -98,14 +94,12 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#wienerNumbers",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#wienerNumbers", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the WienerNumbersDescriptor object.
@@ -116,11 +110,10 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *@exception  CDKException  This method will not throw any exceptions
     *@see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
-
 
     /**
      *  Gets the parameters attribute of the WienerNumbersDescriptor object.
@@ -130,17 +123,16 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *@return    The parameters value
      *@see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return (null);
         // no parameters to return
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
-
 
     /**
      * Calculate the Wiener numbers.
@@ -148,14 +140,13 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *@param  atomContainer   The {@link IAtomContainer} for which this descriptor is to be calculated
      *@return wiener numbers as array of 2 doubles
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         wienerNumbers = new DoubleArrayResult(2);
         double wienerPathNumber = 0; //wienerPath
         double wienerPolarityNumber = 0; //wienerPol
 
-
-        matr = ConnectionMatrix.getMatrix(AtomContainerManipulator.removeHydrogens(atomContainer));        
+        matr = ConnectionMatrix.getMatrix(AtomContainerManipulator.removeHydrogens(atomContainer));
         int[][] distances = PathTools.computeFloydAPSP(matr);
 
         int partial;
@@ -173,8 +164,8 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
 
         wienerNumbers.add(wienerPathNumber);
         wienerNumbers.add(wienerPolarityNumber);
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                wienerNumbers, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), wienerNumbers,
+                getDescriptorNames());
     }
 
     /**
@@ -188,7 +179,7 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(2);
     }
@@ -200,13 +191,11 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *
      *@return    The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
         return (null);
     }
-
-
 
     /**
      *  Gets the parameterType attribute of the WienerNumbersDescriptor object.
@@ -214,9 +203,8 @@ public class WienerNumbersDescriptor extends AbstractMolecularDescriptor impleme
      *@param  name  Description of the Parameter
      *@return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return (null);
     }
 }
-

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2009  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2009  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,11 +19,8 @@
 package org.openscience.cdk.pharmacophore;
 
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
 
 import java.util.ArrayList;
@@ -47,8 +39,8 @@ import java.util.List;
  * @cdk.keyword 3D isomorphism
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.pharmacophore.PharmacophoreQueryTest")
 public class PharmacophoreQuery extends QueryAtomContainer {
+
     private List<Object> exclusionVolumes;
 
     public PharmacophoreQuery() {
@@ -57,26 +49,25 @@ public class PharmacophoreQuery extends QueryAtomContainer {
         exclusionVolumes = new ArrayList<Object>();
     }
 
-
     /**
      * String representation of this query.
      *
      * @return string representation of this query
      */
-    @TestMethod("testToString")
+    @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("PharmacophoreQuery(").append(this.hashCode() + ", ");
-        stringBuffer.append("#A:" + getAtomCount() + ", ");
-        stringBuffer.append("#EC:" + getElectronContainerCount() + ", ");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("PharmacophoreQuery(").append(this.hashCode()).append(", ");
+        stringBuilder.append("#A:").append(getAtomCount()).append(", ");
+        stringBuilder.append("#EC:").append(getElectronContainerCount()).append(", ");
         for (IAtom atom : atoms()) {
             PharmacophoreQueryAtom qatom = (PharmacophoreQueryAtom) atom;
-            stringBuffer.append(qatom.getSymbol()).append(", ");
+            stringBuilder.append(qatom.getSymbol()).append(", ");
         }
         for (IBond bond : bonds()) {
-            stringBuffer.append(bond.toString()).append(", ");
+            stringBuilder.append(bond.toString()).append(", ");
         }
-        stringBuffer.append(")");
-        return stringBuffer.toString();
+        stringBuilder.append(')');
+        return stringBuilder.toString();
     }
 }

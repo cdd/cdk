@@ -1,9 +1,7 @@
-/* $Revision: 11498 $ $Author: egonw $ $Date: 2008-07-04 09:22:58 +0100 (Fri, 04 Jul 2008) $
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -29,7 +27,6 @@ import java.io.StringWriter;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.ChemObjectIOTest;
 import org.openscience.cdk.templates.TestMoleculeFactory;
@@ -44,20 +41,23 @@ import org.openscience.cdk.templates.TestMoleculeFactory;
  */
 public class GaussianInputWriterTest extends ChemObjectIOTest {
 
-    @BeforeClass public static void setup() {
+    @BeforeClass
+    public static void setup() {
         setChemObjectIO(new GaussianInputWriter());
     }
 
-    @Test public void testAccepts() {
-    	GaussianInputWriter reader = new GaussianInputWriter();
-    	Assert.assertTrue(reader.accepts(IAtomContainer.class));
+    @Test
+    public void testAccepts() {
+        GaussianInputWriter reader = new GaussianInputWriter();
+        Assert.assertTrue(reader.accepts(IAtomContainer.class));
     }
 
     /**
      * @cdk.bug 2501715
      */
-    @Test public void testWrite() throws Exception {
-        IAtomContainer molecule=TestMoleculeFactory.makeAlphaPinene();
+    @Test
+    public void testWrite() throws Exception {
+        IAtomContainer molecule = TestMoleculeFactory.makeAlphaPinene();
         StringWriter writer = new StringWriter();
         GaussianInputWriter gaussianWriter = new GaussianInputWriter(writer);
         gaussianWriter.write(molecule);

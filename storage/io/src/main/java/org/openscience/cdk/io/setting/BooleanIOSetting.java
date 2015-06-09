@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The CDK Development Team
+/* Copyright (C) 2003-2007  The CDK Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -35,8 +30,7 @@ import org.openscience.cdk.exception.CDKException;
  */
 public class BooleanIOSetting extends IOSetting {
 
-    public BooleanIOSetting(String name, Importance level, 
-                            String question, String defaultSetting) {
+    public BooleanIOSetting(String name, Importance level, String question, String defaultSetting) {
         super(name, level, question, defaultSetting);
     }
 
@@ -44,6 +38,7 @@ public class BooleanIOSetting extends IOSetting {
      * Sets the setting for a certain question. The setting
      * is a boolean, and it accepts only "true" and "false".
      */
+    @Override
     public void setSetting(String setting) throws CDKException {
         if (setting.equals("true") || setting.equals("false")) {
             this.setting = setting;

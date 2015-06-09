@@ -1,9 +1,7 @@
-/* $Revision: 10838 $ $Author: egonw $ $Date: 2008-05-05 23:03:59 +0200 (Mon, 05 May 2008) $
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -40,24 +38,26 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  */
 public class PCSubstanceXMLReaderTest extends SimpleChemObjectReaderTest {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(PCSubstanceXMLReaderTest.class);
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(PCSubstanceXMLReaderTest.class);
 
-    @BeforeClass public static void setup() throws Exception {
+    @BeforeClass
+    public static void setup() throws Exception {
         setSimpleChemObjectReader(new PCSubstanceXMLReader(), "data/asn/pubchem/sid577309.xml");
     }
 
-    @Test public void testAccepts() throws Exception {
-    	PCSubstanceXMLReader reader = new PCSubstanceXMLReader();
-    	Assert.assertTrue(reader.accepts(AtomContainer.class));
+    @Test
+    public void testAccepts() throws Exception {
+        PCSubstanceXMLReader reader = new PCSubstanceXMLReader();
+        Assert.assertTrue(reader.accepts(AtomContainer.class));
     }
 
-    @Test public void testReading() throws Exception {
+    @Test
+    public void testReading() throws Exception {
         String filename = "data/asn/pubchem/sid577309.xml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         PCSubstanceXMLReader reader = new PCSubstanceXMLReader(ins);
-        IAtomContainer molecule = (IAtomContainer)reader.read(new AtomContainer());
+        IAtomContainer molecule = (IAtomContainer) reader.read(new AtomContainer());
         Assert.assertNotNull(molecule);
 
         // check atom stuff

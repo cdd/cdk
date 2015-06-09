@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -27,8 +27,6 @@ package org.openscience.cdk.aromaticity;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.NoSuchAtomTypeException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -54,25 +52,18 @@ import static org.openscience.cdk.interfaces.IAtomType.Hybridization;
  * @author John May
  * @cdk.module standard
  */
-@TestClass("org.openscience.cdk.aromaticity.AtomTypeModelTest")
 // mores tests in - org.openscience.cdk.aromaticity.ExocyclicAtomTypeModelTest
 final class AtomTypeModel extends ElectronDonation {
 
     /** Predefined electron contribution for several atom types. */
-    private final static Map<String, Integer> types = ImmutableMap.<String, Integer>builder()
-                                                                  .put("N.planar3", 2)
-                                                                  .put("N.minus.planar3", 2)
-                                                                  .put("N.amide", 2)
-                                                                  .put("S.2", 2)
-                                                                  .put("S.planar3", 2)
-                                                                  .put("C.minus.planar", 2)
-                                                                  .put("O.planar3", 2)
-                                                                  .put("N.sp2.3", 1)
-                                                                  .put("C.sp2", 1)
-                                                                  .build();
+    private final static Map<String, Integer> TYPES = ImmutableMap.<String, Integer> builder().put("N.planar3", 2)
+                                                            .put("N.minus.planar3", 2).put("N.amide", 2).put("S.2", 2)
+                                                            .put("S.planar3", 2).put("C.minus.planar", 2)
+                                                            .put("O.planar3", 2).put("N.sp2.3", 1).put("C.sp2", 1)
+                                                            .build();
 
     /** Allow exocyclic pi bonds. */
-    private final boolean exocyclic;
+    private final boolean                     exocyclic;
 
     /**
      * Create the electron donation model specifying whether exocyclic pi bonds
@@ -87,8 +78,8 @@ final class AtomTypeModel extends ElectronDonation {
     }
 
     /** @inheritDoc */
-    @TestMethod("benzene,furan,pyrrole")
-    @Override int[] contribution(IAtomContainer container, RingSearch ringSearch) {
+    @Override
+    int[] contribution(IAtomContainer container, RingSearch ringSearch) {
 
         final int nAtoms = container.getAtomCount();
         final int[] electrons = new int[nAtoms];
@@ -98,20 +89,22 @@ final class AtomTypeModel extends ElectronDonation {
         final Map<IAtom, Integer> indexMap = Maps.newHashMapWithExpectedSize(nAtoms);
 
         for (int i = 0; i < nAtoms; i++) {
-            
+
             IAtom atom = container.getAtom(i);
             indexMap.put(atom, i);
-            
+
             // acyclic atom skipped
-            if (!ringSearch.cyclic(i))
-                continue;
-            
+            if (!ringSearch.cyclic(i)) continue;
+
             Hybridization hyb = atom.getHybridization();
 
-            checkNotNull(atom.getAtomTypeName(),
-                         "atom has unset atom type");
+            checkNotNull(atom.getAtomTypeName(), "atom has unset atom type");
 
-            switch (checkNotNull(hyb, "atom has unset hybridisation")) {
+            // atom has been assigned an atom type but we don't know the hybrid state,
+            // typically for atom type 'X' (unknown)
+            if (hyb == null) continue;
+
+            switch (hyb) {
                 case SP2:
                 case PLANAR3:
                     electrons[i] = electronsForAtomType(atom);
@@ -123,30 +116,28 @@ final class AtomTypeModel extends ElectronDonation {
         }
 
         // exocyclic double bonds are allowed no further processing
-        if (exocyclic)
-            return electrons;
-        
+        if (exocyclic) return electrons;
+
         // check for exocyclic double/triple bonds and disallow their contribution
         for (IBond bond : container.bonds()) {
             if (bond.getOrder() == IBond.Order.DOUBLE || bond.getOrder() == IBond.Order.TRIPLE) {
 
                 IAtom a1 = bond.getAtom(0);
                 IAtom a2 = bond.getAtom(1);
-                
+
                 String a1Type = a1.getAtomTypeName();
                 String a2Type = a2.getAtomTypeName();
-                
+
                 int u = indexMap.get(a1);
                 int v = indexMap.get(a2);
 
                 if (!ringSearch.cyclic(u, v)) {
-                    
+
                     // XXX: single exception - we could make this more general but
                     // for now this mirrors the existing behavior
-                    if (a1Type.equals("N.sp2.3") && a2Type.equals("O.sp2")
-                            || a1Type.equals("O.sp2") && a2Type.equals("N.sp2.3"))
-                        continue;
-                    
+                    if (a1Type.equals("N.sp2.3") && a2Type.equals("O.sp2") || a1Type.equals("O.sp2")
+                            && a2Type.equals("N.sp2.3")) continue;
+
                     electrons[u] = electrons[v] = -1;
                 }
             }
@@ -163,14 +154,12 @@ final class AtomTypeModel extends ElectronDonation {
      * @return the number of electrons
      */
     private static int electronsForAtomType(IAtom atom) {
-        Integer electrons = types.get(atom.getAtomTypeName());
+        Integer electrons = TYPES.get(atom.getAtomTypeName());
 
-        if (electrons != null)
-            return electrons;
+        if (electrons != null) return electrons;
 
         try {
-            IAtomType atomType = AtomTypeFactory.getInstance(
-                    "org/openscience/cdk/dict/data/cdk-atom-types.owl",
+            IAtomType atomType = AtomTypeFactory.getInstance("org/openscience/cdk/dict/data/cdk-atom-types.owl",
                     atom.getBuilder()).getAtomType(atom.getAtomTypeName());
             electrons = atomType.getProperty(CDKConstants.PI_BOND_COUNT);
             return electrons != null ? electrons : 0;

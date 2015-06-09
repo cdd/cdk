@@ -1,9 +1,4 @@
-/* $RCSfile$   
- * $Author$   
- * $Date$   
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -39,7 +34,6 @@ public class IncorrectUseOfCDKCoreClassError extends Error {
     private static final long serialVersionUID = 5307727155023470782L;
 
     public IncorrectUseOfCDKCoreClassError(String message) {
-        super( message );
+        super(message);
     }
 }
-

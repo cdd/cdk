@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,98 +22,98 @@
  */
 package org.openscience.cdk.io.cml;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
- * Low weigth alternative to Sun's Stack class.
+ * Low weight alternative to Sun's Stack class.
  *
  * @cdk.module io
  * @cdk.githash
  *
  * @cdk.keyword stack
  */
-@TestClass("org.openscience.cdk.io.cml.CMLStackTest")
-public class CMLStack {
+final class CMLStack {
 
-  String[] stack = new String[64];
-  int sp = 0;
+    private String[] stack = new String[64];
+    private int      sp    = 0;
 
-  /**
-   * Adds an entry to the stack.
-   */
-  @TestMethod("testPush_String")
-  public void push(String item) {
-    if (sp == stack.length) {
-      String[] temp = new String[2 * sp];
-      System.arraycopy(stack, 0, temp, 0, sp);
-      stack = temp;
+    /**
+     * Adds an entry to the stack.
+     */
+    void push(String item) {
+        if (sp == stack.length) {
+            String[] temp = new String[2 * sp];
+            System.arraycopy(stack, 0, temp, 0, sp);
+            stack = temp;
+        }
+        stack[sp++] = item;
     }
-    stack[sp++] = item;
-  }
-  
-  public int length() {
-	  return sp;
-  }
 
-  /**
-   * Retrieves and deletes to last added entry.
-   *
-   * @see #current()
-   */
-  @TestMethod("testPop")
-  public String pop() {
-    return stack[--sp];
-  }
-
-  /**
-   * Returns the last added entry.
-   *
-   * @see #pop()
-   */
-  @TestMethod("testCurrent")
-  public String current() {
-    if (sp > 0) {
-        return stack[sp-1];
-    } else {
-        return "";
+    int length() {
+        return sp;
     }
-  }
 
-  /**
-   * Returns a String representation of the stack.
-   */
-  public String toString() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("/");
-    for (int i = 0; i < sp; ++i) {
-      sb.append(stack[i]);
-      sb.append("/");
+    /**
+     * Retrieves and deletes to last added entry.
+     *
+     * @see #current()
+     */
+    String pop() {
+        return stack[--sp];
     }
-    return sb.toString();
-  }
 
-  /**
-   * Convenience method to check the last added elements. 
-   */
-  @TestMethod("testEndsWith_String")
-  public boolean endsWith(String lastElement) {
-    return stack[sp-1].equals(lastElement);
-  }
+    /**
+     * Returns the last added entry.
+     *
+     * @see #pop()
+     */
+    String current() {
+        if (sp > 0) {
+            return stack[sp - 1];
+        } else {
+            return "";
+        }
+    }
 
-  /**
-   * Convenience method to check the last two added elements. 
-   */
-  @TestMethod("testEndsWith_String_String")
-  public boolean endsWith(String oneButLast, String lastElement) {
-	    return endsWith(lastElement) && stack[sp-2].equals(oneButLast);
-  }
+    /**
+     * Returns a String representation of the stack.
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('/');
+        for (int i = 0; i < sp; ++i) {
+            sb.append(stack[i]);
+            sb.append('/');
+        }
+        return sb.toString();
+    }
 
-  /**
-   * Convenience method to check the last three added elements. 
-   */
-  @TestMethod("testEndsWith_String_String_String")
-  public boolean endsWith(String twoButLast, String oneButLast, String lastElement) {
-	    return endsWith(oneButLast,lastElement) && stack[sp-3].equals(twoButLast);
-  }
+    /**
+     * Convenience method to check the last added elements.
+     */
+    boolean endsWith(String lastElement) {
+        return stack[sp - 1].equals(lastElement);
+    }
+
+    /**
+     * Convenience method to check the last two added elements.
+     */
+    boolean endsWith(String oneButLast, String lastElement) {
+        return endsWith(lastElement) && stack[sp - 2].equals(oneButLast);
+    }
+
+    /**
+     * Convenience method to check the last three added elements.
+     */
+    boolean endsWith(String twoButLast, String oneButLast, String lastElement) {
+        return endsWith(oneButLast, lastElement) && stack[sp - 3].equals(twoButLast);
+    }
+
+    /**
+     * Current size of the stack.
+     * @return number of items
+     */
+    int size() {
+        return sp;
+    }
 }

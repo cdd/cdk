@@ -1,7 +1,5 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
  *
- * Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
- * 
  * Contact: cdk-devel@lists.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or
@@ -30,14 +28,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.vecmath.Point3d;
 
+import com.google.common.collect.ImmutableMap;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.AtomTypeFactory;
+import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -66,14 +65,29 @@ import org.openscience.cdk.tools.periodictable.PeriodicTable;
  * @cdk.created 2003-08-21
  * @cdk.keyword file format, Mol2
  */
-@TestClass("org.openscience.cdk.io.Mol2ReaderTest")
 public class Mol2Reader extends DefaultChemObjectReader {
 
-    boolean firstLineisMolecule = false;
+    boolean                                  firstLineisMolecule = false;
 
-    BufferedReader input = null;
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(Mol2Reader.class);
+    BufferedReader                           input               = null;
+    private static ILoggingTool              logger              = LoggingToolFactory
+                                                                         .createLoggingTool(Mol2Reader.class);
+
+    /**
+     * Dictionary of known atom type aliases. If the key is seen on input, it
+     * is repleaced with the specified value. Bugs /openbabel/bug/214 and /cdk/bug/1346
+     */
+    private static final Map<String, String> ATOM_TYPE_ALIASES   = ImmutableMap
+                                                                         .<String, String> builder()
+                                                                         // previously produced by Open Babel
+                                                                         .put("S.o2", "S.O2")
+                                                                         .put("S.o", "S.O")
+                                                                         // seen in MMFF94 validation suite
+                                                                         .put("CL", "Cl").put("CU", "Cu")
+                                                                         .put("FE", "Fe").put("BR", "Br")
+                                                                         .put("NA", "Na").put("SI", "Si")
+                                                                         .put("CA", "Ca").put("ZN", "Zn")
+                                                                         .put("LI", "Li").put("MG", "Mg").build();
 
     /**
      * Constructs a new MDLReader that can read Molecule from a given Reader.
@@ -92,12 +106,12 @@ public class Mol2Reader extends DefaultChemObjectReader {
         this(new StringReader(""));
     }
 
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return Mol2Format.getInstance();
     }
 
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) throws CDKException {
         if (input instanceof BufferedReader) {
             this.input = (BufferedReader) input;
@@ -106,18 +120,18 @@ public class Mol2Reader extends DefaultChemObjectReader {
         }
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
-    @TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    @Override
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
         if (IChemModel.class.equals(classObject)) return true;
         if (IAtomContainer.class.equals(classObject)) return true;
-        Class[] interfaces = classObject.getInterfaces();
-        for (Class anInterface : interfaces) {
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (Class<?> anInterface : interfaces) {
             if (IChemModel.class.equals(anInterface)) return true;
             if (IChemFile.class.equals(anInterface)) return true;
             if (IAtomContainer.class.equals(anInterface)) return true;
@@ -126,6 +140,7 @@ public class Mol2Reader extends DefaultChemObjectReader {
         return superClass != null && this.accepts(superClass);
     }
 
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IChemFile) {
             return (T) readChemFile((IChemFile) object);
@@ -176,7 +191,7 @@ public class Mol2Reader extends DefaultChemObjectReader {
             }
         } catch (CDKException cdkexc) {
             throw cdkexc;
-        } catch (Exception exception) {
+        } catch (IllegalArgumentException exception) {
             String error = "Error while parsing MOL2";
             logger.error(error);
             logger.debug(exception);
@@ -194,12 +209,10 @@ public class Mol2Reader extends DefaultChemObjectReader {
 
         // reset it to false so that other read methods called later do not get confused
         firstLineisMolecule = false;
-        
+
         return chemFile;
     }
 
-
-    @TestMethod("testAccepts")
     public boolean accepts(IChemObject object) {
         if (object instanceof IChemFile) {
             return true;
@@ -211,7 +224,6 @@ public class Mol2Reader extends DefaultChemObjectReader {
         return false;
     }
 
-
     /**
      * Read a Reaction from a file in MDL RXN format
      *
@@ -220,9 +232,8 @@ public class Mol2Reader extends DefaultChemObjectReader {
     private IAtomContainer readMolecule(IAtomContainer molecule) throws CDKException {
         AtomTypeFactory atFactory = null;
         try {
-            atFactory = AtomTypeFactory.getInstance(
-                    "org/openscience/cdk/config/data/mol2_atomtypes.xml", molecule.getBuilder()
-            );
+            atFactory = AtomTypeFactory.getInstance("org/openscience/cdk/config/data/mol2_atomtypes.xml",
+                    molecule.getBuilder());
         } catch (Exception exception) {
             String error = "Could not instantiate an AtomTypeFactory";
             logger.error(error);
@@ -242,7 +253,8 @@ public class Mol2Reader extends DefaultChemObjectReader {
             }
 
             // ok, if we're coming from the chemfile functoion, we've alreay read the molecule RTI
-            if (firstLineisMolecule) molecule.setProperty(CDKConstants.TITLE, line);
+            if (firstLineisMolecule)
+                molecule.setProperty(CDKConstants.TITLE, line);
             else {
                 line = input.readLine();
                 molecule.setProperty(CDKConstants.TITLE, line);
@@ -299,11 +311,9 @@ public class Mol2Reader extends DefaultChemObjectReader {
                         String zStr = tokenizer.nextToken();
                         String atomTypeStr = tokenizer.nextToken();
 
-                        // fix OpenBabel atom type codes to SYBYL specification
-                        // this addresses wrong types that were output by OB (but is now fixed)
-                        // see https://sourceforge.net/tracker/index.php?func=detail&aid=1650239&group_id=40728&atid=428740
-                        if ("S.o2".equals(atomTypeStr)) atomTypeStr = "S.O2";
-                        if ("S.o".equals(atomTypeStr)) atomTypeStr = "S.O";
+                        // replace unrecognised atom type
+                        if (ATOM_TYPE_ALIASES.containsKey(atomTypeStr))
+                            atomTypeStr = ATOM_TYPE_ALIASES.get(atomTypeStr);
 
                         IAtom atom = molecule.getBuilder().newInstance(IAtom.class, "X");
                         IAtomType atomType;
@@ -324,6 +334,7 @@ public class Mol2Reader extends DefaultChemObjectReader {
                             AtomTypeManipulator.configure(atom, atomType);
                         }
 
+                        atom.setAtomicNumber(Elements.ofString(atom.getSymbol()).number());
                         atom.setID(nameStr);
                         atom.setAtomTypeName(atomTypeStr);
                         try {
@@ -359,9 +370,7 @@ public class Mol2Reader extends DefaultChemObjectReader {
                                 // do not connect the atoms
                             } else {
                                 IBond bond = molecule.getBuilder().newInstance(IBond.class,
-                                        molecule.getAtom(atom1 - 1),
-                                        molecule.getAtom(atom2 - 1)
-                                );
+                                        molecule.getAtom(atom1 - 1), molecule.getAtom(atom2 - 1));
                                 if ("1".equals(orderStr)) {
                                     bond.setOrder(CDKConstants.BONDORDER_SINGLE);
                                 } else if ("2".equals(orderStr)) {
@@ -407,9 +416,8 @@ public class Mol2Reader extends DefaultChemObjectReader {
         return false;
     }
 
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
 }
-

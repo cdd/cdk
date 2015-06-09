@@ -24,12 +24,9 @@
  */
 package org.openscience.cdk.smsd.tools;
 
-import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.graph.ConnectivityChecker;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -46,7 +43,6 @@ import org.openscience.cdk.tools.manipulator.RingSetManipulator;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.tools.MoleculeSanityCheckTest")
 public class MoleculeSanityCheck {
 
     /**
@@ -54,7 +50,6 @@ public class MoleculeSanityCheck {
      * @param molecule
      * @return cleaned AtomContainer
      */
-    @TestMethod("testCheckAndCleanMolecule")
     public static IAtomContainer checkAndCleanMolecule(IAtomContainer molecule) {
         boolean isMarkush = false;
         for (IAtom atom : molecule.atoms()) {
@@ -95,7 +90,6 @@ public class MoleculeSanityCheck {
      * i.e. need to find rings and aromaticity again since added H's
      * @param mol
      */
-    @TestMethod("testFixAromaticity")
     public static void configure(IAtomContainer mol) {
         // need to find rings and aromaticity again since added H's
 
@@ -111,9 +105,9 @@ public class MoleculeSanityCheck {
             // figure out which atoms are in aromatic rings:
             CDKHydrogenAdder cdk = CDKHydrogenAdder.getInstance(DefaultChemObjectBuilder.getInstance());
             ExtAtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
-            cdk.addImplicitHydrogens(mol);            
+            cdk.addImplicitHydrogens(mol);
 
-            CDKHueckelAromaticityDetector.detectAromaticity(mol);
+            Aromaticity.cdkLegacy().apply(mol);
             // figure out which rings are aromatic:
             RingSetManipulator.markAromaticRings(ringSet);
             // figure out which simple (non cycles) rings are aromatic:
@@ -123,8 +117,7 @@ public class MoleculeSanityCheck {
 
             for (int i = 0; i < mol.getAtomCount(); i++) {
                 mol.getAtom(i).setFlag(CDKConstants.ISAROMATIC, false);
-                jloop:
-                for (int j = 0; j < ringSet.getAtomContainerCount(); j++) {
+                jloop: for (int j = 0; j < ringSet.getAtomContainerCount(); j++) {
                     //logger.debug(i+"\t"+j);
                     IRing ring = (IRing) ringSet.getAtomContainer(j);
                     if (!ring.getFlag(CDKConstants.ISAROMATIC)) {

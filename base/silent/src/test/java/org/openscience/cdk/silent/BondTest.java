@@ -1,26 +1,21 @@
-/* $RCSfile$
- * $Author$    
- * $Date$    
- * $Revision$
- * 
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
- * 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 package org.openscience.cdk.silent;
 
@@ -40,8 +35,11 @@ import org.openscience.cdk.interfaces.ITestObjectBuilder;
  */
 public class BondTest extends AbstractBondTest {
 
-    @BeforeClass public static void setUp() {
+    @BeforeClass
+    public static void setUp() {
         setTestObjectBuilder(new ITestObjectBuilder() {
+
+            @Override
             public IChemObject newTestObject() {
                 return new Bond();
             }
@@ -61,11 +59,11 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_arrayIAtom() {
         IChemObject object = newChemObject();
-        IAtom atom1 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom2 = object.getBuilder().newInstance(IAtom.class,"O");
-        IAtom atom3 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom4 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom5 = object.getBuilder().newInstance(IAtom.class,"C");
+        IAtom atom1 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom2 = object.getBuilder().newInstance(IAtom.class, "O");
+        IAtom atom3 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom4 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom5 = object.getBuilder().newInstance(IAtom.class, "C");
 
         IBond bond1 = new Bond(new IAtom[]{atom1, atom2, atom3, atom4, atom5});
         Assert.assertEquals(5, bond1.getAtomCount());
@@ -76,11 +74,11 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_arrayIAtom_IBond_Order() {
         IChemObject object = newChemObject();
-        IAtom atom1 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom2 = object.getBuilder().newInstance(IAtom.class,"O");
-        IAtom atom3 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom4 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom5 = object.getBuilder().newInstance(IAtom.class,"C");
+        IAtom atom1 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom2 = object.getBuilder().newInstance(IAtom.class, "O");
+        IAtom atom3 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom4 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom5 = object.getBuilder().newInstance(IAtom.class, "C");
 
         IBond bond1 = new Bond(new IAtom[]{atom1, atom2, atom3, atom4, atom5}, IBond.Order.SINGLE);
         Assert.assertEquals(5, bond1.getAtomCount());
@@ -92,8 +90,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -106,8 +104,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom_IBond_Order() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o, IBond.Order.DOUBLE);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -120,8 +118,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom_IBond_Order_IBond_Stereo() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o, IBond.Order.SINGLE, IBond.Stereo.UP);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -132,41 +130,76 @@ public class BondTest extends AbstractBondTest {
     }
 
     // Overwrite default methods: no notifications are expected!
-    
-    @Test public void testNotifyChanged() {
+
+    @Test
+    @Override
+    public void testNotifyChanged() {
         ChemObjectTestHelper.testNotifyChanged(newChemObject());
     }
-    @Test public void testNotifyChanged_SetFlag() {
+
+    @Test
+    @Override
+    public void testNotifyChanged_SetFlag() {
         ChemObjectTestHelper.testNotifyChanged_SetFlag(newChemObject());
     }
-    @Test public void testNotifyChanged_SetFlags() {
+
+    @Test
+    @Override
+    public void testNotifyChanged_SetFlags() {
         ChemObjectTestHelper.testNotifyChanged_SetFlags(newChemObject());
     }
-    @Test public void testNotifyChanged_IChemObjectChangeEvent() {
+
+    @Test
+    @Override
+    public void testNotifyChanged_IChemObjectChangeEvent() {
         ChemObjectTestHelper.testNotifyChanged_IChemObjectChangeEvent(newChemObject());
     }
-    @Test public void testStateChanged_IChemObjectChangeEvent() {
+
+    @Test
+    @Override
+    public void testStateChanged_IChemObjectChangeEvent() {
         ChemObjectTestHelper.testStateChanged_IChemObjectChangeEvent(newChemObject());
     }
-    @Test public void testClone_ChemObjectListeners() throws Exception {
+
+    @Test
+    @Override
+    public void testClone_ChemObjectListeners() throws Exception {
         ChemObjectTestHelper.testClone_ChemObjectListeners(newChemObject());
     }
-    @Test public void testAddListener_IChemObjectListener() {
+
+    @Test
+    @Override
+    public void testAddListener_IChemObjectListener() {
         ChemObjectTestHelper.testAddListener_IChemObjectListener(newChemObject());
     }
-    @Test public void testGetListenerCount() {
+
+    @Test
+    @Override
+    public void testGetListenerCount() {
         ChemObjectTestHelper.testGetListenerCount(newChemObject());
     }
-    @Test public void testRemoveListener_IChemObjectListener() {
+
+    @Test
+    @Override
+    public void testRemoveListener_IChemObjectListener() {
         ChemObjectTestHelper.testRemoveListener_IChemObjectListener(newChemObject());
     }
-    @Test public void testSetNotification_true() {
+
+    @Test
+    @Override
+    public void testSetNotification_true() {
         ChemObjectTestHelper.testSetNotification_true(newChemObject());
     }
-    @Test public void testNotifyChanged_SetProperty() {
+
+    @Test
+    @Override
+    public void testNotifyChanged_SetProperty() {
         ChemObjectTestHelper.testNotifyChanged_SetProperty(newChemObject());
     }
-    @Test public void testNotifyChanged_RemoveProperty() {
+
+    @Test
+    @Override
+    public void testNotifyChanged_RemoveProperty() {
         ChemObjectTestHelper.testNotifyChanged_RemoveProperty(newChemObject());
     }
 }

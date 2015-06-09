@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -52,12 +47,10 @@ public class PharmacophoreUtilityTest {
     public static void loadConformerData() {
         String filename = "data/mdl/pcoretest1.sdf";
         InputStream ins = PharmacophoreUtilityTest.class.getClassLoader().getResourceAsStream(filename);
-        IteratingMDLConformerReader reader = new IteratingMDLConformerReader(
-            ins, DefaultChemObjectBuilder.getInstance()
-        );
+        IteratingMDLConformerReader reader = new IteratingMDLConformerReader(ins,
+                DefaultChemObjectBuilder.getInstance());
         if (reader.hasNext()) PharmacophoreUtilityTest.conformers = (ConformerContainer) reader.next();
     }
-
 
     @Test
     public void testReadPcoreDef() throws Exception {
@@ -77,7 +70,7 @@ public class PharmacophoreUtilityTest {
         Assert.assertEquals(3, def2.getAtomCount());
         Assert.assertEquals(3, def2.getBondCount());
         Assert.assertNull(def2.getProperty(CDKConstants.TITLE));
-        
+
         String[] ids = {"Aromatic", "Hydroxyl", "BasicAmine"};
         for (IAtom atom : def2.atoms()) {
             String sym = atom.getSymbol();
@@ -104,7 +97,6 @@ public class PharmacophoreUtilityTest {
         Assert.assertEquals(3, def1.getAtomCount());
         Assert.assertEquals(2, def1.getBondCount());
         Assert.assertEquals("A modified definition for the D1 receptor", def1.getProperty("description"));
-
 
         String[] ids = {"Aromatic", "Hydroxyl", "BasicAmine"};
         for (IAtom atom : def1.atoms()) {
@@ -174,4 +166,3 @@ public class PharmacophoreUtilityTest {
         return alist.toArray(new IAtom[]{});
     }
 }
-

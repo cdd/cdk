@@ -18,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.charges.Electronegativity;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -59,22 +57,21 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.dictref qsar-descriptors:sigmaElectronegativity
  * @see Electronegativity
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.SigmaElectronegativityDescriptorTest")
 public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
-	/**Number of maximum iterations*/
-    private int maxIterations = 0;
 
-    private static final String[] descriptorNames = {"elecSigmA"};
-    
-	private Electronegativity electronegativity;
+    /**Number of maximum iterations*/
+    private int                   maxIterations   = 0;
+
+    private static final String[] NAMES = {"elecSigmA"};
+
+    private Electronegativity     electronegativity;
 
     /**
      *  Constructor for the SigmaElectronegativityDescriptor object
      */
     public SigmaElectronegativityDescriptor() {
-    	electronegativity = new Electronegativity();
-  }
-
+        electronegativity = new Electronegativity();
+    }
 
     /**
      *  Gets the specification attribute of the SigmaElectronegativityDescriptor
@@ -82,14 +79,12 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      *
      *@return    The specification value
      */
-    @TestMethod(value="testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#sigmaElectronegativity",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#sigmaElectronegativity", this
+                        .getClass().getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the SigmaElectronegativityDescriptor
@@ -98,19 +93,17 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      *@param  params            1: max iterations (optional, defaults to 20)
      *@exception  CDKException  Description of the Exception
      */
-    @TestMethod(value="testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length > 1) {
             throw new CDKException("SigmaElectronegativityDescriptor only expects one parameter");
         }
-        if (!(params[0] instanceof Integer) ){
+        if (!(params[0] instanceof Integer)) {
             throw new CDKException("The parameter must be of type Integer");
         }
-        if(params.length==0)
-        	return;
+        if (params.length == 0) return;
         maxIterations = (Integer) params[0];
     }
-
 
     /**
      *  Gets the parameters attribute of the SigmaElectronegativityDescriptor
@@ -118,7 +111,7 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      *
      *@return    The parameters value
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[1];
@@ -126,11 +119,10 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return descriptorNames;
+        return NAMES;
     }
-
 
     /**
      *  The method calculates the sigma electronegativity of a given atom
@@ -140,7 +132,7 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      *@param  ac                AtomContainer
      *@return                   return the sigma electronegativity
      */
-    @TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer ac) {
 
         IAtomContainer clone;
@@ -150,21 +142,20 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
             localAtom = clone.getAtom(ac.getAtomNumber(atom));
             AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(clone);
         } catch (CDKException e) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(Double.NaN), descriptorNames, e);
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    Double.NaN), NAMES, e);
         } catch (CloneNotSupportedException e) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new DoubleResult(Double.NaN), descriptorNames, e);
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                    Double.NaN), NAMES, e);
         }
 
         if (maxIterations != -1 && maxIterations != 0) electronegativity.setMaxIterations(maxIterations);
 
         double result = electronegativity.calculateSigmaElectronegativity(clone, localAtom);
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new DoubleResult(result), descriptorNames);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(result),
+                                   NAMES);
     }
-
 
     /**
      *  Gets the parameterNames attribute of the SigmaElectronegativityDescriptor
@@ -172,13 +163,12 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "maxIterations";
         return params;
     }
-
 
     /**
      *  Gets the parameterType attribute of the SigmaElectronegativityDescriptor
@@ -187,9 +177,8 @@ public class SigmaElectronegativityDescriptor extends AbstractAtomicDescriptor i
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
-        return 0; 
+        return 0;
     }
 }
-

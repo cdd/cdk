@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
+/* Copyright (C) 2004-2007  Miguel Rojas <miguel.rojas@uni-koeln.de>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -44,20 +36,20 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  *    Valence Shell Electron Pair Repulsion or VSEPR model and at the same time its
  *    hybridization of atoms in a molecule.
  *
- *  <p>The basic premise of the model is that the electrons are paired in a molecule 
- *    and that the molecule geometry is determined only by the repulsion between the pairs. 
+ *  <p>The basic premise of the model is that the electrons are paired in a molecule
+ *    and that the molecule geometry is determined only by the repulsion between the pairs.
  *    The geometry adopted by a molecule is then the one in which the repulsions are minimized.
  *
  *  <p>It counts the number of electron pairs in the Lewis dot diagram which
  *   are attached to an atom. Then uses the following table.
  * <pre>
  * <table border="1">
- *   <tr>  
+ *   <tr>
  * 	  <td>pairs on an atom</td>
  *    <td>hybridization of the atom</td>
  *    <td>geometry</td>
- *    <td>number for CDK.Constants</td> 
- *   </tr>   
+ *    <td>number for CDK.Constants</td>
+ *   </tr>
  *   <tr><td>2</td><td>sp</td><td>linear</td><td>1</td></tr>
  *   <tr><td>3</td><td>sp^2</td><td>trigonal planar</td><td>2</td></tr>
  *   <tr><td>4</td><td>sp^3</td><td>tetrahedral</td><td>3</td></tr>
@@ -69,7 +61,7 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  * </table>
  * </pre>
  *
- *  <p>This table only works if the central atom is a p-block element 
+ *  <p>This table only works if the central atom is a p-block element
  *   (groups IIA through VIIIA), not a transition metal.
  *
  *
@@ -94,114 +86,101 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  *@cdk.set        qsar-descriptors
  * @cdk.dictref qsar-descriptors:atomHybridizationVSEPR
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.AtomHybridizationVSEPRDescriptorTest")
 public class AtomHybridizationVSEPRDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
-	/**
-	 *  Constructor for the AtomHybridizationVSEPRDescriptor object
-	 */
-	public AtomHybridizationVSEPRDescriptor() {}
+    /**
+     *  Constructor for the AtomHybridizationVSEPRDescriptor object
+     */
+    public AtomHybridizationVSEPRDescriptor() {}
 
-	/**
-	 *  Gets the specification attribute of the AtomHybridizationVSEPRDescriptor object
-	 *
-	 *@return    The specification value
-	 */
-	@TestMethod(value="testGetSpecification")
+    /**
+     *  Gets the specification attribute of the AtomHybridizationVSEPRDescriptor object
+     *
+     *@return    The specification value
+     */
+    @Override
     public DescriptorSpecification getSpecification() {
-		return new DescriptorSpecification(
-				"http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomHybridizationVSEPR",
-				this.getClass().getName(),
-				"The Chemistry Development Kit");
-	}
+        return new DescriptorSpecification(
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomHybridizationVSEPR", this
+                        .getClass().getName(), "The Chemistry Development Kit");
+    }
 
-
-	/**
+    /**
      * This descriptor does have any parameter.
      */
-	@TestMethod(value="testSetParameters_arrayObject")
-    public void setParameters(Object[] params) throws CDKException {
-	}
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
-
-	/**
-	 *  Gets the parameters attribute of the AtomHybridizationVSEPRDescriptor object
-	 *
-	 * @return    The parameters value
+    /**
+     *  Gets the parameters attribute of the AtomHybridizationVSEPRDescriptor object
+     *
+     * @return    The parameters value
      * @see       #setParameters
-	 */
-	@TestMethod(value="testGetParameters")
+     */
+    @Override
     public Object[] getParameters() {
-		return null;
-	}
+        return null;
+    }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return new String[]{"hybr"};
     }
 
-
     /**
-	 *  This method calculates the hybridization of an atom.
-	 *
-	 *@param  atom              The IAtom for which the DescriptorValue is requested
+     *  This method calculates the hybridization of an atom.
+     *
+     *@param  atom              The IAtom for which the DescriptorValue is requested
      *@param  container         Parameter is the atom container.
-	 *@return                   The hybridization
-	 */
+     *@return                   The hybridization
+     */
 
-	@TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer container) {
         IAtomType atomType;
         try {
             atomType = CDKAtomTypeMatcher.getInstance(atom.getBuilder()).findMatchingAtomType(container, atom);
         } catch (CDKException e) {
-            return new DescriptorValue(
-                    getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), // does that work??
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), // does that work??
                     getDescriptorNames(), new CDKException("Atom type was null"));
         }
         if (atomType == null) {
-            return new DescriptorValue(
-                    getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), // does that work??
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), // does that work??
                     getDescriptorNames(), new CDKException("Atom type was null"));
 
         }
 
         if (atomType.getHybridization() == null) {
-            return new DescriptorValue(
-                    getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), // does that work??
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), // does that work??
                     getDescriptorNames(), new CDKException("Hybridization was null"));
         }
         int hybridizationCDK = atomType.getHybridization().ordinal();
 
-        return new DescriptorValue(
-                getSpecification(), getParameterNames(), getParameters(),
-                new IntegerResult(hybridizationCDK),
-                getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                hybridizationCDK), getDescriptorNames());
     }
 
     /**
      *  Gets the parameterNames attribute of the AtomHybridizationVSEPRDescriptor object
-	 *
-	 *@return    The parameterNames value
-	 */
-	@TestMethod(value="testGetParameterNames")
+     *
+     *@return    The parameterNames value
+     */
+    @Override
     public String[] getParameterNames() {
         return new String[0];
-	}
+    }
 
-
-	/**
-	 *  Gets the parameterType attribute of the AtomHybridizationVSEPRDescriptor object
-	 *
-	 *@param  name  Description of the Parameter
+    /**
+     *  Gets the parameterType attribute of the AtomHybridizationVSEPRDescriptor object
+     *
+     *@param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
-	 */
-	@TestMethod(value="testGetParameterType_String")
+     */
+    @Override
     public Object getParameterType(String name) {
-		return null;
-	}
+        return null;
+    }
 }
-

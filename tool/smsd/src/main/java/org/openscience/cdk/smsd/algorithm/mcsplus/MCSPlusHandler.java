@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -47,16 +45,15 @@ import org.openscience.cdk.smsd.tools.MolHandler;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.SMSDBondSensitiveTest")
 public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
 
-    private static List<Map<IAtom, IAtom>> allAtomMCS = null;
-    private static Map<IAtom, IAtom> atomsMCS = null;
-    private static Map<Integer, Integer> firstMCS = null;
-    private static List<Map<Integer, Integer>> allMCS = null;
-    private IAtomContainer source = null;
-    private IAtomContainer target = null;
-    private boolean flagExchange = false;
+    private static List<Map<IAtom, IAtom>>     allAtomMCS   = null;
+    private static Map<IAtom, IAtom>           atomsMCS     = null;
+    private static Map<Integer, Integer>       firstMCS     = null;
+    private static List<Map<Integer, Integer>> allMCS       = null;
+    private IAtomContainer                     source       = null;
+    private IAtomContainer                     target       = null;
+    private boolean                            flagExchange = false;
 
     /**
      * Constructor for the MCS Plus algorithm class
@@ -73,7 +70,7 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
      * @param source
      * @param target
      */
-    @TestMethod("testSet_MolHandler_MolHandler")
+    @Override
     public synchronized void set(MolHandler source, MolHandler target) {
         this.source = source.getMolecule();
         this.target = target.getMolecule();
@@ -84,7 +81,7 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
      * @param source
      * @param target
      */
-    @TestMethod("testSet_IQueryAtomContainer_MolHandler")
+    @Override
     public void set(IQueryAtomContainer source, IAtomContainer target) {
         this.source = source;
         this.target = target;
@@ -93,10 +90,9 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
     /** {@inheritDoc}
      * Function is called by the main program and serves as a starting point for the comparison procedure.
      *
-     * @param shouldMatchBonds 
+     * @param shouldMatchBonds
      */
     @Override
-    @TestMethod("testSearchMCS")
     public synchronized void searchMCS(boolean shouldMatchBonds) {
         List<List<Integer>> mappings = null;
         try {
@@ -119,10 +115,10 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
     private synchronized void setAllMapping() {
         try {
 
-            List<Map<Integer, Integer>> final_solution = FinalMappings.getInstance().getFinalMapping();
+            List<Map<Integer, Integer>> finalSolution = FinalMappings.getInstance().getFinalMapping();
             int counter = 0;
-            for (Map<Integer, Integer> solution : final_solution) {
-//                System.out.println("Number of MCS solution: " + solution);
+            for (Map<Integer, Integer> solution : finalSolution) {
+                //                System.out.println("Number of MCS solution: " + solution);
                 Map<Integer, Integer> validSolution = new TreeMap<Integer, Integer>();
                 if (!flagExchange) {
                     for (Map.Entry<Integer, Integer> map : solution.entrySet()) {
@@ -150,14 +146,14 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
                 Map<IAtom, IAtom> atomMappings = new HashMap<IAtom, IAtom>();
                 for (Map.Entry<Integer, Integer> map : solution.entrySet()) {
 
-                    int IIndex = map.getKey();
-                    int JIndex = map.getValue();
+                    int iIndex = map.getKey();
+                    int jIndex = map.getValue();
 
                     IAtom sourceAtom = null;
                     IAtom targetAtom = null;
 
-                    sourceAtom = source.getAtom(IIndex);
-                    targetAtom = target.getAtom(JIndex);
+                    sourceAtom = source.getAtom(iIndex);
+                    targetAtom = target.getAtom(jIndex);
                     atomMappings.put(sourceAtom, targetAtom);
                 }
                 allAtomMCS.add(counter++, atomMappings);
@@ -182,28 +178,28 @@ public class MCSPlusHandler extends AbstractMCSAlgorithm implements IMCSBase {
 
     /** {@inheritDoc}
      */
-    @TestMethod("testSearchMCS")
+    @Override
     public synchronized List<Map<Integer, Integer>> getAllMapping() {
         return allMCS;
     }
 
     /** {@inheritDoc}
      */
-    @TestMethod("testSearchMCS")
+    @Override
     public synchronized Map<Integer, Integer> getFirstMapping() {
         return firstMCS;
     }
 
     /** {@inheritDoc}
      */
-    @TestMethod("testSearchMCS")
+    @Override
     public synchronized List<Map<IAtom, IAtom>> getAllAtomMapping() {
         return allAtomMCS;
     }
 
     /** {@inheritDoc}
      */
-    @TestMethod("testSearchMCS")
+    @Override
     public synchronized Map<IAtom, IAtom> getFirstAtomMapping() {
         return atomsMCS;
     }

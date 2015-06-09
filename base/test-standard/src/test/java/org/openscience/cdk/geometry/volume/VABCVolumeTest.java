@@ -1,20 +1,20 @@
 /* Copyright (C) 2011  Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.geometry.volume;
 
@@ -39,9 +39,7 @@ public class VABCVolumeTest {
 
     @BeforeClass
     public static void setup() {
-        smilesParser = new SmilesParser(
-            SilentChemObjectBuilder.getInstance()
-        );
+        smilesParser = new SmilesParser(SilentChemObjectBuilder.getInstance());
     }
 
     @Test
@@ -52,13 +50,13 @@ public class VABCVolumeTest {
         Assert.assertEquals(25.8524433266667, volume, 0.01);
     }
 
-    @Test(expected=CDKException.class)
+    @Test(expected = CDKException.class)
     public void testIronChloride() throws InvalidSmilesException, CDKException {
         IAtomContainer methane = smilesParser.parseSmiles("Cl[Fe]Cl");
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(methane);
         VABCVolume.calculate(methane);
     }
-    
+
     @Test
     public void testOmeprazol() throws InvalidSmilesException, CDKException {
         IAtomContainer methane = smilesParser.parseSmiles("COc2ccc1[nH]c(nc1c2)S(=O)Cc3ncc(C)c(OC)c3C");

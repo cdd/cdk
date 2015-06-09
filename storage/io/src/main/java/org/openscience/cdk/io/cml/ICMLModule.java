@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -37,16 +35,20 @@ import org.xml.sax.Attributes;
  *
  * @author Egon Willighagen <egonw@sci.kun.nl>
  **/
-public interface ICMLModule{
+public interface ICMLModule {
 
-  void startDocument();
-  void endDocument();
-  void startElement(CMLStack xpath, String uri, String local, String raw, Attributes atts);
-  void endElement(CMLStack xpath, String uri, String local, String raw);
-  void characterData(CMLStack xpath, char ch[], int start, int length);
-  
-  IChemFile returnChemFile();
+    void startDocument();
 
-  void inherit(ICMLModule conv);
-  
+    void endDocument();
+
+    void startElement(CMLStack xpath, String uri, String local, String raw, Attributes atts);
+
+    void endElement(CMLStack xpath, String uri, String local, String raw);
+
+    void characterData(CMLStack xpath, char ch[], int start, int length);
+
+    IChemFile returnChemFile();
+
+    void inherit(ICMLModule conv);
+
 }

@@ -22,12 +22,11 @@ import java.util.List;
 
 public class MDEDescriptorTest extends MolecularDescriptorTest {
 
-    public MDEDescriptorTest() {
-    }
+    public MDEDescriptorTest() {}
 
     @Before
     public void setUp() throws Exception {
-    	setDescriptor(MDEDescriptor.class);
+        setDescriptor(MDEDescriptor.class);
     }
 
     @Test
@@ -41,10 +40,11 @@ public class MDEDescriptorTest extends MolecularDescriptorTest {
 
         DoubleArrayResult result = (DoubleArrayResult) descriptor.calculate(ac).getValue();
 
-        for (int i = 0; i < 19; i++) System.out.println(result.get(i));
-        
-        Assert.assertEquals(0.0000, result.get(MDEDescriptor.mdeo11), 0.0001);
-        Assert.assertEquals(1.1547, result.get(MDEDescriptor.mdeo12), 0.0001);
-        Assert.assertEquals(2.9416, result.get(MDEDescriptor.mdeo22), 0.0001);
+        for (int i = 0; i < 19; i++)
+            System.out.println(result.get(i));
+
+        Assert.assertEquals(0.0000, result.get(MDEDescriptor.MDEO11), 0.0001);
+        Assert.assertEquals(1.1547, result.get(MDEDescriptor.MDEO12), 0.0001);
+        Assert.assertEquals(2.9416, result.get(MDEDescriptor.MDEO22), 0.0001);
     }
 }

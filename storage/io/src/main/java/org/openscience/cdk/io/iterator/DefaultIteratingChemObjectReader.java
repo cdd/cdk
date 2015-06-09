@@ -19,17 +19,12 @@
  */
 package org.openscience.cdk.io.iterator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.io.ChemObjectIO;
 import org.openscience.cdk.io.IChemObjectReader;
 import org.openscience.cdk.io.IChemObjectReaderErrorHandler;
 import org.openscience.cdk.io.ISimpleChemObjectReader;
-import org.openscience.cdk.io.listener.IChemObjectIOListener;
-import org.openscience.cdk.io.setting.IOSetting;
 
 /**
  * Abstract class that IteratingChemObjectReader's can implement to have it
@@ -38,63 +33,65 @@ import org.openscience.cdk.io.setting.IOSetting;
  * @cdk.module io
  * @cdk.githash
  */
-public abstract class DefaultIteratingChemObjectReader<T extends IChemObject>
-    extends ChemObjectIO
-    implements IIteratingChemObjectReader<T> {
+public abstract class DefaultIteratingChemObjectReader<T extends IChemObject> extends ChemObjectIO implements
+        IIteratingChemObjectReader<T> {
 
-    protected IChemObjectReader.Mode mode = IChemObjectReader.Mode.RELAXED;
+    protected IChemObjectReader.Mode        mode         = IChemObjectReader.Mode.RELAXED;
     protected IChemObjectReaderErrorHandler errorHandler = null;
-	
-    public boolean accepts(Class objectClass) {
+
+    @Override
+    public boolean accepts(Class<? extends IChemObject> objectClass) {
         return false; // it's an iterator, idiot.
     }
-    
+
     /* Extra convenience methods */
-    
+
     /**
      * File IO generally does not support removing of entries.
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void setReaderMode(ISimpleChemObjectReader.Mode mode) {
-    	this.mode = mode;
+        this.mode = mode;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setErrorHandler(IChemObjectReaderErrorHandler handler) {
         this.errorHandler = handler;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(String message) throws CDKException {
         if (this.errorHandler != null) this.errorHandler.handleError(message);
         if (this.mode == Mode.STRICT) throw new CDKException(message);
     }
 
     /** {@inheritDoc} */
-    public void handleError(String message, Exception exception)
-    throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, exception);
+    @Override
+    public void handleError(String message, Exception exception) throws CDKException {
+        if (this.errorHandler != null) this.errorHandler.handleError(message, exception);
         if (this.mode == Mode.STRICT) {
             throw new CDKException(message, exception);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleError(String message, int row, int colStart, int colEnd) throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, row, colStart, colEnd);
+        if (this.errorHandler != null) this.errorHandler.handleError(message, row, colStart, colEnd);
         if (this.mode == Mode.STRICT) throw new CDKException(message);
     }
 
     /** {@inheritDoc} */
-    public void handleError(String message, int row, int colStart, int colEnd, Exception exception)
-    throws CDKException {
-        if (this.errorHandler != null)
-            this.errorHandler.handleError(message, row, colStart, colEnd, exception);
+    @Override
+    public void handleError(String message, int row, int colStart, int colEnd, Exception exception) throws CDKException {
+        if (this.errorHandler != null) this.errorHandler.handleError(message, row, colStart, colEnd, exception);
         if (this.mode == Mode.STRICT) {
             throw new CDKException(message, exception);
         }

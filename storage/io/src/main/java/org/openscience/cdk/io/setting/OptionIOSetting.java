@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The CDK Development Team
+/* Copyright (C) 2003-2007  The CDK Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,7 +23,7 @@ import java.util.List;
 import org.openscience.cdk.exception.CDKException;
 
 /**
- * An class for a reader setting which must be found in the list 
+ * An class for a reader setting which must be found in the list
  * of possible settings.
  *
  * @cdk.module io
@@ -39,26 +34,25 @@ import org.openscience.cdk.exception.CDKException;
 public class OptionIOSetting extends IOSetting {
 
     private List<String> settings;
-    
+
     /**
      * OptionIOSetting is IOSetting for which the value must be
      * in the list of possible options.
      */
-    public OptionIOSetting(String name, Importance level, 
-                           String question, List<String> settings, 
-                           String defaultSetting) {
+    public OptionIOSetting(String name, Importance level, String question, List<String> settings, String defaultSetting) {
         super(name, level, question, defaultSetting);
         this.settings = settings;
         if (!this.settings.contains(defaultSetting)) {
             this.settings.add(defaultSetting);
         }
     }
-    
+
     /**
      * Sets the setting for a certain question. It will throw
-     * a CDKException when the setting is not valid.    
+     * a CDKException when the setting is not valid.
      *
      */
+    @Override
     public void setSetting(String setting) throws CDKException {
         if (settings.contains(setting)) {
             this.setting = setting;
@@ -75,17 +69,17 @@ public class OptionIOSetting extends IOSetting {
      */
     public void setSetting(int setting) throws CDKException {
         if (setting < settings.size() + 1 && setting > 0) {
-            this.setting = (String)settings.get(setting-1);
+            this.setting = (String) settings.get(setting - 1);
         } else {
             throw new CDKException("Setting " + setting + " does not exist.");
         }
     }
-    
+
     /**
      * Returns a Vector of Strings containing all possible options.
      */
     public List<String> getOptions() {
         return settings;
     }
-    
+
 }

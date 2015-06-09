@@ -17,6 +17,7 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS AST
  */
 class ASTHybrdizationNumber extends SimpleNode {
+
     int hybridizationNumber;
 
     public ASTHybrdizationNumber(int id) {
@@ -38,6 +39,7 @@ class ASTHybrdizationNumber extends SimpleNode {
     /**
      * Accept the visitor. *
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

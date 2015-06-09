@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -29,7 +29,6 @@ import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.templates.TestMoleculeFactory;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,16 +42,16 @@ import static org.junit.Assert.assertNotNull;
  */
 public class StateStreamTest {
 
-    @Test public void hasNext() throws Exception {
-        VFSubState state = createNaphthaleneToBenzene(AtomMatcher.forAny(),
-                                                      BondMatcher.forAny());
+    @Test
+    public void hasNext() throws Exception {
+        VFSubState state = createNaphthaleneToBenzene(AtomMatcher.forAny(), BondMatcher.forAny());
         Iterator<int[]> it = new StateStream(state);
         assertFalse(it.hasNext());
     }
 
-    @Test public void hasNext2() throws Exception {
-        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(),
-                                                      BondMatcher.forAny());
+    @Test
+    public void hasNext2() throws Exception {
+        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(), BondMatcher.forAny());
         int cnt = 0;
         Iterator<int[]> it = new StateStream(state);
         while (it.hasNext()) {
@@ -62,9 +61,9 @@ public class StateStreamTest {
         assertThat(cnt, is(24));
     }
 
-    @Test public void next() throws Exception {
-        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(),
-                                                      BondMatcher.forAny());
+    @Test
+    public void next() throws Exception {
+        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(), BondMatcher.forAny());
         Iterator<int[]> it = new StateStream(state);
         assertThat(it.next(), is(new int[]{0, 1, 2, 7, 8, 9}));
         assertThat(it.next(), is(new int[]{0, 9, 8, 7, 2, 1}));
@@ -88,14 +87,13 @@ public class StateStreamTest {
         assertThat(it.next(), is(new int[]{7, 8, 9, 0, 1, 2}));
         assertThat(it.next(), is(new int[]{8, 7, 2, 1, 0, 9}));
         assertThat(it.next(), is(new int[]{8, 9, 0, 1, 2, 7}));
-        assertThat(it.next(), is(new int[]{9, 0, 1, 2, 7, 8}));     
+        assertThat(it.next(), is(new int[]{9, 0, 1, 2, 7, 8}));
         assertThat(it.next(), is(new int[]{9, 8, 7, 2, 1, 0}));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void remove() throws Exception {
-        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(),
-                                                      BondMatcher.forAny());
+        VFSubState state = createBenzeneToNaphthalene(AtomMatcher.forAny(), BondMatcher.forAny());
         Iterator<int[]> it = new StateStream(state);
         it.remove();
     }
@@ -108,8 +106,7 @@ public class StateStreamTest {
      *
      * Naphthalene: InChI=1/C10H8/c1-2-6-10-8-4-3-7-9(10)5-1/h1-8H
      */
-    VFSubState createBenzeneToNaphthalene(AtomMatcher atomMatcher,
-                                          BondMatcher bondMatcher) throws Exception {
+    VFSubState createBenzeneToNaphthalene(AtomMatcher atomMatcher, BondMatcher bondMatcher) throws Exception {
         IAtomContainer container1 = TestMoleculeFactory.makeBenzene();
         IAtomContainer container2 = TestMoleculeFactory.makeNaphthalene();
         GraphUtil.EdgeToBondMap bonds1 = GraphUtil.EdgeToBondMap.withSpaceFor(container1);
@@ -126,8 +123,7 @@ public class StateStreamTest {
      *
      * Naphthalene: InChI=1/C10H8/c1-2-6-10-8-4-3-7-9(10)5-1/h1-8H
      */
-    VFSubState createNaphthaleneToBenzene(AtomMatcher atomMatcher,
-                                          BondMatcher bondMatcher) throws Exception {
+    VFSubState createNaphthaleneToBenzene(AtomMatcher atomMatcher, BondMatcher bondMatcher) throws Exception {
         IAtomContainer container1 = TestMoleculeFactory.makeNaphthalene();
         IAtomContainer container2 = TestMoleculeFactory.makeBenzene();
         GraphUtil.EdgeToBondMap bonds1 = GraphUtil.EdgeToBondMap.withSpaceFor(container1);

@@ -1,9 +1,4 @@
-/* $RCSfile: $
- * $Author$
- * $Date$  
- * $Revision$
- *
- * Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -35,28 +30,29 @@ import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * Utility that helps determine which data features are present.
- * 
+ *
  * @author egonw
  * @cdk.githash
- * 
+ *
  * @see    DataFeatures
  */
 public class MoleculeFeaturesTool {
 
     public static boolean hasPartialCharges(IAtomContainer molecule) {
-        for (IAtom atom : molecule.atoms()) if (atom.getCharge() != 0.0000) return true;
+        for (IAtom atom : molecule.atoms())
+            if (atom.getCharge() != 0.0000) return true;
         return false;
     }
 
     public static boolean hasFormalCharges(IAtomContainer molecule) {
-        for (IAtom atom : molecule.atoms()) if (atom.getFormalCharge() != 0) return true;
+        for (IAtom atom : molecule.atoms())
+            if (atom.getFormalCharge() != 0) return true;
         return false;
     }
 
     public static boolean hasElementSymbols(IAtomContainer molecule) {
         for (IAtom atom : molecule.atoms()) {
-            if (atom.getSymbol() != null &&
-                atom.getSymbol().length() > 0) return true;
+            if (atom.getSymbol() != null && atom.getSymbol().length() > 0) return true;
         }
         return false;
     }
@@ -64,8 +60,9 @@ public class MoleculeFeaturesTool {
     /**
      * Checks whether all bonds have exactly two atoms.
      */
-    public static boolean hasGraphRepresentation(IAtomContainer molecule) {        
-        for (IBond bond : molecule.bonds()) if (bond.getAtomCount() != 2) return false;
+    public static boolean hasGraphRepresentation(IAtomContainer molecule) {
+        for (IBond bond : molecule.bonds())
+            if (bond.getAtomCount() != 2) return false;
         return true;
     }
 

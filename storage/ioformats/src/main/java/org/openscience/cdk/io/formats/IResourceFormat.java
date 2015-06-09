@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$  
- * $Revision$
- *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -61,12 +56,11 @@ public interface IResourceFormat {
      * @return null if no MIME type has been accepted on
      */
     public String getMIMEType();
-    
+
     /**
      * Indicates if the format is an XML-based language.
-     * 
+     *
      * @return if the format is XML-based.
      */
     public boolean isXMLBased();
 }
-

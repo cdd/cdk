@@ -1,6 +1,5 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
+ *                    2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,32 +24,38 @@
  */
 package org.openscience.cdk.io.cml;
 
+import java.util.StringTokenizer;
+
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
-import org.openscience.cdk.qsar.result.*;
-import org.xml.sax.Attributes;
+import org.openscience.cdk.qsar.result.BooleanResult;
+import org.openscience.cdk.qsar.result.DoubleArrayResult;
+import org.openscience.cdk.qsar.result.DoubleResult;
+import org.openscience.cdk.qsar.result.IDescriptorResult;
+import org.openscience.cdk.qsar.result.IntegerArrayResult;
+import org.openscience.cdk.qsar.result.IntegerResult;
 
-import java.util.StringTokenizer;
+import org.xml.sax.Attributes;
 
 /**
  * This is an implementation for the CDK convention.
  *
  * @cdk.module io
  * @cdk.githash
- * 
+ *
  * @author egonw
  */
 public class QSARConvention extends CMLCoreModule {
 
-    private String currentDescriptorAlgorithmSpecification;
-    private String currentDescriptorImplementationTitel;
-    private String currentDescriptorImplementationVendor;
-    private String currentDescriptorImplementationIdentifier;
-    private String currentDescriptorDataType;
-    private String currentDescriptorResult;
+    private String  currentDescriptorAlgorithmSpecification;
+    private String  currentDescriptorImplementationTitel;
+    private String  currentDescriptorImplementationVendor;
+    private String  currentDescriptorImplementationIdentifier;
+    private String  currentDescriptorDataType;
+    private String  currentDescriptorResult;
     private boolean currentDescriptorDataIsArray;
-	
+
     public QSARConvention(IChemFile chemFile) {
         super(chemFile);
     }
@@ -58,109 +63,102 @@ public class QSARConvention extends CMLCoreModule {
     public QSARConvention(ICMLModule conv) {
         super(conv);
     }
-    
+
+    @Override
     public void startElement(CMLStack xpath, String uri, String local, String raw, Attributes atts) {
-//        <property xmlns:qsar="http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/"
-//            convention="qsar:DescriptorValue">
-//            <metadataList>
-//              <metadata dictRef="qsar:specificationReference" content="qsar:weight"/>
-//              <metadata dictRef="qsar:implementationTitle" content="org.openscience.cdk.qsar.descriptors.atomic.WeightDescriptor"/>
-//              <metadata dictRef="qsar:implementationIdentifier" content="$Id$"/>
-//              <metadata dictRef="qsar:implementationVendor" content="The Chemistry Development Kit"/>
-//              <metadataList title="qsar:descriptorParameters">
-//                <metadata title="elementSymbol" content="*"/>
-//              </metadataList>
-//            </metadataList>
-//            <scalar dataType="xsd:double" dictRef="qsar:weight">72.0</scalar>
-//          </property>
-        
-    	if (xpath.endsWith("molecule", "propertyList", "property")) {
-//    		cdo.startObject("MolecularDescriptor");
-    		currentDescriptorDataIsArray = false;
-    		currentDescriptorAlgorithmSpecification = "";
-    		currentDescriptorImplementationTitel = "";
-    		currentDescriptorImplementationVendor = "";
-    		currentDescriptorImplementationIdentifier = "";
-    		currentDescriptorDataType = "";
-    		currentDescriptorResult = "";
-    	} else if (xpath.endsWith("property", "metadataList", "metadata")) {
-    		super.startElement(xpath, uri, local, raw, atts);
-    		if (DICTREF.equals("qsar:specificationReference")) {
-//    			cdo.setObjectProperty("MolecularDescriptor", "SpecificationReference", atts.getValue("content"));
-    			currentDescriptorAlgorithmSpecification = atts.getValue("content");
-    		} else if (DICTREF.equals("qsar:implementationTitle")) {
-//    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationTitle", atts.getValue("content"));
-    			currentDescriptorImplementationTitel = atts.getValue("content");
-    		} else if (DICTREF.equals("qsar:implementationIdentifier")) {
-//    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationIdentifier", atts.getValue("content"));
-    			currentDescriptorImplementationIdentifier = atts.getValue("content");
-    		} else if (DICTREF.equals("qsar:implementationVendor")) {
-//    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationVendor", atts.getValue("content"));
-    			currentDescriptorImplementationVendor = atts.getValue("content");
-    		}
-    	} else if (xpath.endsWith("propertyList", "property", "scalar")) {
-//    		cdo.setObjectProperty("MolecularDescriptor", "DataType", atts.getValue("dataType"));
-    		currentDescriptorDataType = atts.getValue("dataType");
-    		super.startElement(xpath, uri, local, raw, atts);
+        //        <property xmlns:qsar="http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/"
+        //            convention="qsar:DescriptorValue">
+        //            <metadataList>
+        //              <metadata dictRef="qsar:specificationReference" content="qsar:weight"/>
+        //              <metadata dictRef="qsar:implementationTitle" content="org.openscience.cdk.qsar.descriptors.atomic.WeightDescriptor"/>
+        //              <metadata dictRef="qsar:implementationIdentifier" content="$Id$"/>
+        //              <metadata dictRef="qsar:implementationVendor" content="The Chemistry Development Kit"/>
+        //              <metadataList title="qsar:descriptorParameters">
+        //                <metadata title="elementSymbol" content="*"/>
+        //              </metadataList>
+        //            </metadataList>
+        //            <scalar dataType="xsd:double" dictRef="qsar:weight">72.0</scalar>
+        //          </property>
+
+        if (xpath.endsWith("molecule", "propertyList", "property")) {
+            //    		cdo.startObject("MolecularDescriptor");
+            currentDescriptorDataIsArray = false;
+            currentDescriptorAlgorithmSpecification = "";
+            currentDescriptorImplementationTitel = "";
+            currentDescriptorImplementationVendor = "";
+            currentDescriptorImplementationIdentifier = "";
+            currentDescriptorDataType = "";
+            currentDescriptorResult = "";
+        } else if (xpath.endsWith("property", "metadataList", "metadata")) {
+            super.startElement(xpath, uri, local, raw, atts);
+            if (DICTREF.equals("qsar:specificationReference")) {
+                //    			cdo.setObjectProperty("MolecularDescriptor", "SpecificationReference", atts.getValue("content"));
+                currentDescriptorAlgorithmSpecification = atts.getValue("content");
+            } else if (DICTREF.equals("qsar:implementationTitle")) {
+                //    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationTitle", atts.getValue("content"));
+                currentDescriptorImplementationTitel = atts.getValue("content");
+            } else if (DICTREF.equals("qsar:implementationIdentifier")) {
+                //    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationIdentifier", atts.getValue("content"));
+                currentDescriptorImplementationIdentifier = atts.getValue("content");
+            } else if (DICTREF.equals("qsar:implementationVendor")) {
+                //    			cdo.setObjectProperty("MolecularDescriptor", "ImplementationVendor", atts.getValue("content"));
+                currentDescriptorImplementationVendor = atts.getValue("content");
+            }
+        } else if (xpath.endsWith("propertyList", "property", "scalar")) {
+            //    		cdo.setObjectProperty("MolecularDescriptor", "DataType", atts.getValue("dataType"));
+            currentDescriptorDataType = atts.getValue("dataType");
+            super.startElement(xpath, uri, local, raw, atts);
         } else {
             super.startElement(xpath, uri, local, raw, atts);
         }
     }
 
-    public void endElement (CMLStack xpath, String uri, String local, String raw) {
-    	if (xpath.endsWith("molecule", "propertyList", "property")) {
-//    		cdo.endObject("MolecularDescriptor");
-    		DescriptorSpecification descriptorSpecification = new DescriptorSpecification(
-    			currentDescriptorAlgorithmSpecification,
-    	    	currentDescriptorImplementationTitel,
-    	    	currentDescriptorImplementationIdentifier,
-    	    	currentDescriptorImplementationVendor
-    		);
-    		currentMolecule.setProperty(descriptorSpecification, 
-    	        new DescriptorValue(
-    	        	descriptorSpecification,
-    	    		new String[0], new Object[0],
-    	    		currentDescriptorDataIsArray ?
-    	    		    newDescriptorResultArray(currentDescriptorResult) :
-    	    		    newDescriptorResult(currentDescriptorResult),
-    	    		new String[0])
-    		);
-    	} else if (xpath.endsWith("property", "scalar")) {
-//    		cdo.setObjectProperty("MolecularDescriptor", "DescriptorValue", currentChars);
-    		currentDescriptorResult = currentChars;
-    	} else {
-    		super.endElement(xpath, uri, local, raw);
-    	}
+    @Override
+    public void endElement(CMLStack xpath, String uri, String local, String raw) {
+        if (xpath.endsWith("molecule", "propertyList", "property")) {
+            //    		cdo.endObject("MolecularDescriptor");
+            DescriptorSpecification descriptorSpecification = new DescriptorSpecification(
+                    currentDescriptorAlgorithmSpecification, currentDescriptorImplementationTitel,
+                    currentDescriptorImplementationIdentifier, currentDescriptorImplementationVendor);
+            currentMolecule.setProperty(descriptorSpecification, new DescriptorValue(descriptorSpecification,
+                    new String[0], new Object[0],
+                    currentDescriptorDataIsArray ? newDescriptorResultArray(currentDescriptorResult)
+                            : newDescriptorResult(currentDescriptorResult), new String[0]));
+        } else if (xpath.endsWith("property", "scalar")) {
+            //    		cdo.setObjectProperty("MolecularDescriptor", "DescriptorValue", currentChars);
+            currentDescriptorResult = currentChars;
+        } else {
+            super.endElement(xpath, uri, local, raw);
+        }
     }
 
     private IDescriptorResult newDescriptorResult(String descriptorValue) {
-    	IDescriptorResult result = null;
-    	if ("xsd:double".equals(currentDescriptorDataType)) {
-    		result = new DoubleResult(Double.parseDouble(descriptorValue));    		
-    	} else if ("xsd:integer".equals(currentDescriptorDataType)) {
-    		result = new IntegerResult(Integer.parseInt(descriptorValue));
-    	} else if ("xsd:boolean".equals(currentDescriptorDataType)) {
-    		result = new BooleanResult(new Boolean(descriptorValue).booleanValue());
-    	}
-		return result;
-	}
+        IDescriptorResult result = null;
+        if ("xsd:double".equals(currentDescriptorDataType)) {
+            result = new DoubleResult(Double.parseDouble(descriptorValue));
+        } else if ("xsd:integer".equals(currentDescriptorDataType)) {
+            result = new IntegerResult(Integer.parseInt(descriptorValue));
+        } else if ("xsd:boolean".equals(currentDescriptorDataType)) {
+            result = new BooleanResult(Boolean.valueOf(descriptorValue));
+        }
+        return result;
+    }
 
     private IDescriptorResult newDescriptorResultArray(String descriptorValue) {
-    	IDescriptorResult result = null;
-    	if ("xsd:double".equals(currentDescriptorDataType)) {
-    		result = new DoubleArrayResult();
-    		StringTokenizer tokenizer = new StringTokenizer(descriptorValue);
+        IDescriptorResult result = null;
+        if ("xsd:double".equals(currentDescriptorDataType)) {
+            result = new DoubleArrayResult();
+            StringTokenizer tokenizer = new StringTokenizer(descriptorValue);
             while (tokenizer.hasMoreElements()) {
-                ((DoubleArrayResult)result).add(Double.parseDouble(tokenizer.nextToken()));
+                ((DoubleArrayResult) result).add(Double.parseDouble(tokenizer.nextToken()));
             }
-    	} else if ("xsd:integer".equals(currentDescriptorDataType)) {
-    		result = new IntegerArrayResult();
-    		StringTokenizer tokenizer = new StringTokenizer(descriptorValue);
+        } else if ("xsd:integer".equals(currentDescriptorDataType)) {
+            result = new IntegerArrayResult();
+            StringTokenizer tokenizer = new StringTokenizer(descriptorValue);
             while (tokenizer.hasMoreElements()) {
-                ((IntegerArrayResult)result).add(Integer.parseInt(tokenizer.nextToken()));
+                ((IntegerArrayResult) result).add(Integer.parseInt(tokenizer.nextToken()));
             }
-    	}
-		return result;
-	}
-
+        }
+        return result;
+    }
 }

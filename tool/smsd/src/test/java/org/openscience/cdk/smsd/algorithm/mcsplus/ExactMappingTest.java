@@ -22,15 +22,16 @@
  */
 package org.openscience.cdk.smsd.algorithm.mcsplus;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openscience.cdk.AtomContainer;
-import static org.junit.Assert.*;
 
 /**
  * @cdk.module test-smsd
@@ -38,30 +39,24 @@ import static org.junit.Assert.*;
  */
 public class ExactMappingTest {
 
-    public ExactMappingTest() {
-    }
+    public ExactMappingTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     @Test
     public void testSomeMethod() {
-         System.out.println("ExactMapping.extractMapping");
         // TODO review the generated test code and remove the default call to fail.
-        assertNotNull(ExactMapping.extractMapping(new ArrayList<List<Integer>>(),
-                new ArrayList<Integer>(), new ArrayList<Integer>()));
+        assertNotNull(ExactMapping.extractMapping(new ArrayList<List<Integer>>(), new ArrayList<Integer>(),
+                new ArrayList<Integer>()));
     }
 }

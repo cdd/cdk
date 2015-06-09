@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,7 +30,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.NoSuchElementException;
 
-import org.openscience.cdk.annotations.TestMethod;
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -51,28 +49,26 @@ import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
  * @cdk.iooptions
  *
  * @see org.openscience.cdk.io.PCCompoundASNReader
- * 
+ *
  * @author       Egon Willighagen <egonw@users.sf.net>
  * @cdk.created  2008-05-05
  *
  * @cdk.keyword  file format, ASN
  * @cdk.keyword  PubChem
  */
-public class IteratingPCCompoundASNReader
-extends DefaultIteratingChemObjectReader<IAtomContainer> {
+public class IteratingPCCompoundASNReader extends DefaultIteratingChemObjectReader<IAtomContainer> {
 
-    private BufferedReader input;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(IteratingPCCompoundASNReader.class);
-    private IChemObjectBuilder builder;
-    
-    private boolean nextAvailableIsKnown;
-    private boolean hasNext;
-    private IAtomContainer nextMolecule;
-    
-    private String currentLine;
-    private int depth;
-    
+    private BufferedReader      input;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(IteratingPCCompoundASNReader.class);
+    private IChemObjectBuilder  builder;
+
+    private boolean             nextAvailableIsKnown;
+    private boolean             hasNext;
+    private IAtomContainer      nextMolecule;
+
+    private String              currentLine;
+    private int                 depth;
+
     /**
      * Constructs a new IteratingPCCompoundASNReader that can read Molecule from a given Reader.
      *
@@ -93,56 +89,55 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
         this(new InputStreamReader(in), builder);
     }
 
-
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return PubChemSubstancesASNFormat.getInstance();
     }
 
+    @Override
     public boolean hasNext() {
         if (!nextAvailableIsKnown) {
             hasNext = false;
-            
+
             // now try to read the next molecule
             try {
                 currentLine = input.readLine();
-            	boolean endMoleculeFound = false;
-            	boolean startMoleculeFound = false;
-            	
-            	StringBuffer buffer = new StringBuffer();
-            	while (!startMoleculeFound && currentLine != null) {
-            		int depthDiff = countBrackets(currentLine);
-            		depth += depthDiff;
-            		if (depthDiff > 0 && depth == 3) {
-            			String command = getCommand(currentLine);
-            			if (command.equals("compound")) {
-            				startMoleculeFound = true;
-            				buffer.append("PC-Compound ::= {\n");
-            			}
-            		}
-            		currentLine = input.readLine();
-            	}
-            	while (!endMoleculeFound && currentLine != null) {
-            		int depthDiff = countBrackets(currentLine);
-            		depth += depthDiff;
-            		if (depthDiff < 0 && depth == 2) {
-            			endMoleculeFound = true;
-            			buffer.append("}\n");
-            			break;
-            		} else {
-            			buffer.append(currentLine).append("\n");
-            		}
-            		currentLine = input.readLine();
-            	}
-            	if (startMoleculeFound && endMoleculeFound) {
-            		hasNext = true;
-            		PCCompoundASNReader asnReader = new PCCompoundASNReader(
-            			new StringReader(buffer.toString())
-            		);
-            		IChemFile cFile = (IChemFile)asnReader.read(builder.newInstance(IChemFile.class));
-            		nextMolecule = ChemFileManipulator.getAllAtomContainers(cFile).get(0);
-            	}
-            } catch (Exception exception) {
+                boolean endMoleculeFound = false;
+                boolean startMoleculeFound = false;
+
+                StringBuffer buffer = new StringBuffer();
+                while (!startMoleculeFound && currentLine != null) {
+                    int depthDiff = countBrackets(currentLine);
+                    depth += depthDiff;
+                    if (depthDiff > 0 && depth == 3) {
+                        String command = getCommand(currentLine);
+                        if (command.equals("compound")) {
+                            startMoleculeFound = true;
+                            buffer.append("PC-Compound ::= {\n");
+                        }
+                    }
+                    currentLine = input.readLine();
+                }
+                while (!endMoleculeFound && currentLine != null) {
+                    int depthDiff = countBrackets(currentLine);
+                    depth += depthDiff;
+                    if (depthDiff < 0 && depth == 2) {
+                        endMoleculeFound = true;
+                        buffer.append("}\n");
+                        break;
+                    } else {
+                        buffer.append(currentLine).append('\n');
+                    }
+                    currentLine = input.readLine();
+                }
+                if (startMoleculeFound && endMoleculeFound) {
+                    hasNext = true;
+                    PCCompoundASNReader asnReader = new PCCompoundASNReader(new StringReader(buffer.toString()));
+                    IChemFile cFile = (IChemFile) asnReader.read(builder.newInstance(IChemFile.class));
+                    asnReader.close();
+                    nextMolecule = ChemFileManipulator.getAllAtomContainers(cFile).get(0);
+                }
+            } catch (IOException | IllegalArgumentException | CDKException exception) {
                 logger.error("Error while reading next molecule: ", exception.getMessage());
                 logger.debug(exception);
                 exception.printStackTrace();
@@ -153,22 +148,23 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
         }
         return hasNext;
     }
-    
-    private int countChars(String copy, char character) {
-    	int occurences = 0;
-    	for (int i=0; i<copy.length(); i++) {
-    		if (character == copy.charAt(i)) occurences++;
-    	}
-    	return occurences;
-    }
-    
-    private int countBrackets(String currentLine) {
-		int bracketsOpen = countChars(currentLine, '{');
-		int bracketsClose = countChars(currentLine, '}');
-		return bracketsOpen - bracketsClose;
-	}
 
-	public IAtomContainer next() {
+    private int countChars(String copy, char character) {
+        int occurences = 0;
+        for (int i = 0; i < copy.length(); i++) {
+            if (character == copy.charAt(i)) occurences++;
+        }
+        return occurences;
+    }
+
+    private int countBrackets(String currentLine) {
+        int bracketsOpen = countChars(currentLine, '{');
+        int bracketsClose = countChars(currentLine, '}');
+        return bracketsOpen - bracketsClose;
+    }
+
+    @Override
+    public IAtomContainer next() {
         if (!nextAvailableIsKnown) {
             hasNext();
         }
@@ -178,48 +174,48 @@ extends DefaultIteratingChemObjectReader<IAtomContainer> {
         }
         return nextMolecule;
     }
-    
-    @TestMethod("testClose")
-	  public void close() throws IOException {
+
+    @Override
+    public void close() throws IOException {
         input.close();
     }
-    
+
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
-    
+
     private String getCommand(String line) {
-    	StringBuffer buffer = new StringBuffer();
-    	int i = 0;
-    	boolean foundBracket = false;
-    	while (i<line.length() && !foundBracket) {
-    		char currentChar = line.charAt(i);
-    		if (currentChar == '{') {
-    			foundBracket = true;
-    		} else {
-    			buffer.append(currentChar);
-    		}
-    		i++;
-    	}
-    	return foundBracket ? buffer.toString().trim() : null;
+        StringBuffer buffer = new StringBuffer();
+        int i = 0;
+        boolean foundBracket = false;
+        while (i < line.length() && !foundBracket) {
+            char currentChar = line.charAt(i);
+            if (currentChar == '{') {
+                foundBracket = true;
+            } else {
+                buffer.append(currentChar);
+            }
+            i++;
+        }
+        return foundBracket ? buffer.toString().trim() : null;
     }
 
-	@TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) {
-		if (reader instanceof BufferedReader) {
-			input = (BufferedReader)reader;
-		} else {
-			input = new BufferedReader(reader);
-		}
+        if (reader instanceof BufferedReader) {
+            input = (BufferedReader) reader;
+        } else {
+            input = new BufferedReader(reader);
+        }
         nextMolecule = null;
         nextAvailableIsKnown = false;
         hasNext = false;
     }
 
-	@TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream reader) {
-	    setReader(new InputStreamReader(reader));
+        setReader(new InputStreamReader(reader));
     }
 
 }
-

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004  The Chemistry Development Kit (CDK) project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -55,7 +50,7 @@ public class MakeClassesDotWebDotModDoclet {
                     webUrl + "api/" +
                     apiPath + "\">" + className + "</ulink>'>");
     }
-    
+
     private void processClasses(ClassDoc[] classes) throws IOException {
         for (int i=0; i<classes.length; i++) {
             ClassDoc doc = classes[i];

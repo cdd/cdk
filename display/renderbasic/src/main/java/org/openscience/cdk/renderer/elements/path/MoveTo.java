@@ -25,18 +25,15 @@ package org.openscience.cdk.renderer.elements.path;
 
 import javax.vecmath.Point2d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * A MoveTo path element moves the drawing 'pen' without making any lines or
  * curves and is commonly used to start a path or make gaps in the path.
- *  
+ *
  * @author Arvid
  * @cdk.module renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.elements.path.MoveToTest")
 public class MoveTo extends PathElement {
 
     /** The point to move to.*/
@@ -44,10 +41,9 @@ public class MoveTo extends PathElement {
 
     /**
      * Make a move to path element.
-     * 
+     *
      * @param point the point to move to
      */
-    @TestMethod("testConstructor")
     public MoveTo(Point2d point) {
         this(point.x, point.y);
     }
@@ -76,13 +72,13 @@ public class MoveTo extends PathElement {
 
     /** {@inheritDoc} **/
     @Override
-    @TestMethod("testPoints")
     public float[] points() {
-        return new float[]{ (float) coords[0], (float) coords[1]};
+        return new float[]{(float) coords[0], (float) coords[1]};
     }
 
     /** @inheritDoc */
-    @Override public void points(double[] coords) {
+    @Override
+    public void points(double[] coords) {
         coords[0] = this.coords[0];
         coords[1] = this.coords[1];
     }

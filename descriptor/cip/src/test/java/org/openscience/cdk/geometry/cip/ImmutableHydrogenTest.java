@@ -68,17 +68,25 @@ public class ImmutableHydrogenTest extends CDKTestCase {
         IAtom hydrogen = new ImmutableHydrogen();
         Assert.assertEquals(0, hydrogen.getListenerCount());
         hydrogen.addListener(new IChemObjectListener() {
+
+            @Override
             public void stateChanged(IChemObjectChangeEvent event) {}
         });
         Assert.assertEquals(0, hydrogen.getListenerCount());
         hydrogen.removeListener(new IChemObjectListener() {
+
+            @Override
             public void stateChanged(IChemObjectChangeEvent event) {}
         });
         Assert.assertEquals(0, hydrogen.getListenerCount());
 
         hydrogen.notifyChanged();
         hydrogen.notifyChanged(new IChemObjectChangeEvent() {
-            public Object getSource() {return new String();}
+
+            @Override
+            public Object getSource() {
+                return new String();
+            }
         });
 
         Assert.assertFalse(hydrogen.getNotification());
@@ -122,8 +130,8 @@ public class ImmutableHydrogenTest extends CDKTestCase {
         IAtom hydrogen = new ImmutableHydrogen();
         hydrogen.setCharge(2.0);
         hydrogen.setImplicitHydrogenCount(1);
-        hydrogen.setPoint2d(new Point2d(1,2));
-        hydrogen.setPoint3d(new Point3d(2,3,4));
+        hydrogen.setPoint2d(new Point2d(1, 2));
+        hydrogen.setPoint3d(new Point3d(2, 3, 4));
         hydrogen.setStereoParity(1);
         hydrogen.setAtomTypeName("foo");
         hydrogen.setBondOrderSum(4.0);
@@ -138,6 +146,7 @@ public class ImmutableHydrogenTest extends CDKTestCase {
         hydrogen.setFlags(null);
         hydrogen.setFlag(CDKConstants.ISINRING, true);
         hydrogen.setID("Me");
+        hydrogen.addProperties(new Properties());
         hydrogen.setProperties(new Properties());
         hydrogen.setProperty(new String(), new String());
         hydrogen.removeProperty(new String());
@@ -150,5 +159,3 @@ public class ImmutableHydrogenTest extends CDKTestCase {
         Assert.assertEquals(hydrogen, hydrogen.clone());
     }
 }
-
-

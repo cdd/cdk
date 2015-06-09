@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,8 +30,8 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IChemFile;
 import org.openscience.cdk.interfaces.IChemObject;
@@ -45,6 +43,7 @@ import org.openscience.cdk.io.formats.CMLFormat;
 import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -63,17 +62,15 @@ import org.xml.sax.XMLReader;
  * @cdk.bug     1544406
  * @cdk.iooptions
  */
-@TestClass("org.openscience.cdk.io.CMLReaderTest")
 public class CMLReader extends DefaultChemObjectReader {
 
-    private XMLReader parser;
-    private InputStream input;
-    private String url;
-    
-    private Map<String,ICMLModule> userConventions = new HashMap<String,ICMLModule>();
+    private XMLReader               parser;
+    private InputStream             input;
+    private String                  url;
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CMLReader.class);
+    private Map<String, ICMLModule> userConventions = new HashMap<String, ICMLModule>();
+
+    private static ILoggingTool     logger          = LoggingToolFactory.createLoggingTool(CMLReader.class);
 
     /**
      * Reads CML from an java.io.InputStream, for example the FileInputStream.
@@ -84,13 +81,13 @@ public class CMLReader extends DefaultChemObjectReader {
         this.input = input;
         init();
     }
-    
+
     public CMLReader() {
         this(new ByteArrayInputStream(new byte[0]));
     }
-    
+
     public void registerConvention(String convention, ICMLModule conv) {
-    	userConventions.put(convention, conv);
+        userConventions.put(convention, conv);
     }
 
     /**
@@ -104,7 +101,7 @@ public class CMLReader extends DefaultChemObjectReader {
         this.url = url;
     }
 
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return CMLFormat.getInstance();
     }
@@ -113,12 +110,12 @@ public class CMLReader extends DefaultChemObjectReader {
      * This method must not be used; XML reading requires the use of an InputStream.
      * Use setReader(InputStream) instead.
      */
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader reader) throws CDKException {
         throw new CDKException("Invalid method call; use SetReader(InputStream) instead.");
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         this.input = input;
     }
@@ -136,7 +133,7 @@ public class CMLReader extends DefaultChemObjectReader {
                 parser = saxParser.getXMLReader();
                 logger.info("Using JAXP/SAX XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ParserConfigurationException | SAXException e) {
                 logger.warn("Could not instantiate JAXP/SAX XML reader: ", e.getMessage());
                 logger.debug(e);
             }
@@ -144,12 +141,11 @@ public class CMLReader extends DefaultChemObjectReader {
         // Aelfred is first alternative.
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("gnu.xml.aelfred2.XmlReader").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("gnu.xml.aelfred2.XmlReader")
+                        .newInstance();
                 logger.info("Using Aelfred2 XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Aelfred2 XML reader!");
                 logger.debug(e);
             }
@@ -157,12 +153,11 @@ public class CMLReader extends DefaultChemObjectReader {
         // Xerces is second alternative
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("org.apache.xerces.parsers.SAXParser").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("org.apache.xerces.parsers.SAXParser")
+                        .newInstance();
                 logger.info("Using Xerces XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Xerces XML reader!");
                 logger.debug(e);
             }
@@ -172,31 +167,31 @@ public class CMLReader extends DefaultChemObjectReader {
         }
     }
 
-	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IChemFile.class.equals(interfaces[i])) return true;
-		}
-		
-		if (IChemFile.class.equals(classObject))
-			return true;
-	    Class superClass = classObject.getSuperclass();
-	    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
+    @Override
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IChemFile.class.equals(interfaces[i])) return true;
+        }
 
-	/**
+        if (IChemFile.class.equals(classObject)) return true;
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
+
+    /**
      * Read a IChemObject from input.
      *
      * @return the content in a ChemFile object
      */
-	public <T extends IChemObject> T read(T object) throws CDKException {
-      if (object instanceof IChemFile) {
-        return (T)readChemFile((IChemFile)object);
-      } else {
-        throw new CDKException("Only supported is reading of ChemFile objects.");
-      }
+    @Override
+    public <T extends IChemObject> T read(T object) throws CDKException {
+        if (object instanceof IChemFile) {
+            return (T) readChemFile((IChemFile) object);
+        } else {
+            throw new CDKException("Only supported is reading of ChemFile objects.");
+        }
     }
 
     // private functions
@@ -213,7 +208,7 @@ public class CMLReader extends DefaultChemObjectReader {
         CMLHandler handler = new CMLHandler(file);
         // copy the manually added conventions
         for (String conv : userConventions.keySet()) {
-        	handler.registerConvention(conv, userConventions.get(conv));
+            handler.registerConvention(conv, userConventions.get(conv));
         }
         parser.setContentHandler(handler);
         parser.setEntityResolver(new CMLResolver());
@@ -232,7 +227,7 @@ public class CMLReader extends DefaultChemObjectReader {
             logger.debug(e);
             throw new CDKException(error, e);
         } catch (SAXParseException saxe) {
-            SAXParseException spe = (SAXParseException)saxe;
+            SAXParseException spe = (SAXParseException) saxe;
             String error = "Found well-formedness error in line " + spe.getLineNumber();
             logger.error(error);
             logger.debug(saxe);
@@ -246,11 +241,9 @@ public class CMLReader extends DefaultChemObjectReader {
         return file;
     }
 
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
-        if(input != null)
-            input.close();
+        if (input != null) input.close();
     }
 
 }
-

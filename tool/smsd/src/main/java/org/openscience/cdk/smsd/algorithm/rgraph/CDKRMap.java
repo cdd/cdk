@@ -1,7 +1,4 @@
-
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
+/* Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
  *               2007-2009  Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * This code has been kindly provided by Stephane Werner
@@ -29,12 +26,11 @@
  */
 package org.openscience.cdk.smsd.algorithm.rgraph;
 
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  *  An CDKRMap implements the association between an edge (bond) in G1 and an edge
  *  (bond) in G2, G1 and G2 being the compared graphs in a RGraph context.
- * 
+ *
  * @author      Stephane Werner, IXELIS <mail@ixelis.net>,
  *              Syed Asad Rahman <asad@ebi.ac.uk> (modified the orignal code)
  * @cdk.created 2002-07-24
@@ -42,8 +38,8 @@ import org.openscience.cdk.annotations.TestClass;
  * @cdk.githash
  */
 
-@TestClass("org.openscience.cdk.smsd.algorithm.cdk.CDKRMapTest")
 public class CDKRMap {
+
     private int id1 = 0;
     private int id2 = 0;
 
@@ -109,10 +105,10 @@ public class CDKRMap {
         }
     }
 
-     /**
-     * Returns a hash code for object comparison.
-     * @return    Returns a hash code for object comparison.
-     */
+    /**
+    * Returns a hash code for object comparison.
+    * @return    Returns a hash code for object comparison.
+    */
 
     @Override
     public int hashCode() {
@@ -122,4 +118,3 @@ public class CDKRMap {
         return hash;
     }
 }
-

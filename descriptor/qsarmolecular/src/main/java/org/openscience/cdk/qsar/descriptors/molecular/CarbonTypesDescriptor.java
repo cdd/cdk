@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
+/* Copyright (C) 2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -22,8 +20,6 @@ package org.openscience.cdk.qsar.descriptors.molecular;
 
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -75,27 +71,19 @@ import org.openscience.cdk.tools.manipulator.BondManipulator;
  * @cdk.keyword topological bond order ctypes
  * @cdk.keyword descriptor
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.CarbonTypesDescriptorTest")
 public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
+    private final static String[] NAMES = {"C1SP1", "C2SP1", "C1SP2", "C2SP2", "C3SP2", "C1SP3", "C2SP3", "C3SP3",
+            "C4SP3"                     };
 
-    private final static String[] names = {
-            "C1SP1", "C2SP1",
-            "C1SP2", "C2SP2", "C3SP2",
-            "C1SP3", "C2SP3", "C3SP3", "C4SP3"
-    };
-    
-    public CarbonTypesDescriptor() {
-    }
+    public CarbonTypesDescriptor() {}
 
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#carbonTypes",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#carbonTypes", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the GravitationalIndexDescriptor object.
@@ -105,7 +93,7 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      *          Description of the Exception
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters for this descriptor
     }
@@ -116,15 +104,15 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      * @return The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // no parameters to return
         return (null);
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     /**
@@ -132,12 +120,11 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         // no param names to return
         return (null);
     }
-
 
     /**
      * Gets the parameterType attribute of the GravitationalIndexDescriptor object.
@@ -145,7 +132,7 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      * @param name Description of the Parameter
      * @return The parameterType value
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return (null);
     }
@@ -156,7 +143,7 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      * @param container Parameter is the atom container.
      * @return An ArrayList containing 9 elements in the order described above
      */
-    @TestMethod("testCalculate_IAtomContainer,testButane,testComplex1,testComplex2")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         int c1sp1 = 0;
         int c2sp1 = 0;
@@ -179,14 +166,22 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
 
             IBond.Order maxBondOrder = getHighestBondOrder(container, atom);
 
-            if (maxBondOrder == IBond.Order.TRIPLE && cc == 1) c1sp1++;
-            else if (maxBondOrder == IBond.Order.TRIPLE && cc == 2) c2sp1++;
-            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 1) c1sp2++;
-            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 2) c2sp2++;
-            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 3) c3sp2++;
-            else if (maxBondOrder == IBond.Order.SINGLE && cc == 1) c1sp3++;
-            else if (maxBondOrder == IBond.Order.SINGLE && cc == 2) c2sp3++;
-            else if (maxBondOrder == IBond.Order.SINGLE && cc == 3) c3sp3++;
+            if (maxBondOrder == IBond.Order.TRIPLE && cc == 1)
+                c1sp1++;
+            else if (maxBondOrder == IBond.Order.TRIPLE && cc == 2)
+                c2sp1++;
+            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 1)
+                c1sp2++;
+            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 2)
+                c2sp2++;
+            else if (maxBondOrder == IBond.Order.DOUBLE && cc == 3)
+                c3sp2++;
+            else if (maxBondOrder == IBond.Order.SINGLE && cc == 1)
+                c1sp3++;
+            else if (maxBondOrder == IBond.Order.SINGLE && cc == 2)
+                c2sp3++;
+            else if (maxBondOrder == IBond.Order.SINGLE && cc == 3)
+                c3sp3++;
             else if (maxBondOrder == IBond.Order.SINGLE && cc == 4) c4sp3++;
         }
 
@@ -201,17 +196,15 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
         retval.add(c3sp3);
         retval.add(c4sp3);
 
-
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     private IBond.Order getHighestBondOrder(IAtomContainer container, IAtom atom) {
         List<IBond> bonds = container.getConnectedBondsList(atom);
         IBond.Order maxOrder = IBond.Order.SINGLE;
         for (IBond bond : bonds) {
-            if (BondManipulator.isHigherOrder(bond.getOrder(), maxOrder))
-            	maxOrder = bond.getOrder();
+            if (BondManipulator.isHigherOrder(bond.getOrder(), maxOrder)) maxOrder = bond.getOrder();
         }
         return maxOrder;
     }
@@ -227,7 +220,7 @@ public class CarbonTypesDescriptor extends AbstractMolecularDescriptor implement
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerArrayResultType(9);
     }

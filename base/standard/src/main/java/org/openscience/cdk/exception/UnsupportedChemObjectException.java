@@ -1,9 +1,4 @@
-/* $RCSfile$   
- * $Author$   
- * $Date$   
- * $Revision$
- * 
- * Copyright (C) 2001-2007  The Chemistry Development Kit (CKD) project
+/* Copyright (C) 2001-2007  The Chemistry Development Kit (CKD) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,19 +23,16 @@
  */
 package org.openscience.cdk.exception;
 
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  * @cdk.module standard
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.exception.UnsupportedChemObjectExceptionTest")
 public class UnsupportedChemObjectException extends CDKException {
 
     private static final long serialVersionUID = -5348883360384907383L;
 
     public UnsupportedChemObjectException(String message) {
-        super( message );
+        super(message);
     }
 }
-

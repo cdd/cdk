@@ -1,5 +1,6 @@
 /* Copyright (C) 1997-2007  Christoph Steinbeck <steinbeck@users.sourceforge.net>
  *                    2010  Egon Willighagen <egonw@users.sourceforge.net>
+ *                    2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,8 +26,6 @@ package org.openscience.cdk.io;
 
 import com.google.common.collect.ImmutableSet;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
@@ -75,7 +74,7 @@ import static org.openscience.cdk.io.MDLV2000Writer.SPIN_MULTIPLICITY;
  * Reads content from MDL molfiles and SD files. It can read a {@link
  * IAtomContainer} or {@link IChemModel} from an MDL molfile, and a {@link
  * IChemFile} from a SD file, with a {@link IChemSequence} of {@link
- * IChemModel}'s, where each IChemModel will contain one IMolecule.
+ * IChemModel}'s, where each IChemModel will contain one {@link IAtomContainer}.
  *
  * <p>From the Atom block it reads atomic coordinates, element types and formal
  * charges. From the Bond block it reads the bonds and the orders. Additionally,
@@ -105,34 +104,33 @@ import static org.openscience.cdk.io.MDLV2000Writer.SPIN_MULTIPLICITY;
  * @cdk.keyword file format, SDF
  * @cdk.bug 1587283
  */
-@TestClass("org.openscience.cdk.io.MDLV2000ReaderTest")
 public class MDLV2000Reader extends DefaultChemObjectReader {
 
-    BufferedReader input = null;
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(MDLV2000Reader.class);
+    BufferedReader                   input            = null;
+    private static ILoggingTool      logger           = LoggingToolFactory.createLoggingTool(MDLV2000Reader.class);
 
-    private BooleanIOSetting forceReadAs3DCoords;
-    private BooleanIOSetting interpretHydrogenIsotopes;
-    private BooleanIOSetting addStereoElements;
+    private BooleanIOSetting         forceReadAs3DCoords;
+    private BooleanIOSetting         interpretHydrogenIsotopes;
+    private BooleanIOSetting         addStereoElements;
 
     // Pattern to remove trailing space (String.trim() will remove leading space, which we don't want)
-    private static final Pattern TRAILING_SPACE = Pattern.compile("\\s+$");
+    private static final Pattern     TRAILING_SPACE   = Pattern.compile("\\s+$");
 
     /** Delimits Structure-Data (SD) Files. */
-    private static final String RECORD_DELIMITER = "$$$$";
+    private static final String      RECORD_DELIMITER = "$$$$";
+
+    /** 
+     *  @deprecated  Incorrect spelling
+    */
+    private static final Set<String> PSUEDO_LABELS    = ImmutableSet.<String> builder().add("*").add("A").add("Q")
+                                                              .add("L").add("LP").add("R") // XXX: not in spec
+                                                              .add("R#").build();
 
     /** Valid pseudo labels. */
-    private static final Set<String> PSUEDO_LABELS = ImmutableSet.<String>builder()
-                                                                 .add("*")
-                                                                 .add("A")
-                                                                 .add("Q")
-                                                                 .add("L")
-                                                                 .add("LP")
-                                                                 .add("R")  // XXX: not in spec
-                                                                 .add("R#")
-                                                                 .build();
-
+    private static final Set<String> PSEUDO_LABELS    = ImmutableSet.<String> builder().add("*").add("A").add("Q")
+                                                              .add("L").add("LP").add("R") // XXX: not in spec
+                                                              .add("R#").build();
+    
     public MDLV2000Reader() {
         this(new StringReader(""));
     }
@@ -166,28 +164,27 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         super.mode = mode;
     }
 
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return MDLV2000Format.getInstance();
     }
 
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) throws CDKException {
         if (input instanceof BufferedReader) {
             this.input = (BufferedReader) input;
-        }
-        else {
+        } else {
             this.input = new BufferedReader(input);
         }
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
-    @TestMethod("testAccepts")
     @SuppressWarnings("unchecked")
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
         Class<?>[] interfaces = classObject.getInterfaces();
         for (Class<?> anInterface : interfaces) {
@@ -213,17 +210,15 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @throws CDKException
      */
     @SuppressWarnings("unchecked")
+    @Override
     public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IAtomContainer) {
             return (T) readAtomContainer((IAtomContainer) object);
-        } 
-        else if (object instanceof IChemFile) {
+        } else if (object instanceof IChemFile) {
             return (T) readChemFile((IChemFile) object);
-        }
-        else if (object instanceof IChemModel) {
+        } else if (object instanceof IChemModel) {
             return (T) readChemModel((IChemModel) object);
-        }
-        else {
+        } else {
             throw new CDKException("Only supported are ChemFile and Molecule.");
         }
     }
@@ -247,9 +242,9 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @return The ChemFile that was read from the MDL file.
      */
     private IChemFile readChemFile(IChemFile chemFile) throws CDKException {
-        
-        IChemObjectBuilder builder  = chemFile.getBuilder();
-        IChemSequence      sequence = builder.newInstance(IChemSequence.class);
+
+        IChemObjectBuilder builder = chemFile.getBuilder();
+        IChemSequence sequence = builder.newInstance(IChemSequence.class);
 
         try {
             IAtomContainer m;
@@ -258,7 +253,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             }
         } catch (CDKException e) {
             throw e;
-        } catch (Exception exception) {
+        } catch (IllegalArgumentException exception) {
             String error = "Error while parsing SDF";
             logger.error(error);
             logger.debug(exception);
@@ -278,22 +273,21 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
     /**
      * Create a new chem model for a single {@link IAtomContainer}.
-     * 
+     *
      * @param container the container to create the model for
      * @return a new {@link IChemModel}
      */
     private static IChemModel newModel(final IAtomContainer container) {
-        
-        if (container == null)
-            throw new NullPointerException("cannot create chem model for a null container");
-        
-        final IChemObjectBuilder builder    = container.getBuilder();
-        final IChemModel         model      = builder.newInstance(IChemModel.class);
-        final IAtomContainerSet  containers = builder.newInstance(IAtomContainerSet.class);
-        
+
+        if (container == null) throw new NullPointerException("cannot create chem model for a null container");
+
+        final IChemObjectBuilder builder = container.getBuilder();
+        final IChemModel model = builder.newInstance(IChemModel.class);
+        final IAtomContainerSet containers = builder.newInstance(IAtomContainerSet.class);
+
         containers.addAtomContainer(container);
         model.setMoleculeSet(containers);
-        
+
         return model;
     }
 
@@ -309,9 +303,9 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         String title = null;
         String remark = null;
         String line = "";
-        
+
         try {
-            
+
             line = input.readLine();
             linecount++;
             if (line == null) {
@@ -338,6 +332,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             // if the line is empty we hav a problem - either a malformed
             // molecule entry or just extra new lines at the end of the file
             if (line.length() == 0) {
+                handleError("Unexpected empty line", linecount, 0, 0);
                 // read till the next $$$$ or EOF
                 while (true) {
                     line = input.readLine();
@@ -352,14 +347,13 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             }
 
             final CTabVersion version = CTabVersion.ofHeader(line);
-            
+
             // check the CT block version
             if (version == CTabVersion.V3000) {
                 handleError("This file must be read with the MDLV3000Reader.");
                 // even if relaxed we can't read V3000 using the V2000 parser
                 throw new CDKException("This file must be read with the MDLV3000Reader.");
-            }
-            else if (version == CTabVersion.UNSPECIFIED) {
+            } else if (version == CTabVersion.UNSPECIFIED) {
                 handleError("This file must be read with the MDLReader.");
                 // okay to read in relaxed mode
             }
@@ -374,13 +368,13 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             int[] explicitValence = new int[nAtoms];
 
             boolean hasX = false, hasY = false, hasZ = false;
-            
+
             for (int i = 0; i < nAtoms; i++) {
                 line = input.readLine();
                 linecount++;
-                
+
                 final IAtom atom = readAtomFast(line, molecule.getBuilder(), linecount);
-                
+
                 atoms[i] = atom;
 
                 Point3d p = atom.getPoint3d();
@@ -388,19 +382,17 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 hasY = hasY || p.y != 0d;
                 hasZ = hasZ || p.z != 0d;
             }
-            
+
             // convert to 2D, if totalZ == 0
             if (!hasX && !hasY && !hasZ) {
                 if (nAtoms == 1) {
                     atoms[0].setPoint2d(new Point2d(0, 0));
-                }
-                else {
+                } else {
                     for (IAtom atomToUpdate : atoms) {
                         atomToUpdate.setPoint3d(null);
                     }
                 }
-            }
-            else if (!hasZ) {
+            } else if (!hasZ) {
 
                 if (!forceReadAs3DCoords.isSet()) {
                     for (IAtom atomToUpdate : atoms) {
@@ -418,28 +410,25 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 line = input.readLine();
                 linecount++;
 
-                bonds[i]      = readBondFast(line, molecule.getBuilder(), atoms, explicitValence, linecount);
+                bonds[i] = readBondFast(line, molecule.getBuilder(), atoms, explicitValence, linecount);
                 hasQueryBonds = hasQueryBonds
-                        || (bonds[i].getOrder() == IBond.Order.UNSET
-                            && !bonds[i].getFlag(CDKConstants.ISAROMATIC));
+                        || (bonds[i].getOrder() == IBond.Order.UNSET && !bonds[i].getFlag(CDKConstants.ISAROMATIC));
             }
 
             if (!hasQueryBonds)
-                outputContainer = molecule;    
+                outputContainer = molecule;
             else
                 outputContainer = new QueryAtomContainer(molecule.getBuilder());
-                
-            
+
             outputContainer.setProperty(CDKConstants.TITLE, title);
             outputContainer.setProperty(CDKConstants.REMARK, remark);
-            
-            // if the container is empty we can simply set the atoms/bonds 
+
+            // if the container is empty we can simply set the atoms/bonds
             // otherwise we add them to the end
             if (outputContainer.isEmpty()) {
                 outputContainer.setAtoms(atoms);
                 outputContainer.setBonds(bonds);
-            }
-            else {
+            } else {
                 for (IAtom atom : atoms)
                     outputContainer.addAtom(atom);
                 for (IBond bond : bonds)
@@ -465,20 +454,21 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 if (valence < 0) {
                     hasQueryBonds = true; // also counts aromatic bond as query
                 } else {
-                    applyMDLValenceModel(outputContainer.getAtom(i), valence);
+                    int unpaired = outputContainer.getConnectedSingleElectronsCount(outputContainer.getAtom(i));
+                    applyMDLValenceModel(outputContainer.getAtom(i), valence + unpaired);
                 }
             }
 
-            // sanity check that we have a decent molecule, query bonds mean we 
+            // sanity check that we have a decent molecule, query bonds mean we
             // don't have a hydrogen count for atoms and stereo perception isn't
             // currently possible
             if (!hasQueryBonds && addStereoElements.isSet() && hasX && hasY) {
                 if (hasZ) { // has 3D coordinates
                     outputContainer.setStereoElements(StereoElementFactory.using3DCoordinates(outputContainer)
-                                                                          .createAll());    
-                } else if (!forceReadAs3DCoords.isSet()) { // has 2D coordinates (set as 2D coordinates) 
-                   outputContainer.setStereoElements(StereoElementFactory.using2DCoordinates(outputContainer)
-                                                                         .createAll());
+                            .createAll());
+                } else if (!forceReadAs3DCoords.isSet()) { // has 2D coordinates (set as 2D coordinates)
+                    outputContainer.setStereoElements(StereoElementFactory.using2DCoordinates(outputContainer)
+                            .createAll());
                 }
             }
 
@@ -486,17 +476,13 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             String error = "Error while parsing line " + linecount + ": " + line + " -> " + exception.getMessage();
             logger.error(error);
             throw exception;
-        } catch (Exception exception) {
+        } catch (IOException exception) {
             exception.printStackTrace();
             String error = "Error while parsing line " + linecount + ": " + line + " -> " + exception.getMessage();
             logger.error(error);
-            handleError(
-                    "Error while parsing line: " + line,
-                    linecount, 0, 0,
-                    exception
-                       );
+            handleError("Error while parsing line: " + line, linecount, 0, 0, exception);
         }
-        
+
         return outputContainer;
     }
 
@@ -510,27 +496,24 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @param explicitValence the explicit valence (bond order sum)
      */
     private void applyMDLValenceModel(IAtom atom, int explicitValence) {
+
         if (atom.getValency() != null) {
             if (atom.getValency() >= explicitValence)
                 atom.setImplicitHydrogenCount(atom.getValency() - explicitValence);
             else
                 atom.setImplicitHydrogenCount(0);
-        }
-        else {
+        } else {
             Integer element = atom.getAtomicNumber();
-            if (element == null)
-                element = 0;
+            if (element == null) element = 0;
 
             Integer charge = atom.getFormalCharge();
-            if (charge == null)
-                charge = 0;
+            if (charge == null) charge = 0;
 
             int implicitValence = MDLValence.implicitValence(element, charge, explicitValence);
             if (implicitValence < explicitValence) {
                 atom.setValency(explicitValence);
                 atom.setImplicitHydrogenCount(0);
-            }
-            else {
+            } else {
                 atom.setValency(implicitValence);
                 atom.setImplicitHydrogenCount(implicitValence - explicitValence);
             }
@@ -547,8 +530,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     newAtom.setAtomicNumber(1);
                     isotopeFactory.configure(newAtom, isotopeFactory.getIsotope("H", 2));
                     AtomContainerManipulator.replaceAtomByAtom(molecule, atom, newAtom);
-                }
-                else if ("T".equals(pseudo.getLabel())) {
+                } else if ("T".equals(pseudo.getLabel())) {
                     IAtom newAtom = molecule.getBuilder().newInstance(IAtom.class, atom);
                     newAtom.setSymbol("H");
                     newAtom.setAtomicNumber(1);
@@ -559,21 +541,18 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         }
     }
 
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
 
     private void initIOSettings() {
         forceReadAs3DCoords = addSetting(new BooleanIOSetting("ForceReadAs3DCoordinates", IOSetting.Importance.LOW,
-                                                              "Should coordinates always be read as 3D?",
-                                                              "false"));
-        interpretHydrogenIsotopes = addSetting(new BooleanIOSetting("InterpretHydrogenIsotopes", IOSetting.Importance.LOW,
-                                                                    "Should D and T be interpreted as hydrogen isotopes?",
-                                                                    "true"));
+                "Should coordinates always be read as 3D?", "false"));
+        interpretHydrogenIsotopes = addSetting(new BooleanIOSetting("InterpretHydrogenIsotopes",
+                IOSetting.Importance.LOW, "Should D and T be interpreted as hydrogen isotopes?", "true"));
         addStereoElements = addSetting(new BooleanIOSetting("AddStereoElements", IOSetting.Importance.LOW,
-                                                            "Assign stereo configurations to stereocenters utilising 2D/3D coordinates.",
-                                                            "true"));
+                "Assign stereo configurations to stereocenters utilising 2D/3D coordinates.", "true"));
     }
 
     public void customizeJob() {
@@ -586,8 +565,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
             char inputChar = input.charAt(i);
-            if (Character.isDigit(inputChar))
-                sb.append(inputChar);
+            if (Character.isDigit(inputChar)) sb.append(inputChar);
         }
         return sb.toString();
     }
@@ -608,61 +586,60 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      *
      * @param line    input line
      * @param builder chem object builder to create the atom
-     * @param lineNum the line number - for printing error messages 
+     * @param lineNum the line number - for printing error messages
      * @return a new atom instance
      */
-    IAtom readAtomFast(String             line,
-                       IChemObjectBuilder builder,
-                       int                lineNum) throws CDKException, IOException {
+    IAtom readAtomFast(String line, IChemObjectBuilder builder, int lineNum) throws CDKException, IOException {
 
         // The line may be truncated and it's checked in reverse at the specified
         // lengths:
         //          1         2         3         4         5         6
         // 123456789012345678901234567890123456789012345678901234567890123456789
-        //                                  | |  |  |  |  |  |  |  |  |  |  |  | 
+        //                                  | |  |  |  |  |  |  |  |  |  |  |  |
         // xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
 
         String symbol;
         double x, y, z;
         int massDiff = 0, charge = 0, parity = 0, valence = 0, mapping = 0;
-        
+
         int length = length(line);
-        if (length > 69) // excess data we should check all fields 
+        if (length > 69) // excess data we should check all fields
             length = 69;
-        
+
         // given the length we jump to the position and parse all fields
         // that could be present (note - fall through switch)
         switch (length) {
-            case 69: // eee: exact charge flag [reaction, query]  
+            case 69: // eee: exact charge flag [reaction, query]
             case 66: // nnn: inversion / retention [reaction]
             case 63: // mmm: atom-atom mapping [reaction]
                 mapping = readMolfileInt(line, 60);
             case 60: // iii: not used
             case 57: // rrr: not used
-            case 54: // HHH: H0 designation [redundant] 
+            case 54: // HHH: H0 designation [redundant]
             case 51: // vvv: valence
                 valence = readMolfileInt(line, 48);
-            case 48: // bbb: stereo care [query]       
-            case 45: // hhh: hydrogen count + 1 [query] 
+            case 48: // bbb: stereo care [query]
+            case 45: // hhh: hydrogen count + 1 [query]
             case 42: // sss: stereo parity
                 parity = toInt(line.charAt(41));
             case 39: // ccc: charge
                 charge = toCharge(line.charAt(38));
             case 36: // dd: mass difference
                 massDiff = sign(line.charAt(34)) * toInt(line.charAt(35));
-            case 34: // x y z and aaa: atom coordinates and symbol 
-            case 33: // symbol is left aligned  
-            case 32:   
-                x      = readMDLCoordinate(line, 0);
-                y      = readMDLCoordinate(line, 10);
-                z      = readMDLCoordinate(line, 20);
+            case 34: // x y z and aaa: atom coordinates and symbol
+            case 33: // symbol is left aligned
+            case 32:
+                x = readMDLCoordinate(line, 0);
+                y = readMDLCoordinate(line, 10);
+                z = readMDLCoordinate(line, 20);
                 symbol = line.substring(31, 34).trim().intern();
                 break;
-             default:
-                 throw new CDKException("invalid line length, " + length + ": " + line);
+            default:
+                handleError("invalid line length", lineNum, 0, 0);
+                throw new CDKException("invalid line length, " + length + ": " + line);
         }
 
-        IAtom atom = createAtom(symbol, builder);
+        IAtom atom = createAtom(symbol, builder, lineNum);
 
         atom.setPoint3d(new Point3d(x, y, z));
         atom.setFormalCharge(charge);
@@ -670,22 +647,18 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
         // if there was a mass difference, set the mass number
         if (massDiff != 0 && atom.getAtomicNumber() > 0)
-            atom.setMassNumber(Isotopes.getInstance()
-                                       .getMajorIsotope(atom.getAtomicNumber())
-                                       .getMassNumber()
-                                       + massDiff);
-        
-        if (valence > 0 && valence < 16)
-            atom.setValency(valence == 15 ? 0 : valence);
+            atom.setMassNumber(Isotopes.getInstance().getMajorIsotope(atom.getAtomicNumber()).getMassNumber()
+                    + massDiff);
 
-        if (mapping != 0)
-            atom.setProperty(CDKConstants.ATOM_ATOM_MAPPING, mapping);
+        if (valence > 0 && valence < 16) atom.setValency(valence == 15 ? 0 : valence);
+
+        if (mapping != 0) atom.setProperty(CDKConstants.ATOM_ATOM_MAPPING, mapping);
 
         return atom;
     }
 
     /**
-     * Read a bond from a line in the MDL bond block. The bond block is 
+     * Read a bond from a line in the MDL bond block. The bond block is
      * formatted as follows, {@code 111222tttsssxxxrrrccc}, where:
      * <ul>
      *     <li>111: first atom number</li>
@@ -695,52 +668,48 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      *     <li>rrr: bond topology</li>
      *     <li>ccc: reaction center</li>
      * </ul>
-     * 
+     *
      * @param line            the input line
      * @param builder         builder to create objects with
      * @param atoms           atoms read from the atom block
      * @param explicitValence array to fill with explicit valence
-     * @param lineNum         the input line number           
+     * @param lineNum         the input line number
      * @return a new bond
-     * @throws CDKException thrown if the input was malformed or didn't make 
+     * @throws CDKException thrown if the input was malformed or didn't make
      *                      sense
      */
-    IBond readBondFast(String             line,
-                       IChemObjectBuilder builder,
-                       IAtom[]            atoms,
-                       int[]              explicitValence,
-                       int                lineNum) throws CDKException {
+    IBond readBondFast(String line, IChemObjectBuilder builder, IAtom[] atoms, int[] explicitValence, int lineNum)
+            throws CDKException {
 
         // The line may be truncated and it's checked in reverse at the specified
         // lengths. Absolutely required is atom indices, bond type and stereo.
-        //          1         2 
+        //          1         2
         // 123456789012345678901
-        //            |  |  |  |  
+        //            |  |  |  |
         // 111222tttsssxxxrrrccc
-        
+
         int length = length(line);
-        if (length > 21)
-            length = 21;
-        
+        if (length > 21) length = 21;
+
         int u, v, type, stereo = 0;
-        
+
         switch (length) {
             case 21: // ccc: reaction centre status
             case 18: // rrr: bond topology
             case 15: // xxx: not used
             case 12: // sss: stereo
                 stereo = readUInt(line, 9, 3);
-            case 9:  // 111222ttt: atoms, type and stereo
-                u      = readMolfileInt(line, 0) - 1;
-                v      = readMolfileInt(line, 3) - 1;
-                type   = readMolfileInt(line, 6);
+            case 9: // 111222ttt: atoms, type and stereo
+                u = readMolfileInt(line, 0) - 1;
+                v = readMolfileInt(line, 3) - 1;
+                type = readMolfileInt(line, 6);
                 break;
             default:
                 throw new CDKException("invalid line length: " + length + " " + line);
         }
-        
+
         IBond bond = builder.newInstance(IBond.class, atoms[u], atoms[v]);
-        
+
         switch (type) {
             case 1: // single
                 bond.setOrder(IBond.Order.SINGLE);
@@ -769,51 +738,49 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             default:
                 throw new CDKException("unrecognised bond type: " + type + ", " + line);
         }
-        
+
         if (type < 4) {
             explicitValence[u] += type;
-            explicitValence[v] += type; 
+            explicitValence[v] += type;
         } else {
-            explicitValence[u] = explicitValence[v] = Integer.MIN_VALUE;    
+            explicitValence[u] = explicitValence[v] = Integer.MIN_VALUE;
         }
-        
+
         return bond;
     }
 
     /**
      * Reads the property block from the {@code input} setting the values in the
-     * container. 
+     * container.
      *
      * @param input     input resource
      * @param container the structure with atoms / bonds present
      * @param nAtoms    the number of atoms in the atoms block
      * @throws IOException low-level IO error
      */
-    void readPropertiesFast(final BufferedReader input,
-                            final IAtomContainer container,
-                            final int nAtoms) throws IOException, CDKException {
+    void readPropertiesFast(final BufferedReader input, final IAtomContainer container, final int nAtoms)
+            throws IOException, CDKException {
         String line;
 
         // first atom index in this Molfile, the container may have
         // already had atoms present before reading the file
         int offset = container.getAtomCount() - nAtoms;
-        
+
         while ((line = input.readLine()) != null) {
-                                        
+
             int index, count;
             int length = line.length();
             final PropertyKey key = PropertyKey.of(line);
             switch (key) {
-                
-                // A  aaa
-                // x...
-                //
-                // atom alias is stored as label on a pseudo atom
+
+            // A  aaa
+            // x...
+            //
+            // atom alias is stored as label on a pseudo atom
                 case ATOM_ALIAS:
                     index = readMolfileInt(line, 3) - 1;
                     final String label = input.readLine();
-                    if (label == null)
-                        return;
+                    if (label == null) return;
                     label(container, offset + index, label);
                     break;
 
@@ -821,17 +788,15 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 //
                 // an atom value is stored as comment on an atom
                 case ATOM_VALUE:
-                                 index   = readMolfileInt(line, 3) - 1;
+                    index = readMolfileInt(line, 3) - 1;
                     final String comment = line.substring(7);
-                    container.getAtom(offset + index)
-                             .setProperty(CDKConstants.COMMENT,
-                                          comment);
+                    container.getAtom(offset + index).setProperty(CDKConstants.COMMENT, comment);
                     break;
-                
+
                 // G  aaappp
                 // x...
-                // 
-                // Abbreviation is required for compatibility with previous versions of MDL ISIS/Desktop which 
+                //
+                // Abbreviation is required for compatibility with previous versions of MDL ISIS/Desktop which
                 // allowed abbreviations with only one attachment. The attachment is denoted by two atom
                 // numbers, aaa and ppp. All of the atoms on the aaa side of the bond formed by aaa-ppp are
                 // abbreviated. The coordinates of the abbreviation are the coordinates of aaa. The text of the
@@ -841,33 +806,31 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 // compatibility with older ISIS versions, but this behavior might not be supported in future
                 // versions.
                 case GROUP_ABBREVIATION:
-                    // not supported, existing parsing doesn't do what is 
+                    // not supported, existing parsing doesn't do what is
                     // mentioned in the specification above
-                    final int    from  = readMolfileInt(line, 3) - 1;
-                    final int    to    = readMolfileInt(line, 6) - 1;
+                    // final int    from  = readMolfileInt(line, 3) - 1;
+                    // final int    to    = readMolfileInt(line, 6) - 1;
                     final String group = input.readLine();
-                    if (group == null)
-                        return;
+                    if (group == null) return;
                     break;
-                
+
                 // M  CHGnn8 aaa vvv ...
-                // 
-                // vvv: -15 to +15. Default of 0 = uncharged atom. When present, this property supersedes 
+                //
+                // vvv: -15 to +15. Default of 0 = uncharged atom. When present, this property supersedes
                 //      all charge and radical values in the atom block, forcing a 0 charge on all atoms not
                 //      listed in an M CHG or M RAD line.
                 case M_CHG:
                     count = readUInt(line, 6, 3);
                     for (int i = 0, st = 10; i < count && st + 7 <= length; i++, st += 8) {
-                            index  = readMolfileInt(line, st) - 1;
+                        index = readMolfileInt(line, st) - 1;
                         int charge = readMolfileInt(line, st + 4);
-                        container.getAtom(offset + index)
-                                 .setFormalCharge(charge);
+                        container.getAtom(offset + index).setFormalCharge(charge);
                     }
                     break;
-                
+
                 // M  ISOnn8 aaa vvv ...
-                // 
-                // vvv: Absolute mass of the atom isotope as a positive integer. When present, this property 
+                //
+                // vvv: Absolute mass of the atom isotope as a positive integer. When present, this property
                 //      supersedes all isotope values in the atom block. Default (no entry) means natural
                 //      abundance. The difference between this absolute mass value and the natural
                 //      abundance value specified in the PTABLE.DAT file must be within the range of -18
@@ -875,48 +838,86 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 case M_ISO:
                     count = readUInt(line, 6, 3);
                     for (int i = 0, st = 10; i < count && st + 7 <= length; i++, st += 8) {
-                            index = readMolfileInt(line, st) - 1;
-                        int mass  = readMolfileInt(line, st + 4);
-                        container.getAtom(offset + index)
-                                 .setMassNumber(mass);
+                        index = readMolfileInt(line, st) - 1;
+                        int mass = readMolfileInt(line, st + 4);
+                        container.getAtom(offset + index).setMassNumber(mass);
                     }
                     break;
-                
+
                 // M  RADnn8 aaa vvv ...
-                // 
-                // vvv: Default of 0 = no radical, 1 = singlet (:), 2 = doublet ( . or ^), 3 = triplet (^^). When 
+                //
+                // vvv: Default of 0 = no radical, 1 = singlet (:), 2 = doublet ( . or ^), 3 = triplet (^^). When
                 //      present, this property supersedes all charge and radical values in the atom block,
                 //      forcing a 0 (zero) charge and radical on all atoms not listed in an M CHG or
                 //      M RAD line.
                 case M_RAD:
                     count = readUInt(line, 6, 3);
                     for (int i = 0, st = 10; i < count && st + 7 <= length; i++, st += 8) {
-                            index = readMolfileInt(line, st) - 1;
-                        int value  = readMolfileInt(line, st + 4);
+                        index = readMolfileInt(line, st) - 1;
+                        int value = readMolfileInt(line, st + 4);
                         SPIN_MULTIPLICITY multiplicity = SPIN_MULTIPLICITY.ofValue(value);
-                        
+
                         for (int e = 0; e < multiplicity.getSingleElectrons(); e++)
                             container.addSingleElectron(offset + index);
                     }
                     break;
-                
+
                 // M  RGPnn8 aaa rrr ...
-                // 
+                //
                 // rrr: Rgroup number, value from 1 to 32 *, labels position of Rgroup on root.
                 //
                 // see also, RGroupQueryReader
                 case M_RGP:
                     count = readUInt(line, 6, 3);
                     for (int i = 0, st = 10; i < count && st + 7 <= length; i++, st += 8) {
-                            index  = readMolfileInt(line, st) - 1;
+                        index = readMolfileInt(line, st) - 1;
                         int number = readMolfileInt(line, st + 4);
                         label(container, offset + index, "R" + number);
                     }
                     break;
-                
-                // M  END
+
+                // M  ZZC aaa c...
                 // 
-                // This entry goes at the end of the properties block and is required for molfiles which contain a 
+                // c: first character of the label, extends to EOL.
+                //
+                // Proprietary atom labels created by ACD/Labs ChemSketch using the Manual Numbering Tool.
+                // This atom property appears to be undocumented, but experimentation leads to the following
+                // specification (tested with ACD/ChemSketch version 12.00 Build 29305, 25 Nov 2008)
+                //
+                // It's not necessary to label any/all atoms but if a label is present, the following applies:
+                //
+                // The atom label(s) consist of an optional prefix, a required numeric label, and optional suffix.
+                //                         
+                // The numeric label is an integer in the range 0 - 999 inclusive.
+                // 
+                // If present, the prefix and suffix can each contain 1 - 50 characters, from the set of printable 
+                // ASCII characters shown here
+                //                            
+                //    !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+                //                    
+                // In addition, both the prefix and suffix may contain leading and/or trailing and/or embedded 
+                // whitespace, included within the limit of 50 characters. These should be preserved when read.
+                //                    
+                // Long labels in the mol/sdfile are not truncated or wrapped onto multiple lines. As a result, the
+                // line could be 114 characters in length (excluding the newline).
+                //
+                // By stopping and restarting the Manual Numbering Tool, it's possible to create non-sequential
+                // or even duplicate numbers or labels. This is reasonable for the intended purpose of the tool - 
+                // labelling the structure as you wish. If unique labels are required, downstream processing will be
+                // necessary to enforce this.
+                //
+                case M_ZZC:
+                    if (mode == Mode.STRICT) {
+                        throw new CDKException("Atom property ZZC is illegal in STRICT mode");
+                    }
+                    index = readMolfileInt(line, 7) - 1;
+                    String atomLabel = line.substring(11);  // DO NOT TRIM
+                    container.getAtom(offset + index).setProperty(CDKConstants.ACDLABS_LABEL, atomLabel);
+                    break;    
+                                    
+                // M  END
+                //
+                // This entry goes at the end of the properties block and is required for molfiles which contain a
                 // version stamp in the counts line.
                 case M_END:
                     return;
@@ -937,8 +938,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
     private IBond.Stereo toStereo(final int stereo, final int type) throws CDKException {
         switch (stereo) {
             case 0:
-                return type == 2 ? IBond.Stereo.E_Z_BY_COORDINATES 
-                                 : IBond.Stereo.NONE;
+                return type == 2 ? IBond.Stereo.E_Z_BY_COORDINATES : IBond.Stereo.NONE;
             case 1:
                 if (mode == Mode.STRICT && type == 2)
                     throw new CDKException("stereo flag was 'up' but bond order was 2");
@@ -956,14 +956,13 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     throw new CDKException("stereo flag was 'down' but bond order was 2");
                 return IBond.Stereo.DOWN;
         }
-        if (mode == Mode.STRICT)
-            throw new CDKException("unknown bond stereo type: " + stereo);
+        if (mode == Mode.STRICT) throw new CDKException("unknown bond stereo type: " + stereo);
         return IBond.Stereo.NONE;
     }
 
     /**
      * Determine the length of the line excluding trailing whitespace.
-     * 
+     *
      * @param str a string
      * @return the length when trailing white space is removed
      */
@@ -986,30 +985,29 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @return a new atom
      * @throws CDKException the symbol is not allowed
      */
-    private IAtom createAtom(String symbol,
-                             IChemObjectBuilder builder) throws CDKException {
-        if (isPeriodicElement(symbol))
-            return builder.newInstance(IAtom.class, symbol);
-        
-        // when strict only accept labels from the specification
-        if (mode == Mode.STRICT && !isPseudoElement(symbol))
-            throw new CDKException("invald symbol: " + symbol);        
-        
+    private IAtom createAtom(String symbol, IChemObjectBuilder builder, int lineNum) throws CDKException {
+        if (isPeriodicElement(symbol)) return builder.newInstance(IAtom.class, symbol);
+
+        if (!isPseudoElement(symbol)) {
+            handleError("invalid symbol: " + symbol, lineNum, 31, 34);
+            // when strict only accept labels from the specification
+            if (mode == Mode.STRICT) throw new CDKException("invalid symbol: " + symbol);
+        }
+
         // will be renumbered later by RGP if R1, R2 etc. if not renumbered then
         // 'R' is a better label than 'R#' if now RGP is specified
-        if (symbol.equals("R#"))
-            symbol = "R";
-        
+        if (symbol.equals("R#")) symbol = "R";
+
         IAtom atom = builder.newInstance(IPseudoAtom.class, symbol);
         atom.setSymbol(symbol);
         atom.setAtomicNumber(0); // avoid NPE downstream
-        
+
         return atom;
     }
 
     /**
      * Is the symbol a periodic element.
-     * 
+     *
      * @param symbol a symbol from the input
      * @return the symbol is a pseudo atom
      */
@@ -1023,12 +1021,12 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * Is the atom symbol a non-periodic element (i.e. pseudo). Valid pseudo
      * atoms are 'R#', 'A', 'Q', '*', 'L' and 'LP'. We also accept 'R' but this
      * is not listed in the specification.
-     * 
+     *
      * @param symbol a symbol from the input
      * @return the symbol is a valid pseudo element
      */
     static boolean isPseudoElement(final String symbol) {
-        return PSUEDO_LABELS.contains(symbol);
+        return PSEUDO_LABELS.contains(symbol);
     }
 
     /**
@@ -1044,39 +1042,44 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      */
     static double readMDLCoordinate(final String line, int offset) throws CDKException {
         // to be valid the decimal should be at the fifth index (4 sig fig)
-        if (line.charAt(offset + 5) != '.')
-            throw new CDKException("invalid coordinate specification");
-        
+        if (line.charAt(offset + 5) != '.') throw new CDKException("invalid coordinate specification");
+
         int start = offset;
         while (line.charAt(start) == ' ')
             start++;
-        
+
         int sign = sign(line.charAt(start));
-        if (sign < 0)
-            start++;
-        
+        if (sign < 0) start++;
+
         int integral = readUInt(line, start, (offset + 5) - start);
         int fraction = readUInt(line, offset + 6, 4);
-                
+
         return sign * (integral * 10000l + fraction) / 10000d;
     }
 
     /**
      * Convert the a character (from an MDL V2000 input) to a charge value:
      * 1 = +1, 2 = +2, 3 = +3, 4 = doublet radical, 5 = -1, 6 = -2, 7 = -3.
-     * 
+     *
      * @param c a character
-     * @return formal charge 
+     * @return formal charge
      */
     private static int toCharge(final char c) {
         switch (c) {
-            case '1': return +3;
-            case '2': return +2;
-            case '3': return +1;
-            case '4': return 0; // doublet radical - superseded by M  RAD
-            case '5': return -1;
-            case '6': return -2;
-            case '7': return -3;
+            case '1':
+                return +3;
+            case '2':
+                return +2;
+            case '3':
+                return +1;
+            case '4':
+                return 0; // doublet radical - superseded by M  RAD
+            case '5':
+                return -1;
+            case '6':
+                return -2;
+            case '7':
+                return -3;
         }
         return 0;
     }
@@ -1091,7 +1094,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
     private static int sign(final char c) {
         return c == '-' ? -1 : +1;
     }
-    
+
     /**
      * Convert a character (ASCII code points) to an integer. If the character
      * was not a digit (i.e. space) the value defaults to 0.
@@ -1158,12 +1161,10 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         }
         switch ((c = line.charAt(index + 1))) {
             case ' ':
-                if (result > 0)
-                    return sign * result;
+                if (result > 0) return sign * result;
                 break;
             case '-':
-                if (result > 0)
-                    return sign * result;
+                if (result > 0) return sign * result;
                 sign = -1;
                 break;
             case '0':
@@ -1183,12 +1184,10 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         }
         switch ((c = line.charAt(index + 2))) {
             case ' ':
-                if (result > 0)
-                    return sign * result;
+                if (result > 0) return sign * result;
                 break;
             case '-':
-                if (result > 0)
-                    return sign * result;
+                if (result > 0) return sign * result;
                 sign = -1;
                 break;
             case '0':
@@ -1210,18 +1209,18 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
     }
 
     /**
-     * Labels the atom at the specified index with the provide label. If the 
+     * Labels the atom at the specified index with the provide label. If the
      * atom was not already a pseudo atom then the original atom is replaced.
-     * 
+     *
      * @param container structure
      * @param index     atom index to replace
      * @param label     the label for the atom
-     * @see IPseudoAtom#setLabel(String)                   
+     * @see IPseudoAtom#setLabel(String)
      */
     static void label(final IAtomContainer container, final int index, final String label) {
-        final IAtom       atom       = container.getAtom(index);
-        final IPseudoAtom pseudoAtom = atom instanceof IPseudoAtom ? (IPseudoAtom) atom 
-                                                                   : container.getBuilder().newInstance(IPseudoAtom.class);
+        final IAtom atom = container.getAtom(index);
+        final IPseudoAtom pseudoAtom = atom instanceof IPseudoAtom ? (IPseudoAtom) atom : container.getBuilder()
+                .newInstance(IPseudoAtom.class);
         if (atom == pseudoAtom) {
             pseudoAtom.setLabel(label);
         } else {
@@ -1249,51 +1248,38 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * @throws CDKException a CDK error occurred
      * @throws IOException  the isotopes file could not be read
      */
-    private IAtom readAtomSlow(String line,
-                               IChemObjectBuilder builder,
-                               int linecount) throws CDKException, IOException {
-        IAtom atom;        
+    private IAtom readAtomSlow(String line, IChemObjectBuilder builder, int linecount) throws CDKException, IOException {
+        IAtom atom;
         Matcher trailingSpaceMatcher = TRAILING_SPACE.matcher(line);
         if (trailingSpaceMatcher.find()) {
-            handleError("Trailing space found",
-                        linecount,
-                        trailingSpaceMatcher.start(), trailingSpaceMatcher.end());
+            handleError("Trailing space found", linecount, trailingSpaceMatcher.start(), trailingSpaceMatcher.end());
             line = trailingSpaceMatcher.replaceAll("");
         }
         double x = Double.parseDouble(line.substring(0, 10).trim());
         double y = Double.parseDouble(line.substring(10, 20).trim());
         double z = Double.parseDouble(line.substring(20, 30).trim());
-        
-        
+
         String element = line.substring(31, Math.min(line.length(), 34)).trim();
         if (line.length() < 34) {
-            handleError("Element atom type does not follow V2000 format type should of length three" +
-                                " and padded with space if required",
-                        linecount, 31, 34);
+            handleError("Element atom type does not follow V2000 format type should of length three"
+                    + " and padded with space if required", linecount, 31, 34);
         }
 
         logger.debug("Atom type: ", element);
         IsotopeFactory isotopeFactory = Isotopes.getInstance();
         if (isotopeFactory.isElement(element)) {
             atom = isotopeFactory.configure(builder.newInstance(IAtom.class, element));
-        }
-        else if ("A".equals(element)) {
+        } else if ("A".equals(element)) {
             atom = builder.newInstance(IPseudoAtom.class, element);
-        }
-        else if ("Q".equals(element)) {
+        } else if ("Q".equals(element)) {
             atom = builder.newInstance(IPseudoAtom.class, element);
-        }
-        else if ("*".equals(element)) {
+        } else if ("*".equals(element)) {
             atom = builder.newInstance(IPseudoAtom.class, element);
-        }
-        else if ("LP".equals(element)) {
+        } else if ("LP".equals(element)) {
             atom = builder.newInstance(IPseudoAtom.class, element);
-        }
-        else if ("L".equals(element)) {
+        } else if ("L".equals(element)) {
             atom = builder.newInstance(IPseudoAtom.class, element);
-        }
-        else if (element.equals("R") ||
-                (element.length() > 0 && element.charAt(0) == 'R')) {
+        } else if (element.equals("R") || (element.length() > 0 && element.charAt(0) == 'R')) {
             logger.debug("Atom ", element, " is not an regular element. Creating a PseudoAtom.");
             //check if the element is R
             String[] rGroup = element.split("^R");
@@ -1307,17 +1293,12 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     // The Rnumber may be set later on, using RGP line
                     atom = builder.newInstance(IPseudoAtom.class, "R");
                 }
-            }
-            else {
+            } else {
                 atom = builder.newInstance(IPseudoAtom.class, element);
             }
-        }
-        else {
-            handleError(
-                    "Invalid element type. Must be an existing " +
-                            "element, or one in: A, Q, L, LP, *.",
-                    linecount, 32, 35
-                       );
+        } else {
+            handleError("Invalid element type. Must be an existing " + "element, or one in: A, Q, L, LP, *.",
+                    linecount, 32, 35);
             atom = builder.newInstance(IPseudoAtom.class, element);
             atom.setSymbol(element);
         }
@@ -1336,22 +1317,15 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                         IIsotope major = Isotopes.getInstance().getMajorIsotope(element);
                         atom.setMassNumber(major.getMassNumber() + massDiff);
                     }
-                } catch (Exception exception) {
-                    handleError(
-                            "Could not parse mass difference field.",
-                            linecount, 35, 37,
-                            exception
-                               );
+                } catch (NumberFormatException | IOException exception) {
+                    handleError("Could not parse mass difference field.", linecount, 35, 37, exception);
                 }
-            }
-            else {
+            } else {
                 logger.error("Cannot set mass difference for a non-element!");
             }
-        }
-        else {
+        } else {
             handleError("Mass difference is missing", linecount, 34, 36);
         }
-
 
         // set the stereo partiy
         Integer parity = line.length() > 41 ? Character.digit(line.charAt(41), 10) : 0;
@@ -1371,14 +1345,9 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                             atom.setValency(valence);
                     }
                 } catch (Exception exception) {
-                    handleError(
-                            "Could not parse valence information field",
-                            linecount, 49, 52,
-                            exception
-                               );
+                    handleError("Could not parse valence information field", linecount, 49, 52, exception);
                 }
-            }
-            else {
+            } else {
                 logger.error("Cannot set valence information for a non-element!");
             }
         }
@@ -1389,29 +1358,21 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             int chargeCode = Integer.parseInt(chargeCodeString);
             if (chargeCode == 0) {
                 // uncharged species
-            }
-            else if (chargeCode == 1) {
+            } else if (chargeCode == 1) {
                 atom.setFormalCharge(+3);
-            }
-            else if (chargeCode == 2) {
+            } else if (chargeCode == 2) {
                 atom.setFormalCharge(+2);
-            }
-            else if (chargeCode == 3) {
+            } else if (chargeCode == 3) {
                 atom.setFormalCharge(+1);
-            }
-            else if (chargeCode == 4) {
-            }
-            else if (chargeCode == 5) {
+            } else if (chargeCode == 4) {
+            } else if (chargeCode == 5) {
                 atom.setFormalCharge(-1);
-            }
-            else if (chargeCode == 6) {
+            } else if (chargeCode == 6) {
                 atom.setFormalCharge(-2);
-            }
-            else if (chargeCode == 7) {
+            } else if (chargeCode == 7) {
                 atom.setFormalCharge(-3);
             }
-        }
-        else {
+        } else {
             handleError("Atom charge is missing", linecount, 36, 39);
         }
 
@@ -1442,67 +1403,54 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             double shift = Double.parseDouble(line.substring(79, 87).trim());
             atom.setProperty("second shift", shift);
         }
-        
+
         return atom;
     }
 
     /**
-     * Read a bond line from an MDL V2000 molfile bond block (slow). The 
+     * Read a bond line from an MDL V2000 molfile bond block (slow). The
      * explicit valence is also modified.
      *
      * @param line      the input from the bond block
      * @param builder   chem object builder
      * @param atoms     array of atoms
-     * @param explicitValence stores the explicit valence of each atom (bond order sum)                 
+     * @param explicitValence stores the explicit valence of each atom (bond order sum)
      * @param linecount the current line count
      * @return a new bond
      * @throws CDKException the bond line could not be parsed
      */
-    private IBond readBondSlow(String             line,
-                               IChemObjectBuilder builder,
-                               IAtom[]            atoms,
-                               int[]              explicitValence,
-                               int                linecount) throws CDKException {
+    private IBond readBondSlow(String line, IChemObjectBuilder builder, IAtom[] atoms, int[] explicitValence,
+            int linecount) throws CDKException {
         int atom1 = Integer.parseInt(line.substring(0, 3).trim());
         int atom2 = Integer.parseInt(line.substring(3, 6).trim());
         int order = Integer.parseInt(line.substring(6, 9).trim());
         IBond.Stereo stereo = null;
         if (line.length() >= 12) {
-            int mdlStereo = line.length() > 12
-                            ? Integer.parseInt(line.substring(9, 12).trim())
-                            : Integer.parseInt(line.substring(9).trim());
+            int mdlStereo = line.length() > 12 ? Integer.parseInt(line.substring(9, 12).trim()) : Integer.parseInt(line
+                    .substring(9).trim());
             if (mdlStereo == 1) {
                 // MDL up bond
                 stereo = IBond.Stereo.UP;
-            }
-            else if (mdlStereo == 6) {
+            } else if (mdlStereo == 6) {
                 // MDL down bond
                 stereo = IBond.Stereo.DOWN;
-            }
-            else if (mdlStereo == 0) {
+            } else if (mdlStereo == 0) {
                 if (order == 2) {
                     // double bond stereo defined by coordinates
                     stereo = IBond.Stereo.E_Z_BY_COORDINATES;
-                }
-                else {
+                } else {
                     // bond has no stereochemistry
                     stereo = IBond.Stereo.NONE;
                 }
-            }
-            else if (mdlStereo == 3 && order == 2) {
+            } else if (mdlStereo == 3 && order == 2) {
                 // unknown E/Z stereochemistry
                 stereo = IBond.Stereo.E_OR_Z;
-            }
-            else if (mdlStereo == 4) {
+            } else if (mdlStereo == 4) {
                 //MDL bond undefined
                 stereo = IBond.Stereo.UP_OR_DOWN;
             }
-        }
-        else {
-            handleError(
-                    "Missing expected stereo field at line: ",
-                    linecount, 10, 12
-                       );
+        } else {
+            handleError("Missing expected stereo field at line: ", linecount, 10, 12);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Bond: " + atom1 + " - " + atom2 + "; order " + order);
@@ -1517,19 +1465,16 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             if (order == 3) cdkOrder = IBond.Order.TRIPLE;
             if (stereo != null) {
                 newBond = builder.newInstance(IBond.class, a1, a2, cdkOrder, stereo);
-            }
-            else {
+            } else {
                 newBond = builder.newInstance(IBond.class, a1, a2, cdkOrder);
             }
             explicitValence[atom1 - 1] += cdkOrder.numeric();
             explicitValence[atom2 - 1] += cdkOrder.numeric();
-        }
-        else if (order == 4) {
-            // aromatic bond                	
+        } else if (order == 4) {
+            // aromatic bond
             if (stereo != null) {
                 newBond = builder.newInstance(IBond.class, a1, a2, IBond.Order.UNSET, stereo);
-            }
-            else {
+            } else {
                 newBond = builder.newInstance(IBond.class, a1, a2, IBond.Order.UNSET);
             }
             // mark both atoms and the bond as aromatic and raise the SINGLE_OR_DOUBLE-flag
@@ -1538,8 +1483,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             a1.setFlag(CDKConstants.ISAROMATIC, true);
             a2.setFlag(CDKConstants.ISAROMATIC, true);
             explicitValence[atom1 - 1] = explicitValence[atom2 - 1] = Integer.MIN_VALUE;
-        }
-        else {
+        } else {
             newBond = new CTFileQueryBond(builder);
             IAtom[] bondAtoms = {a1, a2};
             newBond.setAtoms(bondAtoms);
@@ -1568,8 +1512,8 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
     /**
      * Read the properties from the V2000 block (slow).
-     * 
-     * @param input     input source 
+     *
+     * @param input     input source
      * @param container the container with the atoms / bonds loaded
      * @param nAtoms    the number of atoms in the atom block
      * @param linecount the line count
@@ -1584,10 +1528,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             line = input.readLine();
             linecount++;
             if (line == null) {
-                handleError(
-                        "The expected property block is missing!",
-                        linecount, 0, 0
-                           );
+                handleError("The expected property block is missing!", linecount, 0, 0);
             }
             if (line.startsWith("M  END")) break;
 
@@ -1604,8 +1545,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     int charge = Integer.parseInt(token.trim());
                     container.getAtom(atomNumber - 1).setFormalCharge(charge);
                 }
-            }
-            else if (line.matches("A\\s{1,4}\\d+")) {
+            } else if (line.matches("A\\s{1,4}\\d+")) {
                 // Reads the pseudo atom property from the mol file
 
                 // The atom number of the to replaced atom
@@ -1621,13 +1561,10 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 }
 
                 IAtom newPseudoAtom = container.getBuilder().newInstance(IPseudoAtom.class, alias);
-                if (aliasAtom.getPoint2d() != null)
-                    newPseudoAtom.setPoint2d(aliasAtom.getPoint2d());
-                if (aliasAtom.getPoint3d() != null)
-                    newPseudoAtom.setPoint3d(aliasAtom.getPoint3d());
+                if (aliasAtom.getPoint2d() != null) newPseudoAtom.setPoint2d(aliasAtom.getPoint2d());
+                if (aliasAtom.getPoint3d() != null) newPseudoAtom.setPoint3d(aliasAtom.getPoint3d());
                 AtomContainerManipulator.replaceAtomByAtom(container, aliasAtom, newPseudoAtom);
-            }
-            else if (line.startsWith("M  ISO")) {
+            } else if (line.startsWith("M  ISO")) {
                 try {
                     String countString = line.substring(6, 10).trim();
                     int infoCount = Integer.parseInt(countString);
@@ -1641,17 +1578,12 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                         }
                     }
                 } catch (NumberFormatException exception) {
-                    String error = "Error (" + exception.getMessage() + ") while parsing line "
-                            + linecount + ": " + line + " in property block.";
+                    String error = "Error (" + exception.getMessage() + ") while parsing line " + linecount + ": "
+                            + line + " in property block.";
                     logger.error(error);
-                    handleError(
-                            "NumberFormatException in isotope information.",
-                            linecount, 7, 11,
-                            exception
-                               );
+                    handleError("NumberFormatException in isotope information.", linecount, 7, 11, exception);
                 }
-            }
-            else if (line.startsWith("M  RAD")) {
+            } else if (line.startsWith("M  RAD")) {
                 try {
                     String countString = line.substring(6, 9).trim();
                     int infoCount = Integer.parseInt(countString);
@@ -1677,23 +1609,18 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                                     break;
                             }
                             for (int j = 0; j < spin.getSingleElectrons(); j++) {
-                                container.addSingleElectron(
-                                        container.getBuilder().newInstance(ISingleElectron.class, radical));
+                                container.addSingleElectron(container.getBuilder().newInstance(ISingleElectron.class,
+                                        radical));
                             }
                         }
                     }
                 } catch (NumberFormatException exception) {
-                    String error = "Error (" + exception.getMessage() + ") while parsing line "
-                            + linecount + ": " + line + " in property block.";
+                    String error = "Error (" + exception.getMessage() + ") while parsing line " + linecount + ": "
+                            + line + " in property block.";
                     logger.error(error);
-                    handleError(
-                            "NumberFormatException in radical information",
-                            linecount, 7, 10,
-                            exception
-                               );
+                    handleError("NumberFormatException in radical information", linecount, 7, 10, exception);
                 }
-            }
-            else if (line.startsWith("G  ")) {
+            } else if (line.startsWith("G  ")) {
                 try {
                     String atomNumberString = line.substring(3, 6).trim();
                     int atomNumber = Integer.parseInt(atomNumberString);
@@ -1712,17 +1639,12 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                     }
                     AtomContainerManipulator.replaceAtomByAtom(container, prevAtom, pseudoAtom);
                 } catch (NumberFormatException exception) {
-                    String error = "Error (" + exception.toString() + ") while parsing line "
-                            + linecount + ": " + line + " in property block.";
+                    String error = "Error (" + exception.toString() + ") while parsing line " + linecount + ": " + line
+                            + " in property block.";
                     logger.error(error);
-                    handleError(
-                            "NumberFormatException in group information",
-                            linecount, 4, 7,
-                            exception
-                               );
+                    handleError("NumberFormatException in group information", linecount, 4, 7, exception);
                 }
-            }
-            else if (line.startsWith("M  RGP")) {
+            } else if (line.startsWith("M  RGP")) {
                 StringTokenizer st = new StringTokenizer(line);
                 //Ignore first 3 tokens (overhead).
                 st.nextToken();
@@ -1730,10 +1652,10 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 st.nextToken();
                 //Process the R group numbers as defined in RGP line.
                 while (st.hasMoreTokens()) {
-                    Integer position = new Integer(st.nextToken());
-                    int rNumber = new Integer(st.nextToken());
+                    Integer position = Integer.valueOf(st.nextToken());
+                    int rNumber = Integer.valueOf(st.nextToken());
                     // the container may have already had atoms before the new atoms were read
-                    int index   = container.getAtomCount() - nAtoms + position - 1;
+                    int index = container.getAtomCount() - nAtoms + position - 1;
                     IPseudoAtom pseudoAtom = (IPseudoAtom) container.getAtom(index);
                     if (pseudoAtom != null) {
                         pseudoAtom.setLabel("R" + rNumber);
@@ -1741,7 +1663,7 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
                 }
             }
             if (line.startsWith("V  ")) {
-                Integer atomNumber = new Integer(line.substring(3, 6).trim());
+                Integer atomNumber = Integer.valueOf(line.substring(3, 6).trim());
                 IAtom atomWithComment = container.getAtom(atomNumber - 1);
                 atomWithComment.setProperty(CDKConstants.COMMENT, line.substring(7));
             }
@@ -1751,7 +1673,6 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             }
         }
     }
-    
 
     /**
      * Read non-structural data from input and store as properties the provided
@@ -1759,36 +1680,32 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * after an Molfile and before the record deliminator ('$$$$'). The data
      * consists of one or more Data Header and Data blocks, an example is seen
      * below.
-     * 
+     *
      * <pre>{@code
-     * > 29 <DENSITY> 
+     * > 29 <DENSITY>
      * 0.9132 - 20.0
-     * 
-     * > 29 <BOILING.POINT> 
-     * 63.0 (737 MM) 
+     *
+     * > 29 <BOILING.POINT>
+     * 63.0 (737 MM)
      * 79.0 (42 MM)
-     * 
-     * > 29 <ALTERNATE.NAMES> 
+     *
+     * > 29 <ALTERNATE.NAMES>
      * SYLVAN
-     * 
-     * > 29 <DATE> 
+     *
+     * > 29 <DATE>
      * 09-23-1980
-     * 
-     * > 29 <CRC.NUMBER> 
+     *
+     * > 29 <CRC.NUMBER>
      * F-0213
-     * 
+     *
      * }</pre>
-     * 
+     *
      *
      * @param input     input source
      * @param container the container
      * @throws IOException an error occur whilst reading the input
      */
-    @TestMethod("readNonStructuralData")
-    static void readNonStructuralData(final BufferedReader input,
-                                      final IAtomContainer container) throws IOException {
-
-        final String newline = System.getProperty("line.separator");
+    static void readNonStructuralData(final BufferedReader input, final IAtomContainer container) throws IOException {
 
         String line, header = null;
         boolean wrap = false;
@@ -1801,62 +1718,50 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
             if (newHeader != null) {
 
-                if (header != null)
-                    container.setProperty(header, data.toString());
+                if (header != null) container.setProperty(header, data.toString());
 
                 header = newHeader;
                 wrap = false;
                 data.setLength(0);
 
-            }
-            else {
+            } else {
 
-                if (data.length() > 0 || !line.equals(" "))
-                    line = line.trim();
+                if (data.length() > 0 || !line.equals(" ")) line = line.trim();
 
-                if (line.isEmpty())
-                    continue;
+                if (line.isEmpty()) continue;
 
-                if (!wrap && data.length() > 0)
-                    data.append(newline);
+                if (!wrap && data.length() > 0) data.append('\n');
                 data.append(line);
 
                 wrap = line.length() == 80;
             }
         }
 
-        if (header != null)
-            container.setProperty(header, data.toString());
+        if (header != null) container.setProperty(header, data.toString());
     }
 
     /**
      * Obtain the field name from a potential SD data header. If the header
      * does not contain a field name, then null is returned. The method does
      * not currently return field numbers (e.g. DT&lt;n&gt;).
-     * 
+     *
      * @param line an input line
      * @return the field name
      */
-    @TestMethod("dataHeader_1")
     static String dataHeader(final String line) {
-        if (line.length() > 2 
-                && line.charAt(0) != '>'
-                && line.charAt(1) != ' ')
-            return null;
+        if (line.length() > 2 && line.charAt(0) != '>' && line.charAt(1) != ' ') return null;
         int i = line.indexOf('<', 2);
-        if (i < 0)
-            return null;
+        if (i < 0) return null;
         int j = line.indexOf('>', i);
-        if (j < 0)
-            return null;
+        if (j < 0) return null;
         return line.substring(i + 1, j);
     }
 
     /**
      * Is the line the end of a record. A line is the end of a record if it
-     * is 'null' or is the SDF deliminator, '$$$$'. 
-     * 
-     * @param line a line from the input 
+     * is 'null' or is the SDF deliminator, '$$$$'.
+     *
+     * @param line a line from the input
      * @return the line indicates the end of a record was reached
      */
     private static boolean endOfRecord(final String line) {
@@ -1925,46 +1830,46 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
         /** Sgroup Labels [Sgroup]. */
         M_SLB,
-        
+
         /** Sgroup Connectivity [Sgroup]. */
         M_SCN,
-        
+
         /** Sgroup Expansion [Sgroup]. */
         M_SDS,
-        
+
         /** Sgroup Atom List [Sgroup]. */
         M_SAL,
-        
+
         /** Sgroup Bond List [Sgroup]. */
         M_SBL,
-        
+
         /** Multiple Group Parent Atom List [Sgroup]. */
         M_SPA,
-        
+
         /** Sgroup Subscript [Sgroup]. */
         M_SMT,
-        
+
         /** Sgroup Correspondence [Sgroup]. */
         M_CRS,
-        
+
         /** Sgroup Display Information [Sgroup]. */
         M_SDI,
-        
+
         /** Superatom Bond and Vector Information [Sgroup]. */
         M_SBV,
-        
+
         /** Data Sgroup Field Description [Sgroup]. */
         M_SDT,
-        
+
         /** Data Sgroup Display Information [Sgroup]. */
         M_SDD,
 
         /** Data Sgroup Data. */
         M_SCD,
-        
+
         /** Data Sgroup Data. */
         M_SED,
-        
+
         /** Sgroup Hierarchy Information. */
         M_SPL,
 
@@ -1974,6 +1879,9 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
         /** 3D Feature Properties. */
         M_$3D,
 
+        /** ACDLabs Atom Label */
+        M_ZZC,
+        
         /** End of Block. */
         M_END,
 
@@ -1985,43 +1893,35 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
 
         static {
             for (PropertyKey p : values()) {
-                if (p.name().charAt(0) == 'M')
-                    mSuffix.put(p.name().substring(2, 5), p);
+                if (p.name().charAt(0) == 'M') mSuffix.put(p.name().substring(2, 5), p);
             }
         }
 
         /**
-         * Determine the property key of the provided line. 
+         * Determine the property key of the provided line.
          *
          * @param line an property line
          * @return the key (defaults to {@link #UNKNOWN})
          */
         static PropertyKey of(final String line) {
-            if (line.length() < 5)
-                return UNKNOWN;
+            if (line.length() < 5) return UNKNOWN;
             switch (line.charAt(0)) {
                 case 'A':
-                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ')
-                        return ATOM_ALIAS;
+                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ') return ATOM_ALIAS;
                     return UNKNOWN;
                 case 'G':
-                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ')
-                        return GROUP_ABBREVIATION;
+                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ') return GROUP_ABBREVIATION;
                     return UNKNOWN;
                 case 'S':
-                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ')
-                        return SKIP;
+                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ') return SKIP;
                     return UNKNOWN;
                 case 'V':
-                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ')
-                        return ATOM_VALUE;
+                    if (line.charAt(1) == ' ' && line.charAt(2) == ' ') return ATOM_VALUE;
                     return UNKNOWN;
                 case 'M':
-                    if (line.charAt(1) != ' ' || line.charAt(2) != ' ')
-                        return UNKNOWN;
+                    if (line.charAt(1) != ' ' || line.charAt(2) != ' ') return UNKNOWN;
                     PropertyKey property = mSuffix.get(line.substring(3, 6));
-                    if (property != null)
-                        return property;
+                    if (property != null) return property;
                     return UNKNOWN;
             }
             return UNKNOWN;
@@ -2033,27 +1933,23 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
      * Defines the version of the CTab.
      */
     enum CTabVersion {
-        V2000,
-        V3000,
-        UNSPECIFIED;
+        V2000, V3000, UNSPECIFIED;
 
         /**
          * Given a CTab header, what version was specified. The version
          * is identifier in the by the presence of 'V[2|3]000'. If not
          * version tag is present the version is unspecified.
-         * 
+         *
          * <pre>  5  5  0  0  0  0            999 V2000</prev>
          * <pre>  0  0  0  0  0  0            999 V3000</prev>
-         * 
-         * @param header input line (non-null) 
+         *
+         * @param header input line (non-null)
          * @return the CTab version
          */
         static CTabVersion ofHeader(String header) {
-            if (header.length() < 39)
-                return UNSPECIFIED;
+            if (header.length() < 39) return UNSPECIFIED;
             char c = header.charAt(34);
-            if (c != 'v' && c != 'V')
-                return UNSPECIFIED;
+            if (c != 'v' && c != 'V') return UNSPECIFIED;
             if (header.charAt(35) == '2') // could check for '000'
                 return V2000;
             if (header.charAt(35) == '3') // could check for '000'
@@ -2061,6 +1957,5 @@ public class MDLV2000Reader extends DefaultChemObjectReader {
             return UNSPECIFIED;
         }
     }
-    
-}
 
+}

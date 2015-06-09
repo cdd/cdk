@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The CDK Development Team
+/* Copyright (C) 2003-2007  The CDK Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -35,8 +30,7 @@ import org.openscience.cdk.exception.CDKException;
  */
 public class IntegerIOSetting extends IOSetting {
 
-    public IntegerIOSetting(String name, Importance level, 
-                            String question, String defaultSetting) {
+    public IntegerIOSetting(String name, Importance level, String question, String defaultSetting) {
         super(name, level, question, defaultSetting);
     }
 
@@ -44,6 +38,7 @@ public class IntegerIOSetting extends IOSetting {
      * Sets the setting for a certain question. The setting
      * is a boolean, and it accepts only "true" and "false".
      */
+    @Override
     public void setSetting(String setting) throws CDKException {
         try {
             Integer.parseInt(setting);
@@ -52,7 +47,7 @@ public class IntegerIOSetting extends IOSetting {
             throw new CDKException("Setting " + setting + " is not an integer.", exception);
         }
     }
-    
+
     public int getSettingValue() {
         return Integer.parseInt(this.setting);
     }

@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -73,12 +68,12 @@ public class PharmacophoreQueryBondTest {
         Assert.assertEquals(1.732, qbond2.getLower(), 0.01);
     }
 
-     @Test
+    @Test
     public void testToString() {
         PharmacophoreQueryAtom qatom1 = new PharmacophoreQueryAtom("Amine", "[CX2]N");
         PharmacophoreQueryAtom qatom2 = new PharmacophoreQueryAtom("aromatic", "c1ccccc1");
         PharmacophoreQueryBond qbond1 = new PharmacophoreQueryBond(qatom1, qatom2, 1.0, 2.0);
-        String repr = qbond1.toString();         
+        String repr = qbond1.toString();
         Assert.assertEquals(repr, "DC::Amine [[CX2]N]::aromatic [c1ccccc1]::[1.0 - 2.0] ");
-     }
+    }
 }

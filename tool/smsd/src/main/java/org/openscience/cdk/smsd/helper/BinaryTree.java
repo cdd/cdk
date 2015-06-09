@@ -1,4 +1,3 @@
-
 /**
  *
  * Copyright (C) 2006-2010  Syed Asad Rahman <asad@ebi.ac.uk>
@@ -25,9 +24,6 @@
  */
 package org.openscience.cdk.smsd.helper;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 
 /**
  * Class to construct a Binary tree for McGregor search.
@@ -35,29 +31,27 @@ import org.openscience.cdk.annotations.TestMethod;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.helper.BinaryTreeTest")
 public class BinaryTree {
 
     /**
      * Creates a new instance of BinaryTree.
      * @param value node value
      */
-    @TestMethod("testGetEnergies")
     public BinaryTree(int value) {
         this.value = value;
     }
+
     /**
      * not equal is initialized as null
      */
-    private BinaryTree equal = null;
+    private BinaryTree equal    = null;
     private BinaryTree notEqual = null;
-    private int value = -1;
+    private int        value    = -1;
 
     /**
      * Return value of the node
      * @return get the value of the current node
      */
-    @TestMethod("testGetValue")
     public int getValue() {
         return this.value;
     }
@@ -66,7 +60,6 @@ public class BinaryTree {
      * Returns equal node
      * @return the equal
      */
-    @TestMethod("testGetEqual")
     public BinaryTree getEqual() {
         return equal;
     }
@@ -75,7 +68,6 @@ public class BinaryTree {
      * Set equal node
      * @param equal the equal to set
      */
-    @TestMethod("testSetEqual")
     public void setEqual(BinaryTree equal) {
         this.equal = equal;
     }
@@ -84,7 +76,6 @@ public class BinaryTree {
      * Returns not equal node
      * @return the notEqual
      */
-    @TestMethod("testGetNotEqual")
     public BinaryTree getNotEqual() {
         return notEqual;
     }
@@ -93,7 +84,6 @@ public class BinaryTree {
      * Set not equal node
      * @param notEqual the notEqual to set
      */
-    @TestMethod("testSetNotEqual")
     public void setNotEqual(BinaryTree notEqual) {
         this.notEqual = notEqual;
     }

@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,17 +22,20 @@
  */
 package org.openscience.cdk.smsd.helper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -43,31 +45,25 @@ import static org.junit.Assert.*;
  */
 public class FinalMappingsTest {
 
-    public FinalMappingsTest() {
-    }
+    public FinalMappingsTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of getInstance method, of class FinalMappings.
      */
     @Test
     public void testGetInstance() {
-        System.out.println("getInstance");
         FinalMappings result = FinalMappings.getInstance();
         assertNotNull(result);
     }
@@ -77,7 +73,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testAdd() {
-        System.out.println("add");
         Map<Integer, Integer> mapping = new TreeMap<Integer, Integer>();
         mapping.put(1, 1);
         mapping.put(2, 2);
@@ -93,7 +88,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testSet() {
-        System.out.println("set");
         Map<Integer, Integer> mapping1 = new TreeMap<Integer, Integer>();
         mapping1.put(1, 1);
         mapping1.put(2, 2);
@@ -117,7 +111,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testGetIterator() {
-        System.out.println("getIterator");
         Map<Integer, Integer> mapping1 = new TreeMap<Integer, Integer>();
         mapping1.put(1, 1);
         mapping1.put(2, 2);
@@ -142,7 +135,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testClear() {
-        System.out.println("clear");
         Map<Integer, Integer> mapping1 = new TreeMap<Integer, Integer>();
         mapping1.put(1, 1);
         mapping1.put(2, 2);
@@ -167,7 +159,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testGetFinalMapping() {
-        System.out.println("getFinalMapping");
         Map<Integer, Integer> mapping1 = new TreeMap<Integer, Integer>();
         mapping1.put(1, 1);
         mapping1.put(2, 2);
@@ -193,7 +184,6 @@ public class FinalMappingsTest {
      */
     @Test
     public void testGetSize() {
-        System.out.println("getSize");
         Map<Integer, Integer> mapping1 = new TreeMap<Integer, Integer>();
         mapping1.put(1, 1);
         mapping1.put(2, 2);

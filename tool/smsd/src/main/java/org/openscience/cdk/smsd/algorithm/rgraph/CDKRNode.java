@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
+/* Copyright (C) 2002-2007  Stephane Werner <mail@ixelis.net>
  *               2007-2009  Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * This code has been kindly provided by Stephane Werner
@@ -29,7 +27,6 @@
 package org.openscience.cdk.smsd.algorithm.rgraph;
 
 import java.util.BitSet;
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  *  Node of the resolution graphe (RGraph) An CDKRNode represents an association
@@ -46,15 +43,15 @@ import org.openscience.cdk.annotations.TestClass;
  * @cdk.githash
  */
 
-@TestClass("org.openscience.cdk.smsd.algorithm.cdk.CDKRNodeTest")
 public class CDKRNode {
+
     // G1/G2 mapping
 
-    private CDKRMap rMap = null;
+    private CDKRMap rMap      = null;
     // set of neighbour nodes in the RGraph
-    private BitSet extension = null;
+    private BitSet  extension = null;
     // set of incompatible nodes in the RGraph
-    private BitSet forbidden = null;
+    private BitSet  forbidden = null;
 
     /**
      *  Constructor for the RNode object
@@ -129,7 +126,8 @@ public class CDKRNode {
      */
     @Override
     public String toString() {
-        return ("id1 : " + getrMap().getId1() + ", id2 : " + getrMap().getId2() + "\n" + "extension : " + getExtension() + "\n" + "forbiden : " + getForbidden());
+        return ("id1 : " + getrMap().getId1() + ", id2 : " + getrMap().getId2() + "\n" + "extension : "
+                + getExtension() + "\n" + "forbiden : " + getForbidden());
     }
 
     /**
@@ -148,4 +146,3 @@ public class CDKRNode {
         this.rMap = rMap;
     }
 }
-

@@ -55,8 +55,7 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
 
     @BeforeClass
     public static void setMCSAlgorithm() {
-        AbstractMCSAlgorithmTest.setMCSAlgorithm(
-                new MCSPlusHandler());
+        AbstractMCSAlgorithmTest.setMCSAlgorithm(new MCSPlusHandler());
     }
 
     /**
@@ -66,7 +65,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
     @Override
     public void testSearchMCS() {
         try {
-            System.out.println("searchMCS");
             SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
             IAtomContainer target = null;
             target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
@@ -89,7 +87,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testSet_IAtomContainer_IAtomContainer() throws Exception {
-        System.out.println("set");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -105,11 +102,10 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
     /**
      * Test of set method, of class MCSPlusHandler.
      * @throws CDKException
-     * @throws IOException 
+     * @throws IOException
      */
     @Test
     public void testSet_String_String() throws CDKException, IOException {
-        System.out.println("set");
         String molfile = "data/mdl/decalin.mol";
         String queryfile = "data/mdl/decalin.mol";
         IAtomContainer query = new AtomContainer();
@@ -135,7 +131,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testSet_MolHandler_MolHandler() throws InvalidSmilesException {
-        System.out.println("set");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 
         IAtomContainer target1 = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
@@ -154,7 +149,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testGetAllAtomMapping() throws CDKException {
-        System.out.println("getAllAtomMapping");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         sp.kekulise(false);
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
@@ -178,7 +172,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testGetAllMapping() throws CDKException {
-        System.out.println("getAllMapping");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         sp.kekulise(false);
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
@@ -202,7 +195,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testGetFirstAtomMapping() throws InvalidSmilesException {
-        System.out.println("getFirstAtomMapping");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -223,7 +215,6 @@ public class MCSPlusHandlerTest extends AbstractMCSAlgorithmTest {
      */
     @Test
     public void testGetFirstMapping() throws InvalidSmilesException {
-        System.out.println("getFirstMapping");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -27,8 +22,6 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
@@ -39,7 +32,7 @@ import java.util.Map;
 /**
  * {@link IFingerprinter} that gives a bit set which has a size equal to the number
  * of substructures it was constructed from. A set bit indicates that that
- * substructure was found at least once in the molecule for which the 
+ * substructure was found at least once in the molecule for which the
  * fingerprint was calculated. The fingerprint currently supports 307
  * substructures, listed below:
  *
@@ -366,20 +359,18 @@ import java.util.Map;
  *
  * @cdk.keyword  fingerprint
  * @cdk.keyword  similarity
- * 
+ *
  * @cdk.module   fingerprint
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.fingerprint.SubstructureFingerprinterTest")
 public class SubstructureFingerprinter implements IFingerprinter {
 
     private String[] smarts;
 
     /**
-     * Set up the fingerprinter to use the fragments from 
+     * Set up the fingerprinter to use the fragments from
      * {@link org.openscience.cdk.fingerprint.StandardSubstructureSets}.
      */
-    @TestMethod("testFingerprint")
     public SubstructureFingerprinter() {
         try {
             smarts = StandardSubstructureSets.getFunctionalGroupSMARTS();
@@ -393,15 +384,13 @@ public class SubstructureFingerprinter implements IFingerprinter {
      *
      * @param smarts The collection of fragments to look for
      */
-    @TestMethod("testUserFunctionalGroups")
     public SubstructureFingerprinter(String[] smarts) {
         this.smarts = smarts;
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testUserFunctionalGroups,testFingerprint")
-    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) 
-                  throws CDKException {
+    @Override
+    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer) throws CDKException {
         if (smarts == null) {
             throw new CDKException("No substructures were defined");
         }
@@ -421,13 +410,13 @@ public class SubstructureFingerprinter implements IFingerprinter {
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetRawFingerprint")
+    @Override
     public Map<String, Integer> getRawFingerprint(IAtomContainer iAtomContainer) throws CDKException {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testSize")
+    @Override
     public int getSize() {
         return smarts.length;
     }
@@ -440,17 +429,14 @@ public class SubstructureFingerprinter implements IFingerprinter {
      * @return SMARTS representation of substructure at
      *         index <code>bitIndex</code>.
      */
-    @TestMethod("testGetSubstructure")
     public String getSubstructure(int bitIndex) {
-    	return smarts[bitIndex];
+        return smarts[bitIndex];
     }
-    
+
     /** {@inheritDoc} */
-	@Override
-    @TestMethod("testGetCountFingerprint")
-	public ICountFingerprint getCountFingerprint(IAtomContainer container)
-			throws CDKException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException {
+        throw new UnsupportedOperationException();
+    }
 
 }

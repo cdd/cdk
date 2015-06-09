@@ -23,9 +23,6 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -56,17 +53,16 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
  * @see org.openscience.cdk.ringsearch.SSSRFinder#findEssentialRings()
  * @see GraphUtil
  */
-@TestClass("org.openscience.cdk.graph.EssentialCyclesTest")
 public final class EssentialCycles {
 
     /** Cycles which are essential. */
-    private final List<Cycle> essential;
+    private final List<Cycle>   essential;
 
     /** Initial cycles. */
     private final InitialCycles initial;
 
     /** An MCB extracted from the relevant cycles. */
-    private final GreedyBasis basis;
+    private final GreedyBasis   basis;
 
     /**
      * Determine the essential cycles given a graph. Adjacency list
@@ -100,16 +96,14 @@ public final class EssentialCycles {
     EssentialCycles(final RelevantCycles relevant, final InitialCycles initial) {
         checkNotNull(relevant, "No RelevantCycles provided");
         this.initial = checkNotNull(initial, "No InitialCycles provided");
-        this.basis   = new GreedyBasis(initial.numberOfCycles(),
-                                       initial.numberOfEdges());
+        this.basis = new GreedyBasis(initial.numberOfCycles(), initial.numberOfEdges());
         this.essential = new ArrayList<Cycle>();
 
         // for each cycle added to the basis, if it can be
         // replaced with one of equal size it is non-essential
         for (final List<Cycle> cycles : groupByLength(relevant)) {
             for (final Cycle c : membersOfBasis(cycles)) {
-                if (isEssential(c, cycles))
-                    essential.add(c);
+                if (isEssential(c, cycles)) essential.add(c);
             }
         }
     }
@@ -119,8 +113,6 @@ public final class EssentialCycles {
      *
      * @return array of vertex paths
      */
-    @TestMethod("paths_bicyclo,paths_napthalene,paths_anthracene," +
-                        "paths_cyclophane_odd,paths_cyclophane_even")
     public int[][] paths() {
         final int[][] paths = new int[size()][];
         for (int i = 0; i < paths.length; i++)
@@ -133,8 +125,6 @@ public final class EssentialCycles {
      *
      * @return number of cycles
      */
-    @TestMethod("size_bicyclo,size_napthalene,size_anthracene," +
-                        "size_cyclophane_odd,size_cyclophane_even")
     public int size() {
         return essential.size();
     }
@@ -148,9 +138,7 @@ public final class EssentialCycles {
     private List<List<Cycle>> groupByLength(final RelevantCycles relevant) {
         LinkedList<List<Cycle>> cyclesByLength = new LinkedList<List<Cycle>>();
         for (int[] path : relevant.paths()) {
-            if (cyclesByLength.isEmpty()
-                    || path.length > cyclesByLength.getLast().get(0)
-                                                   .path().length) {
+            if (cyclesByLength.isEmpty() || path.length > cyclesByLength.getLast().get(0).path().length) {
                 cyclesByLength.add(new ArrayList<Cycle>());
             }
             cyclesByLength.getLast().add(new MyCycle(path));
@@ -168,8 +156,7 @@ public final class EssentialCycles {
     private List<Cycle> membersOfBasis(final List<Cycle> cycles) {
         int start = basis.size();
         for (final Cycle c : cycles) {
-            if (basis.isIndependent(c))
-                basis.add(c);
+            if (basis.isIndependent(c)) basis.add(c);
         }
         return basis.members().subList(start, basis.size());
     }
@@ -181,27 +168,22 @@ public final class EssentialCycles {
      * @param relevant  relevant cycles of the same length as <i>cycle</i>
      * @return whether the candidate is essential
      */
-    private boolean isEssential(final Cycle candidate,
-                                final Collection<Cycle> relevant) {
+    private boolean isEssential(final Cycle candidate, final Collection<Cycle> relevant) {
 
         // construct an alternative basis with all equal weight relevant cycles
-        final List<Cycle> alternate
-                = new ArrayList<Cycle>(relevant.size() + basis.size());
+        final List<Cycle> alternate = new ArrayList<Cycle>(relevant.size() + basis.size());
 
         final int weight = candidate.length();
         for (final Cycle cycle : basis.members()) {
-            if (cycle.length() < weight)
-                alternate.add(cycle);
+            if (cycle.length() < weight) alternate.add(cycle);
         }
         for (final Cycle cycle : relevant) {
-            if (!cycle.equals(candidate))
-                alternate.add(cycle);
+            if (!cycle.equals(candidate)) alternate.add(cycle);
         }
 
         // if the alternate basis is smaller, the candidate is essential
         return BitMatrix.from(alternate).eliminate() < basis.size();
     }
-
 
     /**
      * Simple class for helping find the essential cycles from the relevant
@@ -214,21 +196,25 @@ public final class EssentialCycles {
         }
 
         /** @inheritDoc */
-        @Override BitSet edges(int[] path) {
+        @Override
+        BitSet edges(int[] path) {
             return initial.toEdgeVector(path);
         }
 
         /** @inheritDoc */
-        @Override int[][] family() {
+        @Override
+        int[][] family() {
             return new int[][]{path()};
         }
 
         /** @inheritDoc */
-        @Override int sizeOfFamily() {
+        @Override
+        int sizeOfFamily() {
             return 1;
         }
 
         /** @inheritDoc */
+        @Override
         public String toString() {
             return Arrays.toString(path());
         }

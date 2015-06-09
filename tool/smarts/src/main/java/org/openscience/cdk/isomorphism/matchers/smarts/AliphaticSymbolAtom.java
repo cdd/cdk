@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,29 +29,35 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  * @cdk.keyword SMARTS
  */
 public class AliphaticSymbolAtom extends SMARTSAtom {
-	
-	/**
-	 * Creates a new instance.
-	 *
-	 * @param symbol the atom symbol
-	 */
-	public AliphaticSymbolAtom(String symbol, IChemObjectBuilder builder) {
-		super(builder);
-		setFlag(CDKConstants.ISAROMATIC, false);
-		setSymbol(symbol);
-	}
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
-	 */
-	public boolean matches(IAtom atom) {
-		return !atom.getFlag(CDKConstants.ISAROMATIC) && atom.getSymbol().equals(this.getSymbol());
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.PseudoAtom#toString()
-	 */
-	public String toString() {
-		return "AliphaticSymbolAtom(" + getSymbol() + ")";
-	}
+    /**
+     * Creates a new instance.
+     *
+     * @param symbol the atom symbol
+     */
+    public AliphaticSymbolAtom(String symbol, IChemObjectBuilder builder) {
+        super(builder);
+        setFlag(CDKConstants.ISAROMATIC, false);
+        setSymbol(symbol);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
+     */
+    @Override
+    public boolean matches(IAtom atom) {
+        return !atom.getFlag(CDKConstants.ISAROMATIC) && atom.getSymbol().equals(this.getSymbol());
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.openscience.cdk.PseudoAtom#toString()
+     */
+    @Override
+    public String toString() {
+        return "AliphaticSymbolAtom(" + getSymbol() + ")";
+    }
 }

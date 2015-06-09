@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
@@ -63,7 +61,6 @@ import java.util.List;
  * @cdk.module hash
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.ConjugatedAtomEncoderTest")
 final class ConjugatedAtomEncoder implements AtomEncoder {
 
     /* ordered list of encoders */
@@ -77,22 +74,17 @@ final class ConjugatedAtomEncoder implements AtomEncoder {
      * @throws NullPointerException     the list of encoders was null
      * @throws IllegalArgumentException the list of encoders was empty
      */
-    @TestMethod("testConstruction_Null,testConstruction_Empty," +
-                        "testConstruction_Modification")
     public ConjugatedAtomEncoder(List<AtomEncoder> encoders) {
-        if (encoders == null)
-            throw new NullPointerException("null list of encoders");
-        if (encoders.isEmpty())
-            throw new IllegalArgumentException("no encoders provided");
-        this.encoders = Collections
-                .unmodifiableList(new ArrayList<AtomEncoder>(encoders));
+        if (encoders == null) throw new NullPointerException("null list of encoders");
+        if (encoders.isEmpty()) throw new IllegalArgumentException("no encoders provided");
+        this.encoders = Collections.unmodifiableList(new ArrayList<AtomEncoder>(encoders));
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testEncode,testEncode_Single")
-    @Override public int encode(IAtom atom, IAtomContainer container) {
+    @Override
+    public int encode(IAtom atom, IAtomContainer container) {
         int hash = 179426549;
         for (AtomEncoder encoder : encoders)
             hash = 31 * hash + encoder.encode(atom, container);
@@ -114,10 +106,8 @@ final class ConjugatedAtomEncoder implements AtomEncoder {
      * @return a new conjugated encoder
      * @throws NullPointerException either argument was null
      */
-    @TestMethod("testCreate_Null,testCreate_Null2")
     public static AtomEncoder create(AtomEncoder encoder, AtomEncoder... encoders) {
-        if (encoder == null || encoders == null)
-            throw new NullPointerException("null encoders provided");
+        if (encoder == null || encoders == null) throw new NullPointerException("null encoders provided");
         List<AtomEncoder> tmp = new ArrayList<AtomEncoder>(encoders.length + 1);
         tmp.add(encoder);
         for (AtomEncoder e : encoders)

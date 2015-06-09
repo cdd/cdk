@@ -24,8 +24,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.vecmath.Point2d;
@@ -44,26 +42,25 @@ import org.openscience.cdk.renderer.generators.BasicSceneGenerator.ZoomFactor;
 import org.openscience.cdk.renderer.generators.IGenerator;
 import org.openscience.cdk.renderer.visitor.IDrawVisitor;
 
-
 /**
  * <p>The base class for all renderers, handling the core aspects of rendering
  * such as the location of the model in 'model space' and the location on
  * the screen to draw the model. It also holds a reference to the list of
  * {@link IGenerator} instances that are used to create the diagram. These
  * generators are accessed through the generateDiagram method.</p>
- * 
+ *
  * <p>The terminology 'model space' and 'screen space' refer to the coordinate
  * systems for the model and the drawing, respectively. So the 2D points for
  * atoms in the model might be 1 unit apart (roughly representing &Aring;ngstrom,
  * perhaps) but the circles in the diagram that represent those atoms might be
  * 10 pixels apart on screen. Therefore screen space will be 10 times model
  * space for this example.</p>
- * 
+ *
  * <p>The abstract method {@link #calculateScaleForBondLength(double)} is
  * needed to determine the scale. For the model example just given, this would
  * return '10.0' for an input of '10.0', as that is the scale for that desired
  * bond length.</p>
- * 
+ *
  * @cdk.module renderbasic
  * @author maclean
  * @cdk.githash
@@ -78,17 +75,17 @@ public abstract class AbstractRenderer<T extends IChemObject> {
     /**
      * Font managers change the font size depending on the zoom.
      */
-    protected IFontManager fontManager;
+    protected IFontManager        fontManager;
 
     /**
-     * The center point of the model (IMolecule, IMoleculeSet, etc).
+     * The center point of the model (IAtomContainer, IAtomContainerSet, etc).
      */
-    protected Point2d modelCenter = new Point2d(0, 0);
+    protected Point2d             modelCenter = new Point2d(0, 0);
 
     /**
      * The center of the desired position on screen to draw.
      */
-    protected Point2d drawCenter = new Point2d(150, 200);
+    protected Point2d             drawCenter  = new Point2d(150, 200);
 
     /**
      * Generators for diagram elements.
@@ -96,23 +93,24 @@ public abstract class AbstractRenderer<T extends IChemObject> {
     protected List<IGenerator<T>> generators;
 
     /**
-     * Used when repainting an unchanged model. 
+     * Used when repainting an unchanged model.
      */
-    protected IRenderingElement cachedDiagram;
+    protected IRenderingElement   cachedDiagram;
 
     /**
      * Converts between model coordinates and screen coordinates.
      */
-    protected AffineTransform transform;
+    protected AffineTransform     transform;
 
     public AbstractRenderer(RendererModel rendererModel) {
-    	this.rendererModel = rendererModel;
+        this.rendererModel = rendererModel;
     }
+
     /**
      * The main method of the renderer, that uses each of the generators
      * to create a different set of {@link IRenderingElement}s grouped
-     * together into a tree. 
-     * 
+     * together into a tree.
+     *
      * @param object the object of type T to draw
      * @return the diagram as a tree of {@link IRenderingElement}s
      */
@@ -126,10 +124,10 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
     /**
      * Calculate the scale to convert the model bonds into bonds of the length
-     * supplied. A standard way to do this is to calculate the average bond 
+     * supplied. A standard way to do this is to calculate the average bond
      * length (mean, or median) in model space, and divide the supplied screen
      * distance by this average to give a scale.
-     * 
+     *
      * @param bondLength the desired length on screen
      * @return a multiplication factor, or 'scale'
      */
@@ -139,7 +137,7 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      * Converts a bounding rectangle in 'model space' into the equivalent
      * bounds in 'screen space'. Used to determine how much space the model
      * will take up on screen given a particular scale, zoom, and margin.
-     * 
+     *
      * @param modelBounds the bounds of the model
      * @return the bounds of the diagram as drawn on screen
      */
@@ -147,20 +145,16 @@ public abstract class AbstractRenderer<T extends IChemObject> {
         double scale = rendererModel.getParameter(Scale.class).getValue();
         double zoom = rendererModel.getParameter(ZoomFactor.class).getValue();
         double margin = rendererModel.getParameter(Margin.class).getValue();
-        Point2d modelScreenCenter
-            = this.toScreenCoordinates(modelBounds.getCenterX(),
-                                       modelBounds.getCenterY());
+        Point2d modelScreenCenter = this.toScreenCoordinates(modelBounds.getCenterX(), modelBounds.getCenterY());
         double width = (scale * zoom * modelBounds.getWidth()) + (2 * margin);
         double height = (scale * zoom * modelBounds.getHeight()) + (2 * margin);
-        return new Rectangle((int) (modelScreenCenter.x - width / 2),
-                             (int) (modelScreenCenter.y - height / 2),
-                             (int) width,
-                             (int) height);
+        return new Rectangle((int) (modelScreenCenter.x - width / 2), (int) (modelScreenCenter.y - height / 2),
+                (int) width, (int) height);
     }
 
     /**
      * Convert a point in screen space into a point in model space.
-     * 
+     *
      * @param screenX the screen x-coordinate
      * @param screenY the screen y-coordinate
      * @return the equivalent point in model space, or (0,0) if there is an error
@@ -168,30 +162,30 @@ public abstract class AbstractRenderer<T extends IChemObject> {
     public Point2d toModelCoordinates(double screenX, double screenY) {
         try {
             double[] dest = new double[2];
-            double[] src = new double[] { screenX, screenY };
+            double[] src = new double[]{screenX, screenY};
             transform.inverseTransform(src, 0, dest, 0, 1);
             return new Point2d(dest[0], dest[1]);
         } catch (NoninvertibleTransformException n) {
-            return new Point2d(0,0);
+            return new Point2d(0, 0);
         }
     }
 
     /**
      * Convert a point in model space into a point in screen space.
-     * 
+     *
      * @param modelX the model x-coordinate
      * @param modelY the model y-coordinate
      * @return the equivalent point in screen space
      */
     public Point2d toScreenCoordinates(double modelX, double modelY) {
         double[] dest = new double[2];
-        transform.transform(new double[] { modelX, modelY }, 0, dest, 0, 1);
+        transform.transform(new double[]{modelX, modelY}, 0, dest, 0, 1);
         return new Point2d(dest[0], dest[1]);
     }
 
     /**
      * Set the position of the center of the model.
-     * 
+     *
      * @param modelX the x-coordinate of the model center
      * @param modelY the y-coordinate of the model center
      */
@@ -202,7 +196,7 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
     /**
      * Set the point on the screen to draw the diagram.
-     * 
+     *
      * @param modelX the x-coordinate of the point to draw at
      * @param modelY the y-coordinate of the point to draw at
      */
@@ -214,18 +208,18 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
     /**
      * Set the zoom, where 1.0 is 100% zoom.
-     * 
+     *
      * @param zoom the zoom as a double value
      */
     public void setZoom(double zoom) {
-        rendererModel.getParameter(ZoomFactor.class).setValue( zoom );
+        rendererModel.getParameter(ZoomFactor.class).setValue(zoom);
         setup();
     }
 
     /**
      * Creates the transform using the scale, zoom, drawCenter, and modelCenter.
      * In order to scale (and zoom) all elements in a uniform way, a point is
-     * first moved so that the center of the model is at the origin, scaled, 
+     * first moved so that the center of the model is at the origin, scaled,
      * then moved to the correct place on screen.
      */
     protected void setup() {
@@ -235,24 +229,22 @@ public abstract class AbstractRenderer<T extends IChemObject> {
         try {
             transform = new AffineTransform();
             transform.translate(drawCenter.x, drawCenter.y);
-            transform.scale(1,-1); // Converts between CDK Y-up & Java2D Y-down coordinate-systems
+            transform.scale(1, -1); // Converts between CDK Y-up & Java2D Y-down coordinate-systems
             transform.scale(scale, scale);
             transform.scale(zoom, zoom);
             transform.translate(-this.modelCenter.x, -this.modelCenter.y);
         } catch (NullPointerException npe) {
             // one of the drawCenter or modelCenter points have not been set!
-            String errorString = "null pointer when setting transform: " +
-                                "drawCenter=%s scale=%s zoom=%s modelCenter=%s"; 
-            System.err.println(
-                    String.format(
-                            errorString, drawCenter, scale, zoom, modelCenter));
+            String errorString = "null pointer when setting transform: "
+                    + "drawCenter=%s scale=%s zoom=%s modelCenter=%s";
+            System.err.println(String.format(errorString, drawCenter, scale, zoom, modelCenter));
         }
     }
 
     /**
      * Get the {@link RendererModel} used by this renderer, which provides
-     * access to the various parameters used to generate and draw the diagram. 
-     * 
+     * access to the various parameters used to generate and draw the diagram.
+     *
      * @return a reference to the RendererModel
      */
     public RendererModel getRenderer2DModel() {
@@ -272,7 +264,7 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
     /**
      * Get the position on screen that the diagram will be drawn.
-     *  
+     *
      * @return the draw center
      */
     public Point2d getDrawCenter() {
@@ -280,8 +272,8 @@ public abstract class AbstractRenderer<T extends IChemObject> {
     }
 
     /**
-     * Get the center of the model. 
-     * 
+     * Get the center of the model.
+     *
      * @return the model center
      */
     public Point2d getModelCenter() {
@@ -297,15 +289,12 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      * @param diagramWidth the width of the diagram
      * @param diagramHeight the height of the diagram
      */
-    public void setZoomToFit(double drawWidth,
-                             double drawHeight,
-                             double diagramWidth,
-                             double diagramHeight) {
+    public void setZoomToFit(double drawWidth, double drawHeight, double diagramWidth, double diagramHeight) {
 
         double margin = rendererModel.getParameter(Margin.class).getValue();
 
         // determine the zoom needed to fit the diagram to the screen
-        double widthRatio  = drawWidth  / (diagramWidth  + (2 * margin));
+        double widthRatio = drawWidth / (diagramWidth + (2 * margin));
         double heightRatio = drawHeight / (diagramHeight + (2 * margin));
 
         double zoom = Math.min(widthRatio, heightRatio);
@@ -334,19 +323,14 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      * @param diagram
      *            the IRenderingElement tree to render
      */
-    protected void paint(IDrawVisitor drawVisitor,
-            IRenderingElement diagram) {
+    protected void paint(IDrawVisitor drawVisitor, IRenderingElement diagram) {
         if (diagram == null) return;
 
         // cache the diagram for quick-redraw
         this.cachedDiagram = diagram;
 
-        fontManager.setFontName(
-                rendererModel.getParameter(FontName.class).getValue()
-        );
-        fontManager.setFontStyle(
-                rendererModel.getParameter(UsedFontStyle.class).getValue()
-        );
+        fontManager.setFontName(rendererModel.getParameter(FontName.class).getValue());
+        fontManager.setFontStyle(rendererModel.getParameter(UsedFontStyle.class).getValue());
 
         drawVisitor.setFontManager(this.fontManager);
         drawVisitor.setTransform(this.transform);
@@ -379,14 +363,14 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      * @return the shape that the screen should be
      */
     public Rectangle shift(Rectangle screenBounds, Rectangle diagramBounds) {
-        int screenMaxX  = screenBounds.x + screenBounds.width;
-        int screenMaxY  = screenBounds.y + screenBounds.height;
+        int screenMaxX = screenBounds.x + screenBounds.width;
+        int screenMaxY = screenBounds.y + screenBounds.height;
         int diagramMaxX = diagramBounds.x + diagramBounds.width;
         int diagramMaxY = diagramBounds.y + diagramBounds.height;
 
-        int leftOverlap   = screenBounds.x - diagramBounds.x;
-        int rightOverlap  = diagramMaxX - screenMaxX;
-        int topOverlap    = screenBounds.y - diagramBounds.y;
+        int leftOverlap = screenBounds.x - diagramBounds.x;
+        int rightOverlap = diagramMaxX - screenMaxX;
+        int topOverlap = screenBounds.y - diagramBounds.y;
         int bottomOverlap = diagramMaxY - screenMaxY;
 
         int dx = 0;
@@ -432,12 +416,12 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
         double scale = rendererModel.getParameter(Scale.class).getValue();
         double zoom = rendererModel.getParameter(ZoomFactor.class).getValue();
-        
+
         Point2d screenCoord = this.toScreenCoordinates(xCenter, yCenter);
 
         // special case for 0 or 1 atoms
         if (modelWidth == 0 && modelHeight == 0) {
-            return new Rectangle((int)screenCoord.x, (int)screenCoord.y, 0, 0);
+            return new Rectangle((int) screenCoord.x, (int) screenCoord.y, 0, 0);
         }
 
         double margin = rendererModel.getParameter(Margin.class).getValue();
@@ -451,7 +435,7 @@ public abstract class AbstractRenderer<T extends IChemObject> {
 
     /**
      * Sets the transformation needed to draw the model on the canvas when
-     * the diagram needs to fit the screen. 
+     * the diagram needs to fit the screen.
      *
      * @param screenBounds
      *            the bounding box of the draw area
@@ -461,10 +445,8 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      *            if true, model center will be set to the modelBounds center
      *            and the scale will be re-calculated
      */
-    void setupTransformToFit(Rectangle2D screenBounds,
-                             Rectangle2D modelBounds,
-                             boolean reset) {
-        
+    void setupTransformToFit(Rectangle2D screenBounds, Rectangle2D modelBounds, boolean reset) {
+
         double scale = rendererModel.getParameter(Scale.class).getValue();
 
         if (screenBounds == null) return;
@@ -502,9 +484,7 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      *            if true, model center will be set to the modelBounds center
      *            and the scale will be re-calculated
      */
-    protected void setupTransformToFit(Rectangle2D screenBounds,
-            Rectangle2D modelBounds,
-            double bondLength,
+    protected void setupTransformToFit(Rectangle2D screenBounds, Rectangle2D modelBounds, double bondLength,
             boolean reset) {
 
         if (screenBounds == null) return;
@@ -538,47 +518,36 @@ public abstract class AbstractRenderer<T extends IChemObject> {
      * to full display all elements. The method searches for {@link Bounds}
      * elements which act to specify the required bounds when adjunct labels
      * are considered.
-     * 
+     *
      * @param element a rendering element
      * @return the bounds required (null if unspecified)
      */
     public Rectangle2D getBounds(IRenderingElement element) {
-        
-        if (element == null)
-            return null;
-        
+
+        if (element == null) return null;
+
         double minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         double maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
-        
+
         if (element instanceof ElementGroup) {
             for (IRenderingElement child : (ElementGroup) element) {
                 Rectangle2D bounds = getBounds(child);
-                if (bounds == null)
-                    continue;
-                if (bounds.getMinX() < minX)
-                    minX = bounds.getMinX();
-                if (bounds.getMinY() < minY)
-                    minY = bounds.getMinY();
-                if (bounds.getMaxX() > maxX)
-                    maxX = bounds.getMaxX();
-                if (bounds.getMaxY() > maxY)
-                    maxY = bounds.getMaxY();
+                if (bounds == null) continue;
+                if (bounds.getMinX() < minX) minX = bounds.getMinX();
+                if (bounds.getMinY() < minY) minY = bounds.getMinY();
+                if (bounds.getMaxX() > maxX) maxX = bounds.getMaxX();
+                if (bounds.getMaxY() > maxY) maxY = bounds.getMaxY();
             }
         } else if (element.getClass().equals(Bounds.class)) {
             Bounds bounds = (Bounds) element;
-            if (bounds.minX < minX)
-                minX = bounds.minX;
-            if (bounds.minY < minY)
-                minY = bounds.minY;
-            if (bounds.maxX > maxX)
-                maxX = bounds.maxX;
-            if (bounds.maxY > maxY)
-                maxY = bounds.maxY;
+            if (bounds.minX < minX) minX = bounds.minX;
+            if (bounds.minY < minY) minY = bounds.minY;
+            if (bounds.maxX > maxX) maxX = bounds.maxX;
+            if (bounds.maxY > maxY) maxY = bounds.maxY;
         }
-        
-        if (minX == Integer.MAX_VALUE)
-            return null;
-        
+
+        if (minX == Integer.MAX_VALUE) return null;
+
         return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 }

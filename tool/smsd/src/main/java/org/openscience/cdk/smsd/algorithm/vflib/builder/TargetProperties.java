@@ -39,19 +39,18 @@ import org.openscience.cdk.interfaces.IBond;
  */
 public class TargetProperties implements java.io.Serializable {
 
-    private Map<IAtom, Integer> connectedTargetAtomCountMap = null;
-    private Map<IAtom, List<IAtom>> connectedTargetAtomListMap = null;
-    private IBond[][] map = null;
-    private Map<IAtom, Integer> atoms = null;
-    private Map<Integer, IAtom> atomsIndex = null;
+    private Map<IAtom, Integer>     connectedTargetAtomCountMap = null;
+    private Map<IAtom, List<IAtom>> connectedTargetAtomListMap  = null;
+    private IBond[][]               map                         = null;
+    private Map<IAtom, Integer>     atoms                       = null;
+    private Map<Integer, IAtom>     atomsIndex                  = null;
 
     /**
      * @param atom
      * @return the connectedTargetAtomCountMap
      */
     public Integer countNeighbors(IAtom atom) {
-        if (connectedTargetAtomCountMap == null
-                || !connectedTargetAtomCountMap.containsKey(atom)) {
+        if (connectedTargetAtomCountMap == null || !connectedTargetAtomCountMap.containsKey(atom)) {
             System.out.println("Object not found in " + atoms.size() + " atoms");
             return 0;
         }
@@ -68,7 +67,7 @@ public class TargetProperties implements java.io.Serializable {
 
     /**
      * @param atom1
-     * @param atom2 
+     * @param atom2
      * @return the map
      */
     public IBond getBond(IAtom atom1, IAtom atom2) {
@@ -83,7 +82,7 @@ public class TargetProperties implements java.io.Serializable {
     }
 
     /**
-     * 
+     *
      * @param container
      */
     public TargetProperties(IAtomContainer container) {

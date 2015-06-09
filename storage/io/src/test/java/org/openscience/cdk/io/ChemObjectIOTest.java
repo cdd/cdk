@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -60,99 +58,100 @@ public abstract class ChemObjectIOTest extends CDKTestCase {
         chemObjectIO = aChemObjectIO;
     }
 
-    @Test public void testChemObjectIOSet() {
-        Assert.assertNotNull(
-            "You must use setChemObjectIO() to set the IChemObjectIO object.",
-            chemObjectIO
-        );
+    @Test
+    public void testChemObjectIOSet() {
+        Assert.assertNotNull("You must use setChemObjectIO() to set the IChemObjectIO object.", chemObjectIO);
     }
 
-    @Test public void testGetFormat() {
+    @Test
+    public void testGetFormat() {
         IResourceFormat format = chemObjectIO.getFormat();
-        Assert.assertNotNull(
-            "The IChemObjectIO.getFormat method returned null.",
-            format
-        );
+        Assert.assertNotNull("The IChemObjectIO.getFormat method returned null.", format);
     }
 
-    private static IChemObject[] acceptableNNChemObjects = {
-        new ChemFile(), new ChemModel(), new AtomContainer(),
-        new Reaction()
-    };
+    private static IChemObject[] acceptableNNChemObjects = {new ChemFile(), new ChemModel(), new AtomContainer(),
+            new Reaction()                               };
 
-    @Test public void testAcceptsAtLeastOneNonotifyObject() {
+    @Test
+    public void testAcceptsAtLeastOneNonotifyObject() {
         boolean oneAccepted = false;
         for (IChemObject object : acceptableNNChemObjects) {
             if (chemObjectIO.accepts(object.getClass())) {
                 oneAccepted = true;
             }
         }
-        Assert.assertTrue("At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction", oneAccepted);
+        Assert.assertTrue(
+                "At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction",
+                oneAccepted);
     }
 
-    private static IChemObject[] acceptableDebugChemObjects = {
-        new DebugChemFile(), new DebugChemModel(), new DebugAtomContainer(),
-        new DebugReaction()
-    };
+    private static IChemObject[] acceptableDebugChemObjects = {new DebugChemFile(), new DebugChemModel(),
+            new DebugAtomContainer(), new DebugReaction()   };
 
-    @Test public void testAcceptsAtLeastOneDebugObject() {
+    @Test
+    public void testAcceptsAtLeastOneDebugObject() {
         boolean oneAccepted = false;
         for (IChemObject object : acceptableDebugChemObjects) {
             if (chemObjectIO.accepts(object.getClass())) {
                 oneAccepted = true;
             }
         }
-        Assert.assertTrue("At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction", oneAccepted);
+        Assert.assertTrue(
+                "At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction",
+                oneAccepted);
     }
 
     /** static objects, shared between tests - difficult to locate bugs. */
     @Deprecated
-    protected static IChemObject[] acceptableChemObjects = {
-        new ChemFile(), new ChemModel(), new AtomContainer(),
-        new Reaction(), new RGroupQuery(DefaultChemObjectBuilder.getInstance())
-    };
-    
+    protected static IChemObject[] acceptableChemObjects = {new ChemFile(), new ChemModel(), new AtomContainer(),
+            new Reaction(), new RGroupQuery(DefaultChemObjectBuilder.getInstance())};
+
     protected static IChemObject[] acceptableChemObjects() {
-        return new IChemObject[]{
-                new ChemFile(), new ChemModel(), new AtomContainer(),
-                new Reaction(), new RGroupQuery(DefaultChemObjectBuilder.getInstance())
-        };
+        return new IChemObject[]{new ChemFile(), new ChemModel(), new AtomContainer(), new Reaction(),
+                new RGroupQuery(DefaultChemObjectBuilder.getInstance())};
     }
 
-    @Test public void testAcceptsAtLeastOneChemObject() {
+    @Test
+    public void testAcceptsAtLeastOneChemObject() {
         boolean oneAccepted = false;
         for (IChemObject object : acceptableChemObjects) {
             if (chemObjectIO.accepts(object.getClass())) {
                 oneAccepted = true;
             }
         }
-        Assert.assertTrue("At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IMolecule, IReaction, IRGroupQuery", oneAccepted);
+        Assert.assertTrue(
+                "At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction, IRGroupQuery",
+                oneAccepted);
     }
 
     @SuppressWarnings("rawtypes")
-	protected static Class[] acceptableChemObjectClasses = {
-        IChemFile.class, IChemModel.class, IAtomContainer.class, IReaction.class, IRGroupQuery.class
-    };
+    protected static Class[] acceptableChemObjectClasses = {IChemFile.class, IChemModel.class, IAtomContainer.class,
+            IReaction.class, IRGroupQuery.class          };
 
     /**
      * @cdk.bug 3553780
      */
     @SuppressWarnings("unchecked")
-	@Test public void testAcceptsAtLeastOneChemObjectClass() {
+    @Test
+    public void testAcceptsAtLeastOneChemObjectClass() {
         boolean oneAccepted = false;
         for (Class<? extends IChemObject> clazz : acceptableChemObjectClasses) {
             if (chemObjectIO.accepts(clazz)) {
                 oneAccepted = true;
             }
         }
-        Assert.assertTrue("At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction, IRGroupQuery", oneAccepted);
+        Assert.assertTrue(
+                "At least one of the following IChemObect's should be accepted: IChemFile, IChemModel, IAtomContainer, IReaction, IRGroupQuery",
+                oneAccepted);
     }
 
-    @Test public void testClose() throws Exception {
+    @Test
+    public void testClose() throws Exception {
         chemObjectIO.close();
     }
 
-    @Test public void testGetIOSetting() {
+    @Test
+    public void testGetIOSetting() {
         IOSetting[] settings = chemObjectIO.getIOSettings();
         for (IOSetting setting : settings) {
             Assert.assertNotNull(setting);
@@ -163,7 +162,8 @@ public abstract class ChemObjectIOTest extends CDKTestCase {
         }
     }
 
-    @Test public void testAddChemObjectIOListener() {
+    @Test
+    public void testAddChemObjectIOListener() {
         MyListener listener = new MyListener();
         chemObjectIO.addChemObjectIOListener(listener);
     }
@@ -172,12 +172,14 @@ public abstract class ChemObjectIOTest extends CDKTestCase {
 
         private int timesCalled = 0;
 
+        @Override
         public void processIOSettingQuestion(IOSetting setting) {
             timesCalled++;
         }
     }
 
-    @Test public void testRemoveChemObjectIOListener() {
+    @Test
+    public void testRemoveChemObjectIOListener() {
         MyListener listener = new MyListener();
         chemObjectIO.addChemObjectIOListener(listener);
         chemObjectIO.removeChemObjectIOListener(listener);

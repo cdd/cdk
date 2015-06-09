@@ -22,9 +22,6 @@
  */
 package org.openscience.cdk.ringsearch;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -36,36 +33,35 @@ import java.util.List;
  * @author John May
  * @cdk.module core
  */
-@TestClass("org.openscience.cdk.ringsearch.JumboCyclicVertexSearchTest")
 class JumboCyclicVertexSearch implements CyclicVertexSearch {
 
     /* graph representation */
     private final int[][] g;
 
     /* set of known cyclic vertices */
-    private final BitSet cyclic;
+    private final BitSet  cyclic;
 
     /* cycle systems as they are discovered */
-    private List<BitSet> cycles = new ArrayList<BitSet>(1);
+    private List<BitSet>  cycles = new ArrayList<BitSet>(1);
 
     /* indicates if the 'cycle' at 'i' in 'cycles' is fused */
-    private List<Boolean> fused = new ArrayList<Boolean>(1);
+    private List<Boolean> fused  = new ArrayList<Boolean>(1);
 
     /* set of visited vertices */
-    private BitSet visited;
+    private BitSet        visited;
 
     /* the vertices in our path at a given vertex index */
-    private BitSet[] state;
-    
+    private BitSet[]      state;
+
     /** vertex colored by each component. */
-    private int[] colors;
+    private int[]         colors;
 
     /**
      * Create a new cyclic vertex search for the provided graph.
      *
      * @param graph adjacency list representation of a graph
      */
-    @TestMethod("testEmpty") JumboCyclicVertexSearch(int[][] graph) {
+    JumboCyclicVertexSearch(int[][] graph) {
         this.g = graph;
         final int n = graph.length;
 
@@ -108,10 +104,10 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      */
     private void search(int v, BitSet prev, BitSet curr) {
 
-        state[v] = curr;        // set the state before we visit v
-        curr = copy(curr);      // include v in our current state (state[v] is unmodified)
+        state[v] = curr; // set the state before we visit v
+        curr = copy(curr); // include v in our current state (state[v] is unmodified)
         curr.set(v);
-        visited.or(curr);       // mark v as visited (or being visited)
+        visited.or(curr); // mark v as visited (or being visited)
 
         // for each neighbor w of v
         for (int w : g[v]) {
@@ -147,7 +143,7 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      *
      * @return vertex colors
      */
-    @TestMethod("vertexColor")
+    @Override
     public int[] vertexColor() {
         int[] result = colors;
         if (result == null) {
@@ -186,7 +182,6 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic_Int")
     @Override
     public boolean cyclic(int v) {
         return cyclic.get(v);
@@ -195,28 +190,26 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic_IntInt")
-    @Override public boolean cyclic(int u, int v) {
-        
+    @Override
+    public boolean cyclic(int u, int v) {
+
         final int[] colors = vertexColor();
-        
+
         // if either vertex has no color then the edge can not
         // be cyclic
-        if (colors[u] < 0 || colors[v] < 0)
-            return false;
-        
+        if (colors[u] < 0 || colors[v] < 0) return false;
+
         // if the vertex color is 0 it is shared between
-        // two components (i.e. spiro-rings) we need to 
+        // two components (i.e. spiro-rings) we need to
         // check each component
         if (colors[u] == 0 || colors[v] == 0) {
             // either vertices are shared - need to do the expensive check
             for (final BitSet cycle : cycles) {
-                if (cycle.get(u) && cycle.get(v))
-                    return true;
+                if (cycle.get(u) && cycle.get(v)) return true;
             }
             return false;
         }
-        
+
         // vertex is not shared between components
         return colors[u] == colors[v];
     }
@@ -224,23 +217,19 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic")
-    @Override public int[] cyclic() {
+    @Override
+    public int[] cyclic() {
         return toArray(cyclic);
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testIsolated,testIsolated_NonCyclic,testIsolated_Empty," +
-                        "testIsolated_Spiro,testIsolated_SpiroMedium," +
-                        "testIsolated_Biphenyl,testIsolated_BenzylBenzene," +
-                        "testIsolatedFragments")
-    @Override public int[][] isolated() {
+    @Override
+    public int[][] isolated() {
         List<int[]> isolated = new ArrayList<int[]>(cycles.size());
         for (int i = 0; i < cycles.size(); i++) {
-            if (!fused.get(i))
-                isolated.add(toArray(cycles.get(i)));
+            if (!fused.get(i)) isolated.add(toArray(cycles.get(i)));
         }
         return isolated.toArray(new int[isolated.size()][]);
     }
@@ -248,15 +237,11 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testFused,testFused_BiocycloEdgeLinked," +
-                        "testFused_BiocycloVertexLinked,testFused_Orthofused," +
-                        "testFused_Biorthofused,testFused_Cylclophane," +
-                        "testFused_Fullerene")
-    @Override public int[][] fused() {
+    @Override
+    public int[][] fused() {
         List<int[]> fused = new ArrayList<int[]>(cycles.size());
         for (int i = 0; i < cycles.size(); i++) {
-            if (this.fused.get(i))
-                fused.add(toArray(cycles.get(i)));
+            if (this.fused.get(i)) fused.add(toArray(cycles.get(i)));
         }
         return fused.toArray(new int[fused.size()][]);
     }
@@ -346,7 +331,6 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      * @param set input with 0 or more set bits
      * @return the bits which are set in the input
      */
-    @TestMethod("testToArray,testToArray_Empty")
     static int[] toArray(BitSet set) {
         int[] vertices = new int[set.cardinality()];
         int i = 0;
@@ -369,7 +353,6 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      * @param y second bit set
      * @return the XOR of the two bit sets
      */
-    @TestMethod("testXor")
     static BitSet xor(BitSet x, BitSet y) {
         BitSet z = copy(x);
         z.xor(y);
@@ -384,9 +367,8 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      * @param y second bit set
      * @return the AND of the two bit sets
      */
-    @TestMethod("testAnd") static BitSet and(BitSet x, BitSet y) {
-        BitSet z =
-                copy(x);
+    static BitSet and(BitSet x, BitSet y) {
+        BitSet z = copy(x);
         z.and(y);
         return z;
     }
@@ -397,7 +379,6 @@ class JumboCyclicVertexSearch implements CyclicVertexSearch {
      * @param org input bit set
      * @return copy of the input
      */
-    @TestMethod("testCopy")
     static BitSet copy(BitSet org) {
         BitSet cpy = (BitSet) org.clone();
         return cpy;

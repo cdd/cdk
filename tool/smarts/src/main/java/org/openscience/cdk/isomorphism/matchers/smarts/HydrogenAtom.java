@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2004-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -21,7 +19,6 @@
 package org.openscience.cdk.isomorphism.matchers.smarts;
 
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 import java.util.List;
@@ -34,15 +31,19 @@ import java.util.List;
  * @cdk.keyword SMARTS
  */
 public class HydrogenAtom extends SMARTSAtom {
-    
+
     /** Creates a new instance. */
     public HydrogenAtom(IChemObjectBuilder builder) {
         super(builder);
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
      */
+    @Override
     public boolean matches(IAtom atom) {
         if (!atom.getSymbol().equals("H")) {
             return false;
@@ -67,10 +68,8 @@ public class HydrogenAtom extends SMARTSAtom {
 
         //isotopic hydrogen specifications, e.g. deuterium [2H] or tritium etc
         if (atom.getMassNumber() != null) {
-            if (getMassNumber().intValue() == atom.getMassNumber().intValue())
-                return true;
-        }
-        else {
+            if (getMassNumber().intValue() == atom.getMassNumber().intValue()) return true;
+        } else {
             // target atom is [H], so make sure query atom has mass number = 1
             if (getMassNumber() == 1) return true;
         }

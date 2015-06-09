@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author: egonw $
- *  $Date: 2008-07-25 02:46:55 -0400 (Fri, 25 Jul 2008) $
- *  $Revision: 11746 $
- *
- *  Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2002-2006  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -42,6 +36,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  */
 
 public class HybridizationNumberAtom extends SMARTSAtom {
+
     Hybridization hybridization;
 
     /**
@@ -79,17 +74,22 @@ public class HybridizationNumberAtom extends SMARTSAtom {
         }
     }
 
-
-    /* (non-Javadoc)
-      * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
-      */
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
+     */
+    @Override
     public boolean matches(IAtom atom) {
         return hybridization == atom.getHybridization();
     }
 
-    /* (non-Javadoc)
-      * @see org.openscience.cdk.PseudoAtom#toString()
-      */
+    /*
+     * (non-Javadoc)
+     * @see org.openscience.cdk.PseudoAtom#toString()
+     */
+    @Override
     public String toString() {
         return ("HybridizationNumberAtom(" + hybridization.toString() + ")");
     }

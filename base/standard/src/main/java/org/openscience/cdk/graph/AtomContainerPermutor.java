@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
- * The base class for permutors of atom containers, with a single abstract 
+ * The base class for permutors of atom containers, with a single abstract
  * method <code>containerFromPermutation</code> that should be implemented in
  * concrete derived classes.
  *
@@ -38,8 +38,7 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @cdk.keyword    permutation
  * @cdk.module     standard
  */
-public abstract class AtomContainerPermutor extends Permutor 
-    implements Iterator<IAtomContainer> {
+public abstract class AtomContainerPermutor extends Permutor implements Iterator<IAtomContainer> {
 
     /**
      * The atom container that is permuted at each step.
@@ -47,9 +46,9 @@ public abstract class AtomContainerPermutor extends Permutor
     protected IAtomContainer atomContainer;
 
     /**
-     * Start the permutor off with an initial atom container, and the size of 
-     * the permutation. 
-     * 
+     * Start the permutor off with an initial atom container, and the size of
+     * the permutation.
+     *
      * @param atomContainer
      */
     public AtomContainerPermutor(int size, IAtomContainer atomContainer) {
@@ -61,7 +60,7 @@ public abstract class AtomContainerPermutor extends Permutor
      * Convert a permutation (expressed as a list of numbers) into a permuted
      * atom container. This will differ depending on the desired effect of the
      * permutation (atoms or bonds, for example).
-     * 
+     *
      * @return the atom container corresponding to this permutation
      */
     public abstract IAtomContainer containerFromPermutation(int[] permutation);
@@ -69,7 +68,7 @@ public abstract class AtomContainerPermutor extends Permutor
     /**
      * Get a new container, but randomly skip forwards in the list of possible
      * permutations to generate it.
-     * 
+     *
      * @return a random next permuted atom container
      */
     public IAtomContainer randomNext() {
@@ -80,9 +79,11 @@ public abstract class AtomContainerPermutor extends Permutor
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see java.util.Iterator#next()
      */
+    @Override
     public IAtomContainer next() {
         if (!this.hasNext()) {
             throw new NoSuchElementException();
@@ -91,9 +92,9 @@ public abstract class AtomContainerPermutor extends Permutor
         }
     }
 
+    @Override
     public void remove() {
-        // stupid method. not implemented.	
+        // stupid method. not implemented.
     }
 
 }
-

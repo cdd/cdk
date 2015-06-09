@@ -20,8 +20,6 @@
 package org.openscience.cdk.graph.invariant;
 
 import com.google.common.primitives.Ints;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
@@ -43,7 +41,6 @@ import org.openscience.cdk.interfaces.IBond;
  * @see CanonicalLabeler
  * @see HuLuIndexTool
  */
-@TestClass("org.openscience.cdk.graph.invariant.MorganNumbersToolsTest")
 public class MorganNumbersTools {
 
     /** Default size of adjacency lists. */
@@ -57,35 +54,29 @@ public class MorganNumbersTools {
      * @param molecule the molecule to analyse.
      * @return The morgan numbers value.
      */
-    @TestMethod("testGetMorganNumbers_IAtomContainer")
     public static long[] getMorganNumbers(IAtomContainer molecule) {
 
         int order = molecule.getAtomCount();
 
-        long[] currentInvariants  = new long[order];
+        long[] currentInvariants = new long[order];
         long[] previousInvariants = new long[order];
 
-        int[][] graph  = new int[order][INITIAL_DEGREE];
-        int[]   degree = new int[order];
+        int[][] graph = new int[order][INITIAL_DEGREE];
+        int[] degree = new int[order];
 
         // which atoms are the non-hydrogens.
         int[] nonHydrogens = new int[order];
 
         for (int v = 0; v < order; v++)
-            nonHydrogens[v] = "H".equals(molecule.getAtom(v).getSymbol()) ? 0
-                                                                          : 1;
+            nonHydrogens[v] = "H".equals(molecule.getAtom(v).getSymbol()) ? 0 : 1;
 
         // build the graph and initialise the current connectivity
         // value to the number of connected non-hydrogens
         for (IBond bond : molecule.bonds()) {
             int u = molecule.getAtomNumber(bond.getAtom(0));
             int v = molecule.getAtomNumber(bond.getAtom(1));
-            graph[u] = Ints.ensureCapacity(graph[u],
-                                           degree[u] + 1,
-                                           INITIAL_DEGREE);
-            graph[v] = Ints.ensureCapacity(graph[v],
-                                           degree[v] + 1,
-                                           INITIAL_DEGREE);
+            graph[u] = Ints.ensureCapacity(graph[u], degree[u] + 1, INITIAL_DEGREE);
+            graph[v] = Ints.ensureCapacity(graph[v], degree[v] + 1, INITIAL_DEGREE);
             graph[u][degree[u]++] = v;
             graph[v][degree[v]++] = u;
             currentInvariants[u] += nonHydrogens[v];
@@ -110,7 +101,6 @@ public class MorganNumbersTools {
         return currentInvariants;
     }
 
-
     /**
      * Makes an array containing the morgan numbers+element symbol of the atoms
      * of {@code atomContainer}. This method puts the element symbol before the
@@ -120,15 +110,12 @@ public class MorganNumbersTools {
      * @param atomContainer The atomContainer to analyse.
      * @return The morgan numbers value.
      */
-    @TestMethod("testPhenylamine")
     public static String[] getMorganNumbersWithElementSymbol(IAtomContainer atomContainer) {
         long[] morgannumbers = getMorganNumbers(atomContainer);
         String[] morgannumberswithelement = new String[morgannumbers.length];
         for (int i = 0; i < morgannumbers.length; i++) {
-            morgannumberswithelement[i] = atomContainer.getAtom(i)
-                                                       .getSymbol() + "-" + morgannumbers[i];
+            morgannumberswithelement[i] = atomContainer.getAtom(i).getSymbol() + "-" + morgannumbers[i];
         }
         return (morgannumberswithelement);
     }
 }
-

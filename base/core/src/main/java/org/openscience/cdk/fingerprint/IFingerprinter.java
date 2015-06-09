@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2005-2007  Egon Willighagen <egonw@users.sf.net>
  * Copyright (C) 2011       Jonathan Alvarsson <jonalv@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -40,30 +38,30 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  */
 public interface IFingerprinter {
 
-	/**
-	 * Returns the bit fingerprint for the given {@link IAtomContainer}.
-	 * 
-	 * @param  container {@link IAtomContainer} for which the fingerprint should be calculated.
-	 * @return           the bit fingerprint
-	 * @throws CDKException may be thrown if there is an error during aromaticity detection
+    /**
+     * Returns the bit fingerprint for the given {@link IAtomContainer}.
+     *
+     * @param  container {@link IAtomContainer} for which the fingerprint should be calculated.
+     * @return           the bit fingerprint
+     * @throws CDKException may be thrown if there is an error during aromaticity detection
      * or (for key based fingerprints) if there is a SMARTS parsing error
      * @throws UnsupportedOperationException if the Fingerprinter can not produce bit fingerprints
-	 */
-	public IBitFingerprint getBitFingerprint(IAtomContainer container) throws CDKException;
+     */
+    public IBitFingerprint getBitFingerprint(IAtomContainer container) throws CDKException;
 
-	/**
-	 * Returns the count fingerprint for the given {@link IAtomContainer}.
-	 * 
-	 * @param container {@link IAtomContainer} for which the fingerprint should be calculated.
-	 * @return the count fingerprint
-	 * @throws CDKException if there is an error during aromaticity detection
+    /**
+     * Returns the count fingerprint for the given {@link IAtomContainer}.
+     *
+     * @param container {@link IAtomContainer} for which the fingerprint should be calculated.
+     * @return the count fingerprint
+     * @throws CDKException if there is an error during aromaticity detection
      * or (for key based fingerprints) if there is a SMARTS parsing error.
      * @throws UnsupportedOperationException if the Fingerprinter can not produce count fingerprints
-	 */
-	public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException;
-    
-	/**
-     * Returns the raw representation of the fingerprint for the given IAtomContainer. The raw representation contains 
+     */
+    public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException;
+
+    /**
+     * Returns the raw representation of the fingerprint for the given IAtomContainer. The raw representation contains
      * counts as well as the key strings.
      *
      * @param container IAtomContainer for which the fingerprint should be calculated.
@@ -71,13 +69,12 @@ public interface IFingerprinter {
      * @throws CDKException
      */
     public Map<String, Integer> getRawFingerprint(IAtomContainer container) throws CDKException;
-	
-	/**
-	 * Returns the size of the fingerprints calculated.
-	 * 
-	 * @return the size of the fingerprint
-	 */
-	public int getSize();
+
+    /**
+     * Returns the size of the fingerprints calculated.
+     *
+     * @return the size of the fingerprint
+     */
+    public int getSize();
 
 }
-

@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 1997-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -42,11 +40,10 @@ import org.xml.sax.SAXParseException;
  **/
 public class CMLErrorHandler implements ErrorHandler {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(CMLErrorHandler.class);
+    private static ILoggingTool logger        = LoggingToolFactory.createLoggingTool(CMLErrorHandler.class);
 
-    public boolean reportErrors = true;
-    public boolean abortOnErrors = false;
+    public boolean              reportErrors  = true;
+    public boolean              abortOnErrors = false;
 
     /**
      * Constructor a SAX2 ErrorHandler that uses the cdk.tools.LoggingTool
@@ -63,15 +60,15 @@ public class CMLErrorHandler implements ErrorHandler {
      * @param level     significance level
      * @param exception Exception to output
      */
-    private void print (String level, SAXParseException exception) {
+    private void print(String level, SAXParseException exception) {
         if (level.equals("warning")) {
-            logger.warn("** " + level + ": " + exception.getMessage ());
-            logger.warn("   URI  = " + exception.getSystemId ());
-            logger.warn("   line = " + exception.getLineNumber ());
+            logger.warn("** " + level + ": " + exception.getMessage());
+            logger.warn("   URI  = " + exception.getSystemId());
+            logger.warn("   line = " + exception.getLineNumber());
         } else {
-            logger.error("** " + level + ": " + exception.getMessage ());
-            logger.error("   URI  = " + exception.getSystemId ());
-            logger.error("   line = " + exception.getLineNumber ());
+            logger.error("** " + level + ": " + exception.getMessage());
+            logger.error("   URI  = " + exception.getSystemId());
+            logger.error("   line = " + exception.getLineNumber());
         }
     }
 
@@ -82,7 +79,8 @@ public class CMLErrorHandler implements ErrorHandler {
      *
      * @param exception   Exception to output
      **/
-    public void error (SAXParseException exception) throws SAXException {
+    @Override
+    public void error(SAXParseException exception) throws SAXException {
         if (reportErrors) print("error", exception);
         if (abortOnErrors) throw exception;
     }
@@ -92,7 +90,8 @@ public class CMLErrorHandler implements ErrorHandler {
      *
      * @param exception   Exception to output
      **/
-    public void fatalError (SAXParseException exception) throws SAXException {
+    @Override
+    public void fatalError(SAXParseException exception) throws SAXException {
         if (reportErrors) print("fatal", exception);
         if (abortOnErrors) throw exception;
     }
@@ -102,9 +101,9 @@ public class CMLErrorHandler implements ErrorHandler {
      *
      * @param exception   Exception to output
      **/
-    public void warning (SAXParseException exception) throws SAXException {
+    @Override
+    public void warning(SAXParseException exception) throws SAXException {
         if (reportErrors) print("warning", exception);
     }
 
 }
-

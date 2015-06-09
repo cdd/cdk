@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,44 +28,48 @@ package org.openscience.cdk.smiles.smarts.parser;
  */
 class ASTRingIdentifier extends SimpleNode {
 
-	/**
-	 * The ring identifier.
-	 */
-	private int ringId;
+    /**
+     * The ring identifier.
+     */
+    private int ringId;
 
-	/**
-	 * Creates a new instance.
-	 */
-	public ASTRingIdentifier(int id) {
-		super(id);
-	}
+    /**
+     * Creates a new instance.
+     */
+    public ASTRingIdentifier(int id) {
+        super(id);
+    }
 
-	/**
-	 * Creates a new instance.
-	 */
-	public ASTRingIdentifier(SMARTSParser p, int id) {
-		super(p, id);
-	}
+    /**
+     * Creates a new instance.
+     */
+    public ASTRingIdentifier(SMARTSParser p, int id) {
+        super(p, id);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
-	 */
-	public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
-		return visitor.visit(this, data);
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+     */
+    @Override
+    public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 
-	/**
-	 * Returns the ring identifier.
-	 */
-	public int getRingId() {
-		return ringId;
-	}
+    /**
+     * Returns the ring identifier.
+     */
+    public int getRingId() {
+        return ringId;
+    }
 
-	/**
-	 * Sets the ring identifier.
-	 */
-	public void setRingId(int ringId) {
-		this.ringId = ringId;
-	}
+    /**
+     * Sets the ring identifier.
+     */
+    public void setRingId(int ringId) {
+        this.ringId = ringId;
+    }
 
 }

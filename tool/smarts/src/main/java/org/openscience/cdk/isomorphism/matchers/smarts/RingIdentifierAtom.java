@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,37 +28,42 @@ import org.openscience.cdk.isomorphism.matchers.IQueryBond;
  *
  * @cdk.module  smarts
  * @cdk.githash
- * @cdk.keyword SMARTS 
+ * @cdk.keyword SMARTS
  */
 public class RingIdentifierAtom extends SMARTSAtom {
-	private static final long serialVersionUID = -6812146026923460637L;
-	private IQueryAtom atom;
-	private IQueryBond ringBond;
 
-    public RingIdentifierAtom(IChemObjectBuilder builder){
+    private static final long serialVersionUID = -6812146026923460637L;
+    private IQueryAtom        atom;
+    private IQueryBond        ringBond;
+
+    public RingIdentifierAtom(IChemObjectBuilder builder) {
         super(builder);
     }
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org.openscience.cdk.interfaces.IAtom)
-	 */
-	public boolean matches(IAtom atom) {
-		return this.atom.matches(atom);
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSAtom#matches(org
+     * .openscience.cdk.interfaces.IAtom)
+     */
+    @Override
+    public boolean matches(IAtom atom) {
+        return this.atom.matches(atom);
+    }
 
-	public IQueryAtom getAtom() {
-		return atom;
-	}
+    public IQueryAtom getAtom() {
+        return atom;
+    }
 
-	public void setAtom(IQueryAtom atom) {
-		this.atom = atom;
-	}
+    public void setAtom(IQueryAtom atom) {
+        this.atom = atom;
+    }
 
-	public IQueryBond getRingBond() {
-		return ringBond;
-	}
+    public IQueryBond getRingBond() {
+        return ringBond;
+    }
 
-	public void setRingBond(IQueryBond bond) {
-		this.ringBond = bond;
-	}
+    public void setRingBond(IQueryBond bond) {
+        this.ringBond = bond;
+    }
 }

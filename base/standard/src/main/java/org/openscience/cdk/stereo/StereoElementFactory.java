@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -34,8 +34,12 @@ import org.openscience.cdk.interfaces.ITetrahedralChirality;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector2d;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
 import static org.openscience.cdk.interfaces.IBond.Stereo.DOWN;
@@ -49,23 +53,24 @@ import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo;
  * for this functionality use {@link Stereocenters}. The factory will not create
  * stereo elements if there is missing information (wedge/hatch bonds, undefined
  * coordinates) or the layout indicates unspecified configuration.
- * 
+ *
  * Stereocenters specified with inverse down (hatch) bond style are created if
  * the configuration is unambiguous and the bond does not connect to another
  * stereocenter.
- * 
+ *
  * <blockquote><pre>
  * IAtomContainer       container = ...;
- * StereoElementFactory stereo    = StereoElementFactory.using2DCoordinates();
- * 
+ * StereoElementFactory stereo    = StereoElementFactory.using2DCoordinates()
+ *                                                      .interpretProjections(Projection.Haworth);
+ *
  * // set the elements replacing any existing elements (recommended)
  * container.setStereoElements(stereo.createAll());
- * 
+ *
  * // adding elements individually is no recommended as the AtomContainer
  * // does not check for duplicate or contradicting elements
  * for (IStereoElement element : stereo.createAll())
  *     container.addStereoElement(element); // bad, there may already be elements
- * 
+ *
  * </pre></blockquote>
  *
  * @author John May
@@ -84,17 +89,20 @@ public abstract class StereoElementFactory {
     /** A bond map for fast access to bond labels between two atom indices. */
     protected final EdgeToBondMap bondMap;
 
+    
+    protected final Set<Projection> projections = EnumSet.noneOf(Projection.class);
+
     /**
      * Internal constructor.
-     * 
+     *
      * @param container an atom container
-     * @param graph     adjcancey list representation
+     * @param graph     adjacency list representation
      * @param bondMap   lookup bonds by atom index
      */
     protected StereoElementFactory(IAtomContainer container, int[][] graph, EdgeToBondMap bondMap) {
         this.container = container;
-        this.graph     = graph;
-        this.bondMap   = bondMap;
+        this.graph = graph;
+        this.bondMap = bondMap;
     }
 
     /**
@@ -107,20 +115,36 @@ public abstract class StereoElementFactory {
      */
     public List<IStereoElement> createAll() {
 
-        Stereocenters        centers  = new Stereocenters(container, graph, bondMap);
+        Stereocenters centers = new Stereocenters(container, graph, bondMap);
         List<IStereoElement> elements = new ArrayList<IStereoElement>();
 
+        // projection recognition (note no action in constructors)
+        FischerRecognition fischerRecon = new FischerRecognition(container, graph, bondMap, centers);
+        CyclicCarbohydrateRecognition cycleRecon = new CyclicCarbohydrateRecognition(container, graph, bondMap, centers);
+
+        elements.addAll(fischerRecon.recognise(projections));
+        elements.addAll(cycleRecon.recognise(projections));
+
         for (int v = 0; v < graph.length; v++) {
-            if (!centers.isStereocenter(v))
-                continue;
             switch (centers.elementType(v)) {
+                case Bicoordinate:
+                    int t0 = graph[v][0];
+                    int t1 = graph[v][1];
+                    if (centers.elementType(t0) == Stereocenters.Type.Tricoordinate
+                            && centers.elementType(t1) == Stereocenters.Type.Tricoordinate) {
+                        if (centers.isStereocenter(t0) && centers.isStereocenter(t1)) {
+                            IStereoElement element = createExtendedTetrahedral(v, centers);
+                            if (element != null) elements.add(element);
+                        }
+                    }
+                    break;
                 case Tricoordinate:
+                    if (!centers.isStereocenter(v)) continue;
                     for (int w : graph[v]) {
                         if (w > v && bondMap.get(v, w).getOrder() == IBond.Order.DOUBLE) {
                             if (centers.isStereocenter(w)) {
                                 IStereoElement element = createGeometric(v, w, centers);
-                                if (element != null) 
-                                    elements.add(element);
+                                if (element != null) elements.add(element);
                             }
                             break;
                         }
@@ -128,8 +152,7 @@ public abstract class StereoElementFactory {
                     break;
                 case Tetracoordinate:
                     IStereoElement element = createTetrahedral(v, centers);
-                    if (element != null)
-                        elements.add(element);
+                    if (element != null) elements.add(element);
                     break;
             }
         }
@@ -230,6 +253,51 @@ public abstract class StereoElementFactory {
     abstract IDoubleBondStereochemistry createGeometric(IBond bond, Stereocenters stereocenters);
 
     /**
+     * Create an extended tetrahedral element for the atom at index {@code v}.
+     * If an extended  tetrahedral element could not be created then null is
+     * returned. An element can not be created if, one or more atoms was
+     * missing coordinates, the atom has an unspecified (wavy) bond, the atom
+     * is no non-planar bonds (i.e. up/down, wedge/hatch). The method does not
+     * check if tetrahedral chirality is supported - for this functionality
+     * use {@link * Stereocenters}.
+     *
+     * <blockquote><pre>
+     * StereoElementFactory  factory   = ...; // 2D/3D
+     * IAtomContainer        container = ...; // container
+     *
+     * for (int v = 0; v < container.getAtomCount(); v++) {
+     *     // ... verify v is a stereo atom ...
+     *     ExtendedTetrahedral element = factory.createExtendedTetrahedral(v);
+     *     if (element != null)
+     *         container.addStereoElement(element);
+     * }
+     * </pre></blockquote>
+     *
+     * @param v atom index (vertex)
+     * @return a new stereo element
+     */
+    abstract ExtendedTetrahedral createExtendedTetrahedral(int v, Stereocenters stereocenters);
+
+    /**
+     * Indicate that stereochemistry drawn as a certain projection should be
+     * interpreted. 
+     *
+     * <pre>{@code
+     * StereoElementFactory factory = 
+     *   StereoElementFactory.using2DCoordinates(container)
+     *                       .interpretProjections(Projection.Fischer, Projection.Haworth);
+     * }</pre>
+     * 
+     * @param projections types of projection
+     * @return self
+     * @see org.openscience.cdk.stereo.Projection
+     */
+    public StereoElementFactory interpretProjections(Projection ... projections) {
+        Collections.addAll(this.projections, projections);
+        return this;
+    }
+
+    /**
      * Create a stereo element factory for creating stereo elements using 2D
      * coordinates and depiction labels (up/down, wedge/hatch).
      *
@@ -254,7 +322,7 @@ public abstract class StereoElementFactory {
         int[][] graph = GraphUtil.toAdjList(container, bondMap);
         return new StereoElementFactory3D(container, graph, bondMap);
     }
-    
+
     private static boolean hasUnspecifiedParity(IAtom atom) {
         return atom.getStereoParity() != null && atom.getStereoParity() == 3;
     }
@@ -263,7 +331,7 @@ public abstract class StereoElementFactory {
     static final class StereoElementFactory2D extends StereoElementFactory {
 
         /**
-         * Threshold at which the determinant is considered too small (unspeicifed
+         * Threshold at which the determinant is considered too small (unspecified
          * by coordinates).
          */
         private static final double THRESHOLD = 0.1;
@@ -275,31 +343,30 @@ public abstract class StereoElementFactory {
          * @param graph     adjacency list representation
          * @param bondMap   fast bond lookup from atom indices
          */
-        StereoElementFactory2D(IAtomContainer container,
-                               int[][] graph,
-                               EdgeToBondMap bondMap) {
+        StereoElementFactory2D(IAtomContainer container, int[][] graph, EdgeToBondMap bondMap) {
             super(container, graph, bondMap);
         }
 
         /** @inheritDoc */
-        @Override ITetrahedralChirality createTetrahedral(IAtom atom, Stereocenters stereocenters) {
+        @Override
+        ITetrahedralChirality createTetrahedral(IAtom atom, Stereocenters stereocenters) {
             return createTetrahedral(container.getAtomNumber(atom), stereocenters);
         }
 
         /** @inheritDoc */
-        @Override IDoubleBondStereochemistry createGeometric(IBond bond, Stereocenters stereocenters) {
-            return createGeometric(container.getAtomNumber(bond.getAtom(0)),
-                                   container.getAtomNumber(bond.getAtom(1)),
-                                   stereocenters);
+        @Override
+        IDoubleBondStereochemistry createGeometric(IBond bond, Stereocenters stereocenters) {
+            return createGeometric(container.getAtomNumber(bond.getAtom(0)), container.getAtomNumber(bond.getAtom(1)),
+                    stereocenters);
         }
 
         /** @inheritDoc */
-        @Override ITetrahedralChirality createTetrahedral(int v, Stereocenters stereocenters) {
+        @Override
+        ITetrahedralChirality createTetrahedral(int v, Stereocenters stereocenters) {
 
             IAtom focus = container.getAtom(v);
-            
-            if (hasUnspecifiedParity(focus))
-                return null;
+
+            if (hasUnspecifiedParity(focus)) return null;
 
             IAtom[] neighbors = new IAtom[4];
             int[] elevation = new int[4];
@@ -313,121 +380,153 @@ public abstract class StereoElementFactory {
                 IBond bond = bondMap.get(v, w);
 
                 // wavy bond
-                if (isUnspecified(bond))
-                    return null;
+                if (isUnspecified(bond)) return null;
 
                 neighbors[n] = container.getAtom(w);
                 elevation[n] = elevationOf(focus, bond);
 
-                if (elevation[n] != 0)
-                    nonplanar = true;
+                if (elevation[n] != 0) nonplanar = true;
 
                 n++;
             }
 
             // too few/many neighbors
-            if (n < 3 || n > 4)
-                return null;
+            if (n < 3 || n > 4) return null;
 
             // TODO: verify valid wedge/hatch configurations using similar procedure
             // to NonPlanarBonds in the cdk-sdg package.
-            
+
             // no up/down bonds present - check for inverted down/hatch
             if (!nonplanar) {
                 int[] ws = graph[v];
                 for (int i = 0; i < ws.length; i++) {
                     int w = ws[i];
                     IBond bond = bondMap.get(v, w);
-                    
+
                     // we have already previously checked whether 'v' is at the
                     // 'point' and so these must be inverse (fat-end @
                     // stereocenter) ala Daylight
                     if (bond.getStereo() == DOWN || bond.getStereo() == DOWN_INVERTED) {
-                       
-                       // we stick to the 'point' end convention but can 
-                       // interpret if the bond isn't connected to another
-                       // stereocenter - otherwise it's ambiguous!
-                       if (stereocenters.isStereocenter(w))
-                            continue;
-                        
+
+                        // we stick to the 'point' end convention but can
+                        // interpret if the bond isn't connected to another
+                        // stereocenter - otherwise it's ambiguous!
+                        if (stereocenters.isStereocenter(w)) continue;
+
                         elevation[i] = -1;
                         nonplanar = true;
                     }
                 }
-                
+
                 // still no bonds to use
-                if (!nonplanar)
-                    return null;
+                if (!nonplanar) return null;
             }
 
-            int parity = parity(neighbors, elevation);
+            int parity = parity(focus, neighbors, elevation);
 
-            if (parity == 0)
-                return null;
+            if (parity == 0) return null;
 
-            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE
-                                        : Stereo.CLOCKWISE;
+            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE : Stereo.CLOCKWISE;
 
             return new TetrahedralChirality(focus, neighbors, winding);
         }
 
         /** @inheritDoc */
-        @Override IDoubleBondStereochemistry createGeometric(int u, int v, Stereocenters stereocenters) {
+        @Override
+        IDoubleBondStereochemistry createGeometric(int u, int v, Stereocenters stereocenters) {
 
-            if (hasUnspecifiedParity(container.getAtom(u)) 
-                    || hasUnspecifiedParity(container.getAtom(v)))
-                return null;
-            
+            if (hasUnspecifiedParity(container.getAtom(u)) || hasUnspecifiedParity(container.getAtom(v))) return null;
+
             int[] us = graph[u];
             int[] vs = graph[v];
 
-            if (us.length < 2 || us.length > 3 || vs.length < 2 || vs.length > 3)
-                return null;
+            if (us.length < 2 || us.length > 3 || vs.length < 2 || vs.length > 3) return null;
 
             // move pi bonded neighbors to back
             moveToBack(us, v);
             moveToBack(vs, u);
 
-            IAtom[] vAtoms = new IAtom[]{
-                    container.getAtom(us[0]),
-                    container.getAtom(us.length > 2 ? us[1] : u),
-                    container.getAtom(v)
-            };
-            IAtom[] wAtoms = new IAtom[]{
-                    container.getAtom(vs[0]),
-                    container.getAtom(vs.length > 2 ? vs[1] : v),
-                    container.getAtom(u)
-            };
+            IAtom[] vAtoms = new IAtom[]{container.getAtom(us[0]), container.getAtom(us.length > 2 ? us[1] : u),
+                    container.getAtom(v)};
+            IAtom[] wAtoms = new IAtom[]{container.getAtom(vs[0]), container.getAtom(vs.length > 2 ? vs[1] : v),
+                    container.getAtom(u)};
 
             // are any substituents a wavy unspecified bond
-            if (isUnspecified(bondMap.get(u, us[0]))
-                    || isUnspecified(bondMap.get(u, us[1]))
-                    || isUnspecified(bondMap.get(v, vs[0]))
-                    || isUnspecified(bondMap.get(v, vs[1])))
-                return null;
+            if (isUnspecified(bondMap.get(u, us[0])) || isUnspecified(bondMap.get(u, us[1]))
+                    || isUnspecified(bondMap.get(v, vs[0])) || isUnspecified(bondMap.get(v, vs[1]))) return null;
 
             int parity = parity(vAtoms) * parity(wAtoms);
-            Conformation conformation = parity > 0 ? Conformation.OPPOSITE
-                                                   : Conformation.TOGETHER;
+            Conformation conformation = parity > 0 ? Conformation.OPPOSITE : Conformation.TOGETHER;
 
-            if (parity == 0)
-                return null;
+            if (parity == 0) return null;
 
             IBond bond = bondMap.get(u, v);
 
             // crossed bond
-            if (isUnspecified(bond))
-                return null;
+            if (isUnspecified(bond)) return null;
 
             // put the bond in to v is the first neighbor
-            bond.setAtoms(new IAtom[]{container.getAtom(u),
-                                      container.getAtom(v)});
-            
-            return new DoubleBondStereochemistry(bond,
-                                                 new IBond[]{bondMap.get(u, us[0]),
-                                                             bondMap.get(v, vs[0])
-                                                 },
-                                                 conformation);
+            bond.setAtoms(new IAtom[]{container.getAtom(u), container.getAtom(v)});
+
+            return new DoubleBondStereochemistry(bond, new IBond[]{bondMap.get(u, us[0]), bondMap.get(v, vs[0])},
+                    conformation);
+        }
+
+        /** @inheritDoc */
+        @Override
+        ExtendedTetrahedral createExtendedTetrahedral(int v, Stereocenters stereocenters) {
+
+            IAtom focus = container.getAtom(v);
+
+            if (hasUnspecifiedParity(focus)) return null;
+
+            IAtom[] terminals = ExtendedTetrahedral.findTerminalAtoms(container, focus);
+
+            int t0 = container.getAtomNumber(terminals[0]);
+            int t1 = container.getAtomNumber(terminals[1]);
+
+            // check the focus is cumulated
+            if (bondMap.get(v, t0).getOrder() != IBond.Order.DOUBLE
+                    || bondMap.get(v, t1).getOrder() != IBond.Order.DOUBLE) return null;
+
+            IAtom[] neighbors = new IAtom[4];
+            int[] elevation = new int[4];
+
+            neighbors[1] = terminals[0];
+            neighbors[3] = terminals[1];
+
+            int n = 0;
+            for (int w : graph[t0]) {
+                IBond bond = bondMap.get(t0, w);
+                if (w == v) continue;
+                if (bond.getOrder() != IBond.Order.SINGLE) return null;
+                if (isUnspecified(bond)) return null;
+                neighbors[n] = container.getAtom(w);
+                elevation[n] = elevationOf(terminals[0], bond);
+                n++;
+            }
+            n = 2;
+            for (int w : graph[t1]) {
+                IBond bond = bondMap.get(t1, w);
+                if (w == v) continue;
+                if (bond.getOrder() != IBond.Order.SINGLE) return null;
+                if (isUnspecified(bond)) return null;
+                neighbors[n] = container.getAtom(w);
+                elevation[n] = elevationOf(terminals[1], bond);
+                n++;
+            }
+
+            if (elevation[0] != 0 || elevation[1] != 0) {
+                if (elevation[2] != 0 || elevation[3] != 0) return null;
+            } else {
+                if (elevation[2] == 0 && elevation[3] == 0) return null; // undefined configuration
+            }
+
+            int parity = parity(focus, neighbors, elevation);
+
+            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE : Stereo.CLOCKWISE;
+
+            return new ExtendedTetrahedral(focus, neighbors, winding);
         }
 
         /**
@@ -456,21 +555,18 @@ public abstract class StereoElementFactory {
          */
         private int parity(IAtom[] atoms) {
 
-            if (atoms.length != 3)
-                throw new IllegalArgumentException("incorrect number of atoms");
+            if (atoms.length != 3) throw new IllegalArgumentException("incorrect number of atoms");
 
             Point2d a = atoms[0].getPoint2d();
             Point2d b = atoms[1].getPoint2d();
             Point2d c = atoms[2].getPoint2d();
 
-            if (a == null || b == null || c == null)
-                return 0;
+            if (a == null || b == null || c == null) return 0;
 
             double det = det(a.x, a.y, b.x, b.y, c.x, c.y);
 
             // unspecified by coordinates
-            if (Math.abs(det) < THRESHOLD)
-                return 0;
+            if (Math.abs(det) < THRESHOLD) return 0;
 
             return (int) Math.signum(det);
         }
@@ -482,18 +578,45 @@ public abstract class StereoElementFactory {
          * @param elevations the elevations of each atom
          * @return the parity (winding)
          */
-        private int parity(IAtom[] atoms, int[] elevations) {
+        private int parity(IAtom focus, IAtom[] atoms, int[] elevations) {
 
-            if (atoms.length != 4)
-                throw new IllegalArgumentException("incorrect number of atoms");
+            if (atoms.length != 4) throw new IllegalArgumentException("incorrect number of atoms");
 
             Point2d[] coordinates = new Point2d[atoms.length];
             for (int i = 0; i < atoms.length; i++) {
                 coordinates[i] = atoms[i].getPoint2d();
-                if (coordinates[i] == null)
-                    return 0;
+                if (coordinates[i] == null) return 0;
+                coordinates[i] = toUnitVector(focus.getPoint2d(), atoms[i].getPoint2d());
             }
 
+            double det = parity(coordinates, elevations);
+
+            return (int) Math.signum(det);
+        }
+
+        /**
+         * Obtain the unit vector between two points.
+         *
+         * @param from the base of the vector
+         * @param to   the point of the vector
+         * @return the unit vector
+         */
+        private Point2d toUnitVector(Point2d from, Point2d to) {
+            if (from == to) return new Point2d(0, 0);
+            Vector2d v2d = new Vector2d(to.x - from.x, to.y - from.y);
+            v2d.normalize();
+            return new Point2d(v2d);
+        }
+
+        /**
+         * Compute the signed volume of the tetrahedron from the planar points
+         * and elevations.
+         *
+         * @param coordinates locations in the plane
+         * @param elevations  elevations above/below the plane
+         * @return the determinant (signed volume of tetrahedron)
+         */
+        private double parity(final Point2d[] coordinates, final int[] elevations) {
             double x1 = coordinates[0].x;
             double x2 = coordinates[1].x;
             double x3 = coordinates[2].x;
@@ -504,12 +627,8 @@ public abstract class StereoElementFactory {
             double y3 = coordinates[2].y;
             double y4 = coordinates[3].y;
 
-            double det = (elevations[0] * det(x2, y2, x3, y3, x4, y4)) -
-                    (elevations[1] * det(x1, y1, x3, y3, x4, y4)) +
-                    (elevations[2] * det(x1, y1, x2, y2, x4, y4)) -
-                    (elevations[3] * det(x1, y1, x2, y2, x3, y3));
-
-            return (int) Math.signum(det);
+            return (elevations[0] * det(x2, y2, x3, y3, x4, y4)) - (elevations[1] * det(x1, y1, x3, y3, x4, y4))
+                    + (elevations[2] * det(x1, y1, x2, y2, x4, y4)) - (elevations[3] * det(x1, y1, x2, y2, x3, y3));
         }
 
         /** 3x3 determinant helper for a constant third column */
@@ -568,32 +687,33 @@ public abstract class StereoElementFactory {
          * @param graph     adjacency list representation
          * @param bondMap   fast bond lookup from atom indices
          */
-        StereoElementFactory3D(IAtomContainer container,
-                               int[][] graph,
-                               EdgeToBondMap bondMap) {
+        StereoElementFactory3D(IAtomContainer container, int[][] graph, EdgeToBondMap bondMap) {
             super(container, graph, bondMap);
         }
 
         /** @inheritDoc */
-        @Override ITetrahedralChirality createTetrahedral(IAtom atom, Stereocenters stereocenters) {
+        @Override
+        ITetrahedralChirality createTetrahedral(IAtom atom, Stereocenters stereocenters) {
             return createTetrahedral(container.getAtomNumber(atom), stereocenters);
         }
 
         /** @inheritDoc */
-        @Override IDoubleBondStereochemistry createGeometric(IBond bond, Stereocenters stereocenters) {
-            return createGeometric(container.getAtomNumber(bond.getAtom(0)),
-                                   container.getAtomNumber(bond.getAtom(1)),
-                                   stereocenters);
+        @Override
+        IDoubleBondStereochemistry createGeometric(IBond bond, Stereocenters stereocenters) {
+            return createGeometric(container.getAtomNumber(bond.getAtom(0)), container.getAtomNumber(bond.getAtom(1)),
+                    stereocenters);
         }
 
         /** @inheritDoc */
-        @Override ITetrahedralChirality createTetrahedral(int v, Stereocenters stereocenters) {
+        @Override
+        ITetrahedralChirality createTetrahedral(int v, Stereocenters stereocenters) {
+
+            if (!stereocenters.isStereocenter(v)) return null;
 
             IAtom focus = container.getAtom(v);
-            
-            if (hasUnspecifiedParity(focus))
-                return null;
-            
+
+            if (hasUnspecifiedParity(focus)) return null;
+
             IAtom[] neighbors = new IAtom[4];
 
             neighbors[3] = focus;
@@ -604,27 +724,24 @@ public abstract class StereoElementFactory {
                 neighbors[n++] = container.getAtom(w);
 
             // too few/many neighbors
-            if (n < 3 || n > 4)
-                return null;
+            if (n < 3 || n > 4) return null;
 
             // TODO: verify valid wedge/hatch configurations using similar procedure
             // to NonPlanarBonds in the cdk-sdg package
 
             int parity = parity(neighbors);
 
-            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE
-                                        : Stereo.CLOCKWISE;
+            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE : Stereo.CLOCKWISE;
 
             return new TetrahedralChirality(focus, neighbors, winding);
         }
 
         /** @inheritDoc */
-        @Override IDoubleBondStereochemistry createGeometric(int u, int v, Stereocenters stereocenters) {
+        @Override
+        IDoubleBondStereochemistry createGeometric(int u, int v, Stereocenters stereocenters) {
 
-            if (hasUnspecifiedParity(container.getAtom(u))
-                    || hasUnspecifiedParity(container.getAtom(v)))
-                return null;
-            
+            if (hasUnspecifiedParity(container.getAtom(u)) || hasUnspecifiedParity(container.getAtom(v))) return null;
+
             int[] us = graph[u];
             int[] vs = graph[v];
 
@@ -636,29 +753,57 @@ public abstract class StereoElementFactory {
             IAtom uSubstituentAtom = container.getAtom(x);
             IAtom vSubstituentAtom = container.getAtom(w);
 
-            if (uAtom.getPoint3d() == null
-                    || vAtom.getPoint3d() == null
-                    || uSubstituentAtom.getPoint3d() == null
-                    || vSubstituentAtom.getPoint3d() == null)
-                return null;
+            if (uAtom.getPoint3d() == null || vAtom.getPoint3d() == null || uSubstituentAtom.getPoint3d() == null
+                    || vSubstituentAtom.getPoint3d() == null) return null;
 
-            int parity = parity(uAtom.getPoint3d(),
-                                vAtom.getPoint3d(),
-                                uSubstituentAtom.getPoint3d(),
-                                vSubstituentAtom.getPoint3d());
+            int parity = parity(uAtom.getPoint3d(), vAtom.getPoint3d(), uSubstituentAtom.getPoint3d(),
+                    vSubstituentAtom.getPoint3d());
 
-            Conformation conformation = parity > 0 ? Conformation.OPPOSITE
-                                                   : Conformation.TOGETHER;
+            Conformation conformation = parity > 0 ? Conformation.OPPOSITE : Conformation.TOGETHER;
 
             IBond bond = bondMap.get(u, v);
             bond.setAtoms(new IAtom[]{uAtom, vAtom});
 
-            return new DoubleBondStereochemistry(bond,
-                                                 new IBond[]{
-                                                         bondMap.get(u, x),
-                                                         bondMap.get(v, w),
-                                                 },
-                                                 conformation);
+            return new DoubleBondStereochemistry(bond, new IBond[]{bondMap.get(u, x), bondMap.get(v, w),}, conformation);
+        }
+
+        /** @inheritDoc */
+        @Override
+        ExtendedTetrahedral createExtendedTetrahedral(int v, Stereocenters stereocenters) {
+
+            IAtom focus = container.getAtom(v);
+
+            if (hasUnspecifiedParity(focus)) return null;
+
+            IAtom[] terminals = ExtendedTetrahedral.findTerminalAtoms(container, focus);
+            IAtom[] neighbors = new IAtom[4];
+
+            int t0 = container.getAtomNumber(terminals[0]);
+            int t1 = container.getAtomNumber(terminals[1]);
+
+            // check the focus is cumulated
+            if (bondMap.get(v, t0).getOrder() != IBond.Order.DOUBLE
+                    || bondMap.get(v, t1).getOrder() != IBond.Order.DOUBLE) return null;
+
+            neighbors[1] = terminals[0];
+            neighbors[3] = terminals[1];
+
+            int n = 0;
+            for (int w : graph[t0]) {
+                if (bondMap.get(t0, w).getOrder() != IBond.Order.SINGLE) continue;
+                neighbors[n++] = container.getAtom(w);
+            }
+            n = 2;
+            for (int w : graph[t1]) {
+                if (bondMap.get(t1, w).getOrder() != IBond.Order.SINGLE) continue;
+                neighbors[n++] = container.getAtom(w);
+            }
+
+            int parity = parity(neighbors);
+
+            Stereo winding = parity > 0 ? Stereo.ANTI_CLOCKWISE : Stereo.CLOCKWISE;
+
+            return new ExtendedTetrahedral(focus, neighbors, winding);
         }
 
         /** 3x3 determinant helper for a constant third column */
@@ -695,8 +840,7 @@ public abstract class StereoElementFactory {
             // then it is at pi/2 radians (i.e. unspecified) however 3D coordinates
             // are generally discrete and do not normally represent on unspecified
             // stereo configurations so we don't check this
-            int parity = (int) Math.signum(dot(normal, vw))
-                    * (int) Math.signum(dot(normal, ux));
+            int parity = (int) Math.signum(dot(normal, vw)) * (int) Math.signum(dot(normal, ux));
 
             // invert sign, this then matches with Sp2 double bond parity
             return parity * -1;
@@ -710,14 +854,12 @@ public abstract class StereoElementFactory {
          */
         private int parity(IAtom[] atoms) {
 
-            if (atoms.length != 4)
-                throw new IllegalArgumentException("incorrect number of atoms");
+            if (atoms.length != 4) throw new IllegalArgumentException("incorrect number of atoms");
 
             Point3d[] coordinates = new Point3d[atoms.length];
             for (int i = 0; i < atoms.length; i++) {
                 coordinates[i] = atoms[i].getPoint3d();
-                if (coordinates[i] == null)
-                    return 0;
+                if (coordinates[i] == null) return 0;
             }
 
             double x1 = coordinates[0].x;
@@ -735,10 +877,8 @@ public abstract class StereoElementFactory {
             double z3 = coordinates[2].z;
             double z4 = coordinates[3].z;
 
-            double det = (z1 * det(x2, y2, x3, y3, x4, y4)) -
-                    (z2 * det(x1, y1, x3, y3, x4, y4)) +
-                    (z3 * det(x1, y1, x2, y2, x4, y4)) -
-                    (z4 * det(x1, y1, x2, y2, x3, y3));
+            double det = (z1 * det(x2, y2, x3, y3, x4, y4)) - (z2 * det(x1, y1, x3, y3, x4, y4))
+                    + (z3 * det(x1, y1, x2, y2, x4, y4)) - (z4 * det(x1, y1, x2, y2, x3, y3));
 
             return (int) Math.signum(det);
         }
@@ -751,9 +891,7 @@ public abstract class StereoElementFactory {
          * @return a new vector
          */
         private static double[] toVector(Point3d src, Point3d dest) {
-            return new double[]{dest.x - src.x,
-                                dest.y - src.y,
-                                dest.z - src.z};
+            return new double[]{dest.x - src.x, dest.y - src.y, dest.z - src.z};
         }
 
         /**
@@ -775,9 +913,8 @@ public abstract class StereoElementFactory {
          * @return the cross-product
          */
         private static double[] crossProduct(double[] u, double[] v) {
-            return new double[]{(u[1] * v[2]) - (v[1] * u[2]),
-                                (u[2] * v[0]) - (v[2] * u[0]),
-                                (u[0] * v[1]) - (v[0] * u[1])};
+            return new double[]{(u[1] * v[2]) - (v[1] * u[2]), (u[2] * v[0]) - (v[2] * u[0]),
+                    (u[0] * v[1]) - (v[0] * u[1])};
         }
     }
 }

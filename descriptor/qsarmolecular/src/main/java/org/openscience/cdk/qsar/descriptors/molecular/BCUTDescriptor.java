@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net> 
+/* Copyright (C) 2004-2007  Rajarshi Guha <rajarshi@users.sourceforge.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,11 +19,8 @@
 package org.openscience.cdk.qsar.descriptors.molecular;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.charges.GasteigerMarsiliPartialCharges;
-import org.openscience.cdk.charges.GasteigerPEPEPartialCharges;
 import org.openscience.cdk.charges.Polarizability;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
@@ -125,16 +117,15 @@ import Jama.Matrix;
  * @cdk.keyword BCUT
  * @cdk.keyword descriptor
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.BCUTDescriptorTest")
 public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private static ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(BCUTDescriptor.class);
+
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(BCUTDescriptor.class);
 
     // the number of negative & positive eigenvalues
     // to return for each class of BCUT descriptor
-    private int nhigh;
-    private int nlow;
-    private boolean checkAromaticity;
+    private int                 nhigh;
+    private int                 nlow;
+    private boolean             checkAromaticity;
 
     public BCUTDescriptor() {
         // set the default number of BCUT's
@@ -143,12 +134,10 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         this.checkAromaticity = true;
     }
 
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#BCUT",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#BCUT",
+                this.getClass().getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -162,7 +151,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
      * @throws CDKException if the parameters are of the wrong type
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // we expect 3 parameters
         if (params.length != 3) {
@@ -191,7 +180,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
      *         to return respectively
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         Object params[] = new Object[3];
         params[0] = this.nhigh;
@@ -200,7 +189,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         return (params);
     }
 
-    @TestMethod("testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         String[] names;
         String[] suffix = {"w", "c", "p"};
@@ -222,7 +211,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
      *
      * @return The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[3];
         params[0] = "nhigh";
@@ -231,14 +220,13 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         return (params);
     }
 
-
     /**
      * Gets the parameterType attribute of the BCUTDescriptor object.
      *
      * @param name Description of the Parameter (can be either 'nhigh' or 'nlow' or checkAromaticity)
      * @return The parameterType value
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         Object object = null;
         if (name.equals("nhigh")) object = 1;
@@ -279,9 +267,12 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
                     for (int k = 0; k < local.getBondCount(); k++) {
                         IBond bond = local.getBond(k);
                         if (bond.contains(local.getAtom(i)) && bond.contains(local.getAtom(j))) {
-                            if (bond.getFlag(CDKConstants.ISAROMATIC)) matrix[i][j] = 0.15;
-                            else if (bond.getOrder() == CDKConstants.BONDORDER_SINGLE) matrix[i][j] = 0.1;
-                            else if (bond.getOrder() == CDKConstants.BONDORDER_DOUBLE) matrix[i][j] = 0.2;
+                            if (bond.getFlag(CDKConstants.ISAROMATIC))
+                                matrix[i][j] = 0.15;
+                            else if (bond.getOrder() == CDKConstants.BONDORDER_SINGLE)
+                                matrix[i][j] = 0.1;
+                            else if (bond.getOrder() == CDKConstants.BONDORDER_DOUBLE)
+                                matrix[i][j] = 0.2;
                             else if (bond.getOrder() == CDKConstants.BONDORDER_TRIPLE) matrix[i][j] = 0.3;
 
                             if (local.getConnectedBondsCount(i) == 1 || local.getConnectedBondsCount(j) == 1) {
@@ -298,8 +289,10 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
 
             /* set the diagonal entries */
             for (int i = 0; i < natom; i++) {
-                if (vsd != null) matrix[i][i] = vsd[i];
-                else matrix[i][i] = 0.0;
+                if (vsd != null)
+                    matrix[i][i] = vsd[i];
+                else
+                    matrix[i][i] = 0.0;
             }
             return (matrix);
         }
@@ -314,7 +307,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
      *         above. If a parameter list was supplied, then only the specified number
      *         of highest and lowest eigenvalues (for each class of BCUT) will be returned.
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         int counter;
         IAtomContainer molecule;
@@ -343,7 +336,7 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
                 return getDummyDescriptorValue(new CDKException("Error in atom typing: " + e.getMessage(), e));
             }
             try {
-                CDKHueckelAromaticityDetector.detectAromaticity(molecule);
+                Aromaticity.cdkLegacy().apply(molecule);
             } catch (CDKException e) {
                 return getDummyDescriptorValue(new CDKException("Error in aromaticity perception: " + e.getMessage()));
             }
@@ -364,8 +357,8 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         try {
             for (int i = 0; i < molecule.getAtomCount(); i++) {
                 if (molecule.getAtom(i).getSymbol().equals("H")) continue;
-                diagvalue[counter] = Isotopes.getInstance().
-                        getMajorIsotope(molecule.getAtom(i).getSymbol()).getExactMass();
+                diagvalue[counter] = Isotopes.getInstance().getMajorIsotope(molecule.getAtom(i).getSymbol())
+                        .getExactMass();
                 counter++;
             }
         } catch (Exception e) {
@@ -381,17 +374,17 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
 
         // get charge weighted BCUT
         LonePairElectronChecker lpcheck = new LonePairElectronChecker();
-        GasteigerPEPEPartialCharges pepe;
         GasteigerMarsiliPartialCharges peoe;
         try {
             lpcheck.saturate(molecule);
             double[] charges = new double[molecule.getAtomCount()];
-//            pepe = new GasteigerPEPEPartialCharges();
-//            pepe.calculateCharges(molecule);
-//            for (int i = 0; i < molecule.getAtomCount(); i++) charges[i] = molecule.getAtom(i).getCharge();
+            //            pepe = new GasteigerPEPEPartialCharges();
+            //            pepe.calculateCharges(molecule);
+            //            for (int i = 0; i < molecule.getAtomCount(); i++) charges[i] = molecule.getAtom(i).getCharge();
             peoe = new GasteigerMarsiliPartialCharges();
             peoe.assignGasteigerMarsiliSigmaPartialCharges(molecule, true);
-            for (int i = 0; i < molecule.getAtomCount(); i++) charges[i] += molecule.getAtom(i).getCharge();
+            for (int i = 0; i < molecule.getAtomCount(); i++)
+                charges[i] += molecule.getAtom(i).getCharge();
             for (int i = 0; i < molecule.getAtomCount(); i++) {
                 molecule.getAtom(i).setCharge(charges[i]);
             }
@@ -411,7 +404,6 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         eigenDecomposition = new EigenvalueDecomposition(matrix);
         double[] eval2 = eigenDecomposition.getRealEigenvalues();
 
-
         int[][] topoDistance = PathTools.computeFloydAPSP(AdjacencyMatrix.getMatrix(molecule));
 
         // get polarizability weighted BCUT
@@ -419,7 +411,8 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
         counter = 0;
         for (int i = 0; i < molecule.getAtomCount(); i++) {
             if (molecule.getAtom(i).getSymbol().equals("H")) continue;
-            diagvalue[counter] = pol.calculateGHEffectiveAtomPolarizability(molecule, molecule.getAtom(i), false, topoDistance);
+            diagvalue[counter] = pol.calculateGHEffectiveAtomPolarizability(molecule, molecule.getAtom(i), false,
+                    topoDistance);
             counter++;
         }
         burdenMatrix = BurdenMatrix.evalMatrix(molecule, diagvalue);
@@ -452,23 +445,32 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
 
         DoubleArrayResult retval = new DoubleArrayResult((lnlow + enlow + lnhigh + enhigh) * 3);
 
-        for (int i = 0; i < lnlow; i++) retval.add(eval1[i]);
-        for (int i = 0; i < enlow; i++) retval.add(Double.NaN);
-        for (int i = 0; i < lnhigh; i++) retval.add(eval1[eval1.length - i - 1]);
-        for (int i = 0; i < enhigh; i++) retval.add(Double.NaN);
+        for (int i = 0; i < lnlow; i++)
+            retval.add(eval1[i]);
+        for (int i = 0; i < enlow; i++)
+            retval.add(Double.NaN);
+        for (int i = 0; i < lnhigh; i++)
+            retval.add(eval1[eval1.length - i - 1]);
+        for (int i = 0; i < enhigh; i++)
+            retval.add(Double.NaN);
 
+        for (int i = 0; i < lnlow; i++)
+            retval.add(eval2[i]);
+        for (int i = 0; i < enlow; i++)
+            retval.add(Double.NaN);
+        for (int i = 0; i < lnhigh; i++)
+            retval.add(eval2[eval2.length - i - 1]);
+        for (int i = 0; i < enhigh; i++)
+            retval.add(Double.NaN);
 
-        for (int i = 0; i < lnlow; i++) retval.add(eval2[i]);
-        for (int i = 0; i < enlow; i++) retval.add(Double.NaN);
-        for (int i = 0; i < lnhigh; i++) retval.add(eval2[eval2.length - i - 1]);
-        for (int i = 0; i < enhigh; i++) retval.add(Double.NaN);
-
-
-        for (int i = 0; i < lnlow; i++) retval.add(eval3[i]);
-        for (int i = 0; i < enlow; i++) retval.add(Double.NaN);
-        for (int i = 0; i < lnhigh; i++) retval.add(eval3[eval3.length - i - 1]);
-        for (int i = 0; i < enhigh; i++) retval.add(Double.NaN);
-
+        for (int i = 0; i < lnlow; i++)
+            retval.add(eval3[i]);
+        for (int i = 0; i < enlow; i++)
+            retval.add(Double.NaN);
+        for (int i = 0; i < lnhigh; i++)
+            retval.add(eval3[eval3.length - i - 1]);
+        for (int i = 0; i < enhigh; i++)
+            retval.add(Double.NaN);
 
         names = new String[3 * nhigh + 3 * nlow];
         counter = 0;
@@ -481,9 +483,8 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
             }
         }
 
-
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                retval, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), retval,
+                getDescriptorNames());
     }
 
     /**
@@ -497,17 +498,16 @@ public class BCUTDescriptor extends AbstractMolecularDescriptor implements IMole
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleArrayResultType(6);
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
         DoubleArrayResult results = new DoubleArrayResult(6);
-        for (int i = 0; i < 6; i++) results.add(Double.NaN);
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), results, getDescriptorNames(), e);
+        for (int i = 0; i < 6; i++)
+            results.add(Double.NaN);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
+                getDescriptorNames(), e);
     }
 }
-
-

@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,18 +22,20 @@
  */
 package org.openscience.cdk.smsd.tools;
 
+import static org.junit.Assert.assertEquals;
+
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.DefaultChemObjectBuilder;
+import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.smiles.SmilesParser;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.DefaultChemObjectBuilder;
-import static org.junit.Assert.*;
-import org.openscience.cdk.exception.InvalidSmilesException;
-import org.openscience.cdk.interfaces.IAtomContainer;
-import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.smiles.SmilesParser;
 
 /**
  * @cdk.module test-smsd
@@ -42,32 +43,26 @@ import org.openscience.cdk.smiles.SmilesParser;
  */
 public class MoleculeSanityCheckTest {
 
-    public MoleculeSanityCheckTest() {
-    }
+    public MoleculeSanityCheckTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of checkAndCleanMolecule method, of class MoleculeSanityCheck.
-     * @throws InvalidSmilesException 
+     * @throws InvalidSmilesException
      */
     @Test
     public void testCheckAndCleanMolecule() throws InvalidSmilesException {
-        System.out.println("checkAndCleanMolecule");
         String fragmentMolSmiles = "C1=CC=CC=C1.C1=CC2=C(C=C1)C=CC=C2";
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer molecule = sp.parseSmiles(fragmentMolSmiles);
@@ -78,11 +73,10 @@ public class MoleculeSanityCheckTest {
 
     /**
      * Test of fixAromaticity method, of class MoleculeSanityCheck.
-     * @throws InvalidSmilesException 
+     * @throws InvalidSmilesException
      */
     @Test
     public void testFixAromaticity() throws InvalidSmilesException {
-        System.out.println("fixAromaticity");
         String rawMolSmiles = "C1=CC2=C(C=C1)C=CC=C2";
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles(rawMolSmiles);

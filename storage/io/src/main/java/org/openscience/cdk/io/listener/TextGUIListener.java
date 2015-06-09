@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Jmol Development Team
+/* Copyright (C) 2003-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -43,7 +38,7 @@ import org.openscience.cdk.io.setting.OptionIOSetting;
  * Allows processing of IOSetting quesions which are passed to the user
  * by using the System.out and System.in by default.
  *
- * <p>This listener can also be used to list all the questions a ChemObjectWriter 
+ * <p>This listener can also be used to list all the questions a ChemObjectWriter
  * has, by using a dummy StringWriter, and a <code>null</code> Reader.
  *
  * @cdk.module io
@@ -54,48 +49,49 @@ import org.openscience.cdk.io.setting.OptionIOSetting;
 public class TextGUIListener implements IReaderListener, IWriterListener {
 
     private BufferedReader in;
-    private PrintWriter out;
-    
-    private Importance level = Importance.HIGH;
-    
+    private PrintWriter    out;
+
+    private Importance     level = Importance.HIGH;
+
     public TextGUIListener(Importance level) {
         this.level = level;
         this.setInputReader(new InputStreamReader(System.in));
         this.setOutputWriter(new OutputStreamWriter(System.out));
     }
-    
+
     public void setLevel(Importance level) {
         this.level = level;
     }
-    
+
     /**
      * Overwrites the default writer to which the output is directed.
      */
     public void setOutputWriter(Writer writer) {
         if (writer instanceof PrintWriter) {
-            this.out = (PrintWriter)writer;
+            this.out = (PrintWriter) writer;
         } else if (writer == null) {
             this.out = null;
         } else {
             this.out = new PrintWriter(writer);
         }
     }
-    
+
     /**
      * Overwrites the default reader from which the input is taken.
      */
     public void setInputReader(Reader reader) {
         if (reader instanceof BufferedReader) {
-            this.in = (BufferedReader)reader;
+            this.in = (BufferedReader) reader;
         } else if (reader == null) {
             this.in = null;
         } else {
             this.in = new BufferedReader(reader);
         }
     }
-    
+
+    @Override
     public void frameRead(ReaderEvent event) {}
-    
+
     /**
      * Processes the IOSettings by listing the question, giving the options
      * and asking the user to provide their choice.
@@ -103,6 +99,7 @@ public class TextGUIListener implements IReaderListener, IWriterListener {
      * <p>Note: if the input reader is <code>null</code>, then the method
      * does not wait for an answer, and takes the default.
      */
+    @Override
     public void processIOSettingQuestion(IOSetting setting) {
         // post the question
         if (setting.getLevel().ordinal() <= this.level.ordinal()) {
@@ -111,7 +108,7 @@ public class TextGUIListener implements IReaderListener, IWriterListener {
             // post the question
             this.out.print(setting.getQuestion());
             if (setting instanceof BooleanIOSetting) {
-                BooleanIOSetting boolSet = (BooleanIOSetting)setting;
+                BooleanIOSetting boolSet = (BooleanIOSetting) setting;
                 boolean set = boolSet.isSet();
                 if (set) {
                     this.out.print(" [Yn]");
@@ -119,12 +116,12 @@ public class TextGUIListener implements IReaderListener, IWriterListener {
                     this.out.print(" [yN]");
                 }
             } else if (setting instanceof OptionIOSetting) {
-                OptionIOSetting optionSet = (OptionIOSetting)setting;
+                OptionIOSetting optionSet = (OptionIOSetting) setting;
                 List<String> settings = optionSet.getOptions();
-                for (int i=0; i<settings.size(); i++) {
+                for (int i = 0; i < settings.size(); i++) {
                     this.out.println();
-                    String option = (String)settings.get(i);
-                    this.out.print((i+1) + ". " + option);
+                    String option = (String) settings.get(i);
+                    this.out.print((i + 1) + ". " + option);
                     if (option.equals(setting.getSetting())) {
                         this.out.print(" (Default)");
                     }
@@ -134,22 +131,23 @@ public class TextGUIListener implements IReaderListener, IWriterListener {
             }
             this.out.println();
             this.out.flush();
-        
+
             // get the answer, only if input != null
             if (this.in == null) {
-                // don't really ask questions. This is intentional behaviour to 
+                // don't really ask questions. This is intentional behaviour to
                 // allow for listing all questions. The settings is now defaulted,
                 // which is the intention too.
             } else {
                 boolean gotAnswer = false;
                 while (!gotAnswer) {
                     try {
-                        this.out.print("> "); this.out.flush();
+                        this.out.print("> ");
+                        this.out.flush();
                         String answer = in.readLine();
                         if (answer.length() == 0) {
                             // pressed ENTER -> take default
                         } else if (setting instanceof OptionIOSetting) {
-                            ((OptionIOSetting)setting).setSetting(Integer.parseInt(answer));
+                            ((OptionIOSetting) setting).setSetting(Integer.parseInt(answer));
                         } else if (setting instanceof BooleanIOSetting) {
                             if (answer.equalsIgnoreCase("n") || answer.equalsIgnoreCase("no")) {
                                 answer = "false";
@@ -174,8 +172,5 @@ public class TextGUIListener implements IReaderListener, IWriterListener {
             }
         }
     }
-  
+
 }
-
-
-

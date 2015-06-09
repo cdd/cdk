@@ -31,8 +31,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -48,23 +46,21 @@ import org.openscience.cdk.smsd.tools.MolHandler;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.single.SingleMappingHandlerTest")
 public class SingleMappingHandler extends AbstractMCSAlgorithm implements IMCSBase {
 
-    private static List<Map<IAtom, IAtom>> allAtomMCS = null;
-    private static Map<IAtom, IAtom> atomsMCS = null;
-    private static Map<Integer, Integer> firstMCS = null;
-    private static List<Map<Integer, Integer>> allMCS = null;
-    private IAtomContainer source = null;
-    private IQueryAtomContainer smartSource = null;
-    private IAtomContainer target = null;
-    private boolean removeHydrogen = false;
+    private static List<Map<IAtom, IAtom>>     allAtomMCS     = null;
+    private static Map<IAtom, IAtom>           atomsMCS       = null;
+    private static Map<Integer, Integer>       firstMCS       = null;
+    private static List<Map<Integer, Integer>> allMCS         = null;
+    private IAtomContainer                     source         = null;
+    private IQueryAtomContainer                smartSource    = null;
+    private IAtomContainer                     target         = null;
+    private boolean                            removeHydrogen = false;
 
     /**
-     * 
+     *
      * @param removeH true
      */
-    @TestMethod("setMCSAlgorithm")
     public SingleMappingHandler(boolean removeH) {
 
         this.removeHydrogen = removeH;
@@ -80,7 +76,7 @@ public class SingleMappingHandler extends AbstractMCSAlgorithm implements IMCSBa
      * @param source
      * @param target
      */
-    @TestMethod("testSet_MolHandler_MolHandler")
+    @Override
     public void set(MolHandler source, MolHandler target) {
         this.source = source.getMolecule();
         this.target = target.getMolecule();
@@ -91,20 +87,20 @@ public class SingleMappingHandler extends AbstractMCSAlgorithm implements IMCSBa
      * @param source
      * @param target
      */
-    @TestMethod("testSet_IQueryAtomContainer_MolHandler")
+    @Override
     public void set(IQueryAtomContainer source, IAtomContainer target) {
         this.smartSource = source;
         this.source = source;
         this.target = target;
     }
+
     //Function is called by the main program and serves as a starting point for the comparision procedure.
 
     /** {@inheritDoc}
      *
-     * @param bondTypeMatch 
+     * @param bondTypeMatch
      */
     @Override
-    @TestMethod("testSearchMCS")
     public void searchMCS(boolean bondTypeMatch) {
         SingleMapping singleMapping = new SingleMapping();
         List<Map<IAtom, IAtom>> mappings = null;
@@ -179,25 +175,25 @@ public class SingleMappingHandler extends AbstractMCSAlgorithm implements IMCSBa
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetAllMapping")
+    @Override
     public List<Map<Integer, Integer>> getAllMapping() {
         return Collections.unmodifiableList(allMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetFirstMapping")
+    @Override
     public Map<Integer, Integer> getFirstMapping() {
         return Collections.unmodifiableMap(firstMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetAllAtomMapping")
+    @Override
     public List<Map<IAtom, IAtom>> getAllAtomMapping() {
         return Collections.unmodifiableList(allAtomMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetFirstAtomMapping")
+    @Override
     public Map<IAtom, IAtom> getFirstAtomMapping() {
         return Collections.unmodifiableMap(atomsMCS);
     }

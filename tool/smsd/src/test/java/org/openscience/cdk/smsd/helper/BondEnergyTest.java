@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,13 +22,15 @@
  */
 package org.openscience.cdk.smsd.helper;
 
+import static org.junit.Assert.assertEquals;
+
+import org.openscience.cdk.interfaces.IBond.Order;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.openscience.cdk.interfaces.IBond.Order;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -39,31 +40,25 @@ import org.openscience.cdk.interfaces.IBond.Order;
  */
 public class BondEnergyTest {
 
-    public BondEnergyTest() {
-    }
+    public BondEnergyTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of getSymbolFirstAtom method, of class BondEnergy.
      */
     @Test
     public void testGetSymbolFirstAtom() {
-        System.out.println("getSymbolFirstAtom");
         BondEnergy instance = new BondEnergy("H", "I", Order.SINGLE, 295);
         String expResult = "H";
         String result = instance.getSymbolFirstAtom();
@@ -75,7 +70,6 @@ public class BondEnergyTest {
      */
     @Test
     public void testGetSymbolSecondAtom() {
-        System.out.println("getSymbolSecondAtom");
         BondEnergy instance = new BondEnergy("H", "I", Order.SINGLE, 295);
         String expResult = "I";
         String result = instance.getSymbolSecondAtom();
@@ -87,7 +81,6 @@ public class BondEnergyTest {
      */
     @Test
     public void testGetBondOrder() {
-        System.out.println("getBondOrder");
         BondEnergy instance = new BondEnergy("H", "I", Order.SINGLE, 295);
         Order expResult = Order.SINGLE;
         Order result = instance.getBondOrder();
@@ -99,7 +92,6 @@ public class BondEnergyTest {
      */
     @Test
     public void testGetEnergy() {
-        System.out.println("getEnergy");
         BondEnergy instance = new BondEnergy("H", "I", Order.SINGLE, 295);
         int expResult = 295;
         int result = instance.getEnergy();

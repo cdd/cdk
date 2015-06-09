@@ -1,4 +1,4 @@
-/*  
+/*
  *  Copyright (C) 2009  Mark Rijnbeek <markrynbeek@gmail.com>
  *
  *  Contact: cdk-devel@list.sourceforge.net
@@ -41,7 +41,6 @@ public class AtomContainerComparatorBy2DCenterTest extends CDKTestCase {
     public AtomContainerComparatorBy2DCenterTest() {
         super();
     }
-    
 
     @Test
     public void testCompare_Null_Null() {
@@ -57,48 +56,45 @@ public class AtomContainerComparatorBy2DCenterTest extends CDKTestCase {
         Assert.assertEquals("null 2d Coords<-> null 2d coords", 0, comparator.compare(atomContainer, atomContainer));
     }
 
-    
     @Test
     public void testCompare_self_valid_2DCoordinates() {
         IAtomContainer atomContainer = new AtomContainer();
         IAtom atom = new Atom("N");
-        atom.setPoint2d(new Point2d(10,10));
+        atom.setPoint2d(new Point2d(10, 10));
         atomContainer.addAtom(atom);
 
         Comparator<IAtomContainer> comparator = new AtomContainerComparatorBy2DCenter();
         Assert.assertEquals("self 2d Coords<-> self 2d coords", 0, comparator.compare(atomContainer, atomContainer));
     }
 
-
     @Test
     public void testCompare_minusOne() {
         IAtomContainer atomContainer = new AtomContainer();
         IAtom atom = new Atom("N");
-        atom.setPoint2d(new Point2d(10,10));
+        atom.setPoint2d(new Point2d(10, 10));
         atomContainer.addAtom(atom);
 
         IAtomContainer atomContainer2 = new AtomContainer();
         IAtom atom2 = new Atom("P");
-        atom2.setPoint2d(new Point2d(20,10));
+        atom2.setPoint2d(new Point2d(20, 10));
         atomContainer2.addAtom(atom2);
-        
+
         Comparator<IAtomContainer> comparator = new AtomContainerComparatorBy2DCenter();
         Assert.assertEquals("(10,10)<-> (20,10)", -1, comparator.compare(atomContainer, atomContainer2));
     }
 
-    
     @Test
     public void testCompare_plusOne() {
         IAtomContainer atomContainer = new AtomContainer();
         IAtom atom = new Atom("N");
-        atom.setPoint2d(new Point2d(20,10));
+        atom.setPoint2d(new Point2d(20, 10));
         atomContainer.addAtom(atom);
 
         IAtomContainer atomContainer2 = new AtomContainer();
         IAtom atom2 = new Atom("P");
-        atom2.setPoint2d(new Point2d(20,5));
+        atom2.setPoint2d(new Point2d(20, 5));
         atomContainer2.addAtom(atom2);
-        
+
         Comparator<IAtomContainer> comparator = new AtomContainerComparatorBy2DCenter();
         Assert.assertEquals("(20,10)<-> (20,5)", 1, comparator.compare(atomContainer, atomContainer2));
     }

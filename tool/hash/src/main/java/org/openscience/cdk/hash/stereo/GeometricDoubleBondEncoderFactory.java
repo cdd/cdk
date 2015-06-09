@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash.stereo;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
@@ -55,9 +53,7 @@ import static org.openscience.cdk.interfaces.IBond.Stereo.E_OR_Z;
  * @cdk.githash
  * @see org.openscience.cdk.hash.HashGeneratorMaker
  */
-@TestClass("org.openscience.cdk.hash.stereo.GeometricDoubleBondEncoderFactoryTest")
-public final class GeometricDoubleBondEncoderFactory
-        implements StereoEncoderFactory {
+public final class GeometricDoubleBondEncoderFactory implements StereoEncoderFactory {
 
     /**
      * Create a stereo encoder for all potential 2D and 3D double bond stereo
@@ -67,7 +63,6 @@ public final class GeometricDoubleBondEncoderFactory
      * @param graph     adjacency list representation of the container
      * @return a new encoder for tetrahedral elements
      */
-    @TestMethod("testCreate,testCreate_NoCoordinates")
     @Override
     public StereoEncoder create(IAtomContainer container, int[][] graph) {
 
@@ -76,16 +71,14 @@ public final class GeometricDoubleBondEncoderFactory
         for (IBond bond : container.bonds()) {
 
             // if double bond and not E or Z query bond
-            if (DOUBLE.equals(bond.getOrder()) &&
-                    !E_OR_Z.equals(bond.getStereo())) {
+            if (DOUBLE.equals(bond.getOrder()) && !E_OR_Z.equals(bond.getStereo())) {
 
                 IAtom left = bond.getAtom(0);
                 IAtom right = bond.getAtom(1);
 
                 // skip -N=N- double bonds which exhibit inversion
-                if (Integer.valueOf(7).equals(left.getAtomicNumber()) &&
-                        Integer.valueOf(7).equals(right.getAtomicNumber()))
-                    continue;
+                if (Integer.valueOf(7).equals(left.getAtomicNumber())
+                        && Integer.valueOf(7).equals(right.getAtomicNumber())) continue;
 
                 StereoEncoder encoder = newEncoder(container, left, right, right, left, graph);
 
@@ -95,8 +88,7 @@ public final class GeometricDoubleBondEncoderFactory
             }
         }
 
-        return encoders.isEmpty() ? StereoEncoder.EMPTY
-                                  : new MultiStereoEncoder(encoders);
+        return encoders.isEmpty() ? StereoEncoder.EMPTY : new MultiStereoEncoder(encoders);
     }
 
     /**
@@ -113,11 +105,8 @@ public final class GeometricDoubleBondEncoderFactory
      * @param graph       adjacency list representation of the molecule
      * @return a stereo encoder (or null)
      */
-    @TestMethod("testCreate,testCreate_NoCoordinates")
-    static StereoEncoder newEncoder(IAtomContainer container,
-                                    IAtom left, IAtom leftParent,
-                                    IAtom right, IAtom rightParent,
-                                    int[][] graph) {
+    static StereoEncoder newEncoder(IAtomContainer container, IAtom left, IAtom leftParent, IAtom right,
+            IAtom rightParent, int[][] graph) {
 
         List<IBond> leftBonds = container.getConnectedBondsList(left);
         List<IBond> rightBonds = container.getConnectedBondsList(right);
@@ -138,23 +127,18 @@ public final class GeometricDoubleBondEncoderFactory
             int[] rightNeighbors = moveToBack(graph[rightIndex], rightParentIndex);
 
             int l1 = leftNeighbors[0];
-            int l2 = leftNeighbors[1] == leftParentIndex ? leftIndex
-                                                         : leftNeighbors[1];
+            int l2 = leftNeighbors[1] == leftParentIndex ? leftIndex : leftNeighbors[1];
             int r1 = rightNeighbors[0];
-            int r2 = rightNeighbors[1] == rightParentIndex ? rightIndex
-                                                           : rightNeighbors[1];
+            int r2 = rightNeighbors[1] == rightParentIndex ? rightIndex : rightNeighbors[1];
 
             // make 2D/3D geometry
             GeometricParity geometric = geometric(container, leftIndex, rightIndex, l1, l2, r1, r2);
 
             // geometric is null if there were no coordinates
             if (geometric != null) {
-                return new GeometryEncoder(new int[]{leftIndex, rightIndex},
-                                           new CombinedPermutationParity(permutation(leftNeighbors),
-                                                                         permutation(rightNeighbors)),
-                                           geometric);
+                return new GeometryEncoder(new int[]{leftIndex, rightIndex}, new CombinedPermutationParity(
+                        permutation(leftNeighbors), permutation(rightNeighbors)), geometric);
             }
-
 
         }
 
@@ -178,7 +162,6 @@ public final class GeometricDoubleBondEncoderFactory
      *            none
      * @return geometric parity or null
      */
-    @TestMethod("testGeometric_2D,testGeometric_3D")
     static GeometricParity geometric(IAtomContainer mol, int l, int r, int l1, int l2, int r1, int r2) {
 
         // we need all points for 2D as they may be skewed, i.e.
@@ -225,11 +208,9 @@ public final class GeometricDoubleBondEncoderFactory
      * @param neighbors neighbors of a double bonded atom specified by index
      * @return a new permutation parity
      */
-    @TestMethod("testPermutation_SingleSubstituents,testPermutation_TwoSubstituents")
     static PermutationParity permutation(int[] neighbors) {
-        return neighbors.length == 2
-               ? PermutationParity.IDENTITY
-               : new BasicPermutationParity(Arrays.copyOf(neighbors, neighbors.length - 1));
+        return neighbors.length == 2 ? PermutationParity.IDENTITY : new BasicPermutationParity(Arrays.copyOf(neighbors,
+                neighbors.length - 1));
     }
 
     /**
@@ -240,7 +221,6 @@ public final class GeometricDoubleBondEncoderFactory
      * @param v         the value to shift to the back
      * @return <i>neighbors</i> array
      */
-    @TestMethod("testMoveToBack")
     static int[] moveToBack(int[] neighbors, int v) {
         int j = 0;
         for (int i = 0; i < neighbors.length; i++) {
@@ -262,32 +242,24 @@ public final class GeometricDoubleBondEncoderFactory
      * @param bonds all bonds connected to the atom
      * @return whether the atom is accepted for configuration
      */
-    @TestMethod("testAccept_Hybridization," +
-                        "testAccept_QueryBond," +
-                        "testAccept_CumulatedDoubleBond," +
-                        "testAccept_NoSubstituents")
     static boolean accept(IAtom atom, List<IBond> bonds) {
 
         int dbCount = 0;
 
         // not SP2
-        if (!IAtomType.Hybridization.SP2.equals(atom.getHybridization()))
-            return false;
+        if (!IAtomType.Hybridization.SP2.equals(atom.getHybridization())) return false;
 
         // only have one neighbour (which is the other atom) -> this is no configurable
-        if (bonds.size() == 1)
-            return false;
+        if (bonds.size() == 1) return false;
 
         for (IBond bond : bonds) {
 
             // increment the number of double bonds
-            if (DOUBLE.equals(bond.getOrder()))
-                dbCount++;
+            if (DOUBLE.equals(bond.getOrder())) dbCount++;
 
             // up/down bonds sometimes used to indicate E/Z
             IBond.Stereo stereo = bond.getStereo();
-            if (IBond.Stereo.UP_OR_DOWN.equals(stereo) || IBond.Stereo
-                    .UP_OR_DOWN_INVERTED.equals(stereo))
+            if (IBond.Stereo.UP_OR_DOWN.equals(stereo) || IBond.Stereo.UP_OR_DOWN_INVERTED.equals(stereo))
                 return false;
 
         }
@@ -295,6 +267,5 @@ public final class GeometricDoubleBondEncoderFactory
         // not cumulated
         return dbCount == 1;
     }
-
 
 }

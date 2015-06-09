@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,93 +18,87 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * See <a href="http://shelx.uni-ac.gwdg.de/SHELX/">here</a>.
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.ShelXFormatTest")
 public class ShelXFormat extends SimpleChemFormatMatcher implements IChemFormatMatcher {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public ShelXFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new ShelXFormat();
-    	return myself;
+        if (myself == null) myself = new ShelXFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "ShelXL";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return null;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
-        return new String[]{"ins","res"};
+        return new String[]{"ins", "res"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { 
-      return "org.openscience.cdk.io.ShelXReader";
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return "org.openscience.cdk.io.ShelXReader";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { 
-      return "org.openscience.cdk.io.ShelXWriter";
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return "org.openscience.cdk.io.ShelXWriter";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
-        if (line.startsWith("ZERR ") ||
-            line.startsWith("TITL ")) {
+        if (line.startsWith("ZERR ") || line.startsWith("TITL ")) {
             return true;
         }
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return getRequiredDataFeatures();
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return getRequiredDataFeatures();
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.HAS_3D_COORDINATES |
-		       DataFeatures.HAS_UNITCELL_PARAMETERS |
-               DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
-	}
+        return DataFeatures.HAS_3D_COORDINATES | DataFeatures.HAS_UNITCELL_PARAMETERS
+                | DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
+    }
 }

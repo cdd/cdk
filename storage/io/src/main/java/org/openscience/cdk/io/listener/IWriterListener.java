@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2002-2007  The Jmol Development Team
+/* Copyright (C) 2002-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,7 +18,6 @@
  */
 package org.openscience.cdk.io.listener;
 
-
 /**
  * Allows monitoring of progress of writing activities.
  *
@@ -33,5 +27,5 @@ package org.openscience.cdk.io.listener;
  * @author Egon Willighagen <egonw@sci.kun.nl>
  */
 public interface IWriterListener extends IChemObjectIOListener {
-  
+
 }

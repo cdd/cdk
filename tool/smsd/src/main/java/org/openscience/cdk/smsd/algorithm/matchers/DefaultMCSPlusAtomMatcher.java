@@ -46,7 +46,6 @@
  */
 package org.openscience.cdk.smsd.algorithm.matchers;
 
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
@@ -58,15 +57,14 @@ import org.openscience.cdk.isomorphism.matchers.IQueryAtomContainer;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public class DefaultMCSPlusAtomMatcher implements AtomMatcher {
 
-    static final long serialVersionUID = -7861469841127327812L;
-    private int maximumNeighbors;
-    private String symbol = null;
-    private IAtom qAtom = null;
-    private IQueryAtom smartQueryAtom = null;
-    private boolean shouldMatchBonds = false;
+    static final long  serialVersionUID = -7861469841127327812L;
+    private int        maximumNeighbors;
+    private String     symbol           = null;
+    private IAtom      qAtom            = null;
+    private IQueryAtom smartQueryAtom   = null;
+    private boolean    shouldMatchBonds = false;
 
     /**
      * @return the shouldMatchBonds
@@ -103,8 +101,8 @@ public class DefaultMCSPlusAtomMatcher implements AtomMatcher {
         this.symbol = atom.getSymbol();
         setBondMatchFlag(shouldMatchBonds);
 
-//        System.out.println("Atom " + atom.getSymbol());
-//        System.out.println("MAX allowed " + maximumNeighbors);
+        //        System.out.println("Atom " + atom.getSymbol());
+        //        System.out.println("MAX allowed " + maximumNeighbors);
     }
 
     /**
@@ -125,10 +123,10 @@ public class DefaultMCSPlusAtomMatcher implements AtomMatcher {
      * @param blockedPositions
      * @param shouldMatchBonds bond matching flag
      */
-    public DefaultMCSPlusAtomMatcher(IAtomContainer queryContainer, IAtom template, int blockedPositions, boolean shouldMatchBonds) {
+    public DefaultMCSPlusAtomMatcher(IAtomContainer queryContainer, IAtom template, int blockedPositions,
+            boolean shouldMatchBonds) {
         this(queryContainer, template, shouldMatchBonds);
-        this.maximumNeighbors = countImplicitHydrogens(template)
-                + queryContainer.getConnectedAtomsCount(template)
+        this.maximumNeighbors = countImplicitHydrogens(template) + queryContainer.getConnectedAtomsCount(template)
                 - blockedPositions;
     }
 
@@ -164,12 +162,12 @@ public class DefaultMCSPlusAtomMatcher implements AtomMatcher {
     }
 
     private int countImplicitHydrogens(IAtom atom) {
-        return (atom.getImplicitHydrogenCount() == null)
-                ? 0 : atom.getImplicitHydrogenCount();
+        return (atom.getImplicitHydrogenCount() == null) ? 0 : atom.getImplicitHydrogenCount();
     }
 
     /** {@inheritDoc}
      */
+    @Override
     public boolean matches(IAtomContainer targetContainer, IAtom targetAtom) {
         if (smartQueryAtom != null && qAtom == null) {
             if (!smartQueryAtom.matches(targetAtom)) {

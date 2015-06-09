@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Stefan Kuhn <shk3@users.sf.net>
+/* Copyright (C) 2002-2007  Stefan Kuhn <shk3@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,13 +22,11 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.ringsearch.RingPartitioner;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 import java.util.List;
@@ -40,20 +36,19 @@ import java.util.Map;
  * Generates an extended fingerprint for a given {@link IAtomContainer}, that
  * extends the {@link Fingerprinter} with additional bits describing ring
  * features.
- *  
+ *
  * @author         shk3
  * @cdk.created    2006-01-13
  * @cdk.keyword    fingerprint
  * @cdk.keyword    similarity
  * @cdk.module     fingerprint
  * @cdk.githash
- * 
+ *
  * @see            org.openscience.cdk.fingerprint.Fingerprinter
  */
-@TestClass("org.openscience.cdk.fingerprint.ExtendedFingerprinterTest")
 public class ExtendedFingerprinter implements IFingerprinter {
 
-    private final int RESERVED_BITS = 25;
+    private final int     RESERVED_BITS = 25;
 
     private Fingerprinter fingerprinter = null;
 
@@ -62,8 +57,7 @@ public class ExtendedFingerprinter implements IFingerprinter {
      * and with a search depth of <code>DEFAULT_SEARCH_DEPTH</code>.
      */
     public ExtendedFingerprinter() {
-        this(Fingerprinter.DEFAULT_SIZE, 
-             Fingerprinter.DEFAULT_SEARCH_DEPTH);
+        this(Fingerprinter.DEFAULT_SIZE, Fingerprinter.DEFAULT_SEARCH_DEPTH);
     }
 
     public ExtendedFingerprinter(int size) {
@@ -79,107 +73,95 @@ public class ExtendedFingerprinter implements IFingerprinter {
      * @param  searchDepth The desired depth of search
      */
     public ExtendedFingerprinter(int size, int searchDepth) {
-        this.fingerprinter 
-            = new Fingerprinter(size-RESERVED_BITS, searchDepth);
+        this.fingerprinter = new Fingerprinter(size - RESERVED_BITS, searchDepth);
     }
 
     /**
-     * Generates a fingerprint of the default size for the given 
-     * AtomContainer, using path and ring metrics. It contains the 
-     * informations from getBitFingerprint() and bits which tell if the structure 
-     * has 0 rings, 1 or less rings, 2 or less rings ... 10 or less rings 
-     * (referring to smallest set of smallest rings) and bits which tell if 
+     * Generates a fingerprint of the default size for the given
+     * AtomContainer, using path and ring metrics. It contains the
+     * informations from getBitFingerprint() and bits which tell if the structure
+     * has 0 rings, 1 or less rings, 2 or less rings ... 10 or less rings
+     * (referring to smallest set of smallest rings) and bits which tell if
      * there is a fused ring system with 1,2...8 or more rings in it
      *
      *@param container The AtomContainer for which a Fingerprint is generated
      *@return a bit fingerprint for the given <code>IAtomContainer</code>.
      */
-    @TestMethod("testgetBitFingerprint_IAtomContainer")
-    public IBitFingerprint getBitFingerprint(IAtomContainer container) 
-                  throws CDKException {
-        return this.getBitFingerprint(container,null,null);
+    @Override
+    public IBitFingerprint getBitFingerprint(IAtomContainer container) throws CDKException {
+        return this.getBitFingerprint(container, null, null);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetRawFingerprint")
+    @Override
     public Map<String, Integer> getRawFingerprint(IAtomContainer iAtomContainer) throws CDKException {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Generates a fingerprint of the default size for the given 
-     * AtomContainer, using path and ring metrics. It contains the 
+     * Generates a fingerprint of the default size for the given
+     * AtomContainer, using path and ring metrics. It contains the
      * informations from getBitFingerprint() and bits which tell if the structure
-     * has 0 rings, 1 or less rings, 2 or less rings ... 10 or less rings and 
-     * bits which tell if there is a fused ring system with 1,2...8 or more 
-     * rings in it. The RingSet used is passed via rs parameter. This must be 
-     * a smallesSetOfSmallestRings. The List must be a list of all ring 
+     * has 0 rings, 1 or less rings, 2 or less rings ... 10 or less rings and
+     * bits which tell if there is a fused ring system with 1,2...8 or more
+     * rings in it. The RingSet used is passed via rs parameter. This must be
+     * a smallesSetOfSmallestRings. The List must be a list of all ring
      * systems in the molecule.
      *
-     * @param     atomContainer The AtomContainer for which a Fingerprint is 
+     * @param     atomContainer The AtomContainer for which a Fingerprint is
      *                          generated
-     * @param     ringSet       An SSSR RingSet of ac (if not available, use 
-     *                          getExtendedFingerprint(AtomContainer ac), 
+     * @param     ringSet       An SSSR RingSet of ac (if not available, use
+     *                          getExtendedFingerprint(AtomContainer ac),
      *                          which does the calculation)
      * @param     rslist        A list of all ring systems in ac
      * @exception CDKException  for example if input can not be cloned.
      * @return a BitSet representing the fingerprint
      */
-    @TestMethod("testgetBitFingerprint_IAtomContainer_IRingSet_List")
-    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer, 
-                                 IRingSet ringSet, 
-                                 List<IRingSet> rslist) throws CDKException {
+    public IBitFingerprint getBitFingerprint(IAtomContainer atomContainer, IRingSet ringSet, List<IRingSet> rslist)
+            throws CDKException {
         IAtomContainer container;
         try {
             container = (IAtomContainer) atomContainer.clone();
         } catch (CloneNotSupportedException e) {
             throw new CDKException("Could not clone input");
         }
-        
+
         IBitFingerprint fingerprint = fingerprinter.getBitFingerprint(container);
         int size = this.getSize();
-        double weight 
-            = MolecularFormulaManipulator.getTotalNaturalAbundance(
-                  MolecularFormulaManipulator.getMolecularFormula(container));
-        for(int i=1;i<11;i++){
-            if(weight>(100*i))
-                fingerprint.set(size-26+i); // 26 := RESERVED_BITS+1
+        double weight = MolecularFormulaManipulator.getTotalNaturalAbundance(MolecularFormulaManipulator
+                .getMolecularFormula(container));
+        for (int i = 1; i < 11; i++) {
+            if (weight > (100 * i)) fingerprint.set(size - 26 + i); // 26 := RESERVED_BITS+1
         }
-        if(ringSet==null){
-            ringSet=new SSSRFinder(container).findSSSR();
-            rslist=RingPartitioner.partitionRings(ringSet);
+        if (ringSet == null) {
+            ringSet = Cycles.sssr(container).toRingSet();
+            rslist = RingPartitioner.partitionRings(ringSet);
         }
-        for(int i=0;i<7;i++){
-            if(ringSet.getAtomContainerCount()>i)
-                fingerprint.set(size-15+i); // 15 := RESERVED_BITS+1+10 mass bits
+        for (int i = 0; i < 7; i++) {
+            if (ringSet.getAtomContainerCount() > i) fingerprint.set(size - 15 + i); // 15 := RESERVED_BITS+1+10 mass bits
         }
-        int maximumringsystemsize=0;
-        for(int i=0;i<rslist.size();i++){
-            if ( ((IRingSet)rslist.get(i)).getAtomContainerCount() 
-                            > 
-                 maximumringsystemsize )
-                
-                maximumringsystemsize
-                    = ( (IRingSet)rslist.get(i) ).getAtomContainerCount();
+        int maximumringsystemsize = 0;
+        for (int i = 0; i < rslist.size(); i++) {
+            if (((IRingSet) rslist.get(i)).getAtomContainerCount() > maximumringsystemsize)
+
+            maximumringsystemsize = ((IRingSet) rslist.get(i)).getAtomContainerCount();
         }
-        for(int i=0;i<maximumringsystemsize && i<9;i++){
-            fingerprint.set(size-8+i-3);
+        for (int i = 0; i < maximumringsystemsize && i < 9; i++) {
+            fingerprint.set(size - 8 + i - 3);
         }
         return fingerprint;
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetSize")
+    @Override
     public int getSize() {
-        return fingerprinter.getSize()+RESERVED_BITS;
+        return fingerprinter.getSize() + RESERVED_BITS;
     }
 
     /** {@inheritDoc} */
-	@Override
-    @TestMethod("testGetCountFingerprint")
-	public ICountFingerprint getCountFingerprint(IAtomContainer container)
-			throws CDKException {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ICountFingerprint getCountFingerprint(IAtomContainer container) throws CDKException {
+        throw new UnsupportedOperationException();
+    }
 
 }

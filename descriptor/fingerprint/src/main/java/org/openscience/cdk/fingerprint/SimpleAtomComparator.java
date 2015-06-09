@@ -1,7 +1,5 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *
- * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
- *           
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,10 +23,7 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
-import org.openscience.cdk.interfaces.IChemObject;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -38,28 +33,25 @@ import java.util.Comparator;
  * symbol and hybridization states. This will aid in finding a deterministic
  * path rather than Stochastic one. </P>
  *
- * @author Syed Asad Rahman (2012) 
- * @cdk.keyword fingerprint 
- * @cdk.keyword similarity 
+ * @author Syed Asad Rahman (2012)
+ * @cdk.keyword fingerprint
+ * @cdk.keyword similarity
  * @cdk.module fingerprint
  * @cdk.githash
- * 
+ *
  */
-@TestClass("org.openscience.cdk.fingerprint.SimpleAtomComparatorTest")
 public class SimpleAtomComparator implements Comparator<IAtom>, Serializable {
 
     private static final long serialVersionUID = 2345252069991872083L;
 
-
-	@TestMethod("testCompare_NullHybridization,testCompare_SameHybridization,testCompare_DifferentHybridization,testCompare_DifferentSymbol")
     @Override
-	public int compare(IAtom o1, IAtom o2) {
-		if (o1.getSymbol().equalsIgnoreCase(o2.getSymbol())) {
-			if (o1.getHybridization() != null && o2.getHybridization() != null) {
-				return o1.getHybridization().compareTo(o2.getHybridization());
-			}
-			return 0;
-		}
-		return 10 * o1.getSymbol().compareToIgnoreCase(o2.getSymbol());
-	} 
+    public int compare(IAtom o1, IAtom o2) {
+        if (o1.getSymbol().equalsIgnoreCase(o2.getSymbol())) {
+            if (o1.getHybridization() != null && o2.getHybridization() != null) {
+                return o1.getHybridization().compareTo(o2.getHybridization());
+            }
+            return 0;
+        }
+        return 10 * o1.getSymbol().compareToIgnoreCase(o2.getSymbol());
+    }
 }

@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -38,14 +33,14 @@ import org.openscience.cdk.exception.CDKException;
  *
  * @author         Egon Willighagen
  * @cdk.created    2004-01-08
- * 
+ *
  * @cdk.module     valencycheck
  * @cdk.githash
  */
 public interface IValencyChecker {
 
-	public boolean isSaturated(IAtomContainer ac) throws CDKException;
-	public boolean isSaturated(IAtom atom, IAtomContainer container) throws CDKException;
+    public boolean isSaturated(IAtomContainer ac) throws CDKException;
+
+    public boolean isSaturated(IAtom atom, IAtomContainer container) throws CDKException;
 
 }
-

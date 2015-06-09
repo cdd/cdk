@@ -18,99 +18,90 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * Serializes a CDK model into the Web Ontology Language using the
  * N3 format.
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.CDKOWLFormatTest")
 public class CDKOWLFormat extends SimpleChemFormatMatcher implements IChemFormatMatcher {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public CDKOWLFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new CDKOWLFormat();
-    	return myself;
+        if (myself == null) myself = new CDKOWLFormat();
+        return myself;
     }
-    
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetFormatName")
+
+    /** {@inheritDoc} */
+    @Override
     public String getFormatName() {
         return "CDK OWL (N3)";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetMIMEType")
+    /** {@inheritDoc} */
+    @Override
     public String getMIMEType() {
         return "text/n3";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetPreferredNameExtension")
+    /** {@inheritDoc} */
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetNameExtensions")
+    /** {@inheritDoc} */
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"n3"};
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { 
-      return "org.openscience.cdk.io.rdf.CDKOWLReader";
+    /** {@inheritDoc} */
+    @Override
+    public String getReaderClassName() {
+        return "org.openscience.cdk.io.rdf.CDKOWLReader";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { 
-      return "org.openscience.cdk.io.rdf.CDKOWLWriter";
+    /** {@inheritDoc} */
+    @Override
+    public String getWriterClassName() {
+        return "org.openscience.cdk.io.rdf.CDKOWLWriter";
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testMatches")
+    /** {@inheritDoc} */
+    @Override
     public boolean matches(int lineNumber, String line) {
-        if (line.startsWith("PREFIX") &&
-            line.contains("http://cdk.sourceforge.net/model.owl#")) {
+        if (line.startsWith("PREFIX") && line.contains("http://cdk.sourceforge.net/model.owl#")) {
             return true;
         }
         return false;
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.HAS_2D_COORDINATES |
-               DataFeatures.HAS_3D_COORDINATES |
-               DataFeatures.HAS_ATOM_PARTIAL_CHARGES |
-               DataFeatures.HAS_ATOM_FORMAL_CHARGES |
-               DataFeatures.HAS_ATOM_MASS_NUMBERS |
-               DataFeatures.HAS_ATOM_ISOTOPE_NUMBERS |
-               DataFeatures.HAS_GRAPH_REPRESENTATION |
-               DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.HAS_2D_COORDINATES | DataFeatures.HAS_3D_COORDINATES
+                | DataFeatures.HAS_ATOM_PARTIAL_CHARGES | DataFeatures.HAS_ATOM_FORMAL_CHARGES
+                | DataFeatures.HAS_ATOM_MASS_NUMBERS | DataFeatures.HAS_ATOM_ISOTOPE_NUMBERS
+                | DataFeatures.HAS_GRAPH_REPRESENTATION | DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

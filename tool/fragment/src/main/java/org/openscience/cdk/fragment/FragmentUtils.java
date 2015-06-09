@@ -22,8 +22,6 @@
  */
 package org.openscience.cdk.fragment;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -41,7 +39,6 @@ import java.util.List;
  * @author Rajarshi Guha
  * @cdk.module fragment
  */
-@TestClass("org.openscience.cdk.fragment.FragmentUtilsTest")
 public class FragmentUtils {
 
     /**
@@ -49,14 +46,12 @@ public class FragmentUtils {
      *
      * Note that if a ring bond is specified, the resultant list will contain
      * teh opened ring twice.
-     * 
+     *
      * @param atomContainer The molecule to split
      * @param bond The bond to split at
      * @return A list containing the two parts of the molecule
      */
-    @TestMethod("testSplit")
-    protected static List<IAtomContainer> splitMolecule(IAtomContainer atomContainer,
-                                                        IBond bond) {
+    protected static List<IAtomContainer> splitMolecule(IAtomContainer atomContainer, IBond bond) {
         List<IAtomContainer> ret = new ArrayList<IAtomContainer>();
 
         for (IAtom atom : bond.atoms()) {
@@ -64,8 +59,10 @@ public class FragmentUtils {
             // later on we'll want to make sure that the fragment doesn't contain
             // the bond joining the current atom and the atom that is on the other side
             IAtom excludedAtom;
-            if (atom.equals(bond.getAtom(0))) excludedAtom = bond.getAtom(1);
-            else excludedAtom = bond.getAtom(0);
+            if (atom.equals(bond.getAtom(0)))
+                excludedAtom = bond.getAtom(1);
+            else
+                excludedAtom = bond.getAtom(0);
 
             List<IBond> part = new ArrayList<IBond>();
             part.add(bond);
@@ -99,7 +96,6 @@ public class FragmentUtils {
     // at a bond, we need to create an IAtomContainer from it, containing *one* of the atoms
     // of the splitting bond. In addition, the new IAtomContainer should not contain the
     // splitting bond itself
-    @TestMethod("testMakeAtomContainer")
     protected static IAtomContainer makeAtomContainer(IAtom atom, List<IBond> parts, IAtom excludedAtom) {
         IAtomContainer partContainer = atom.getBuilder().newInstance(IAtomContainer.class);
         partContainer.addAtom(atom);
@@ -113,17 +109,13 @@ public class FragmentUtils {
         return partContainer;
     }
 
-    @TestMethod("testTraversal_Chain")
-    protected static List<IBond> traverse(IAtomContainer atomContainer, IAtom atom,
-                                          List<IBond> bondList) {
+    protected static List<IBond> traverse(IAtomContainer atomContainer, IAtom atom, List<IBond> bondList) {
         List<IBond> connectedBonds = atomContainer.getConnectedBondsList(atom);
         for (IBond aBond : connectedBonds) {
-            if (bondList.contains(aBond))
-                continue;
+            if (bondList.contains(aBond)) continue;
             bondList.add(aBond);
             IAtom nextAtom = aBond.getConnectedAtom(atom);
-            if (atomContainer.getConnectedAtomsCount(nextAtom) == 1)
-                continue;
+            if (atomContainer.getConnectedAtomsCount(nextAtom) == 1) continue;
             traverse(atomContainer, nextAtom, bondList);
         }
         return bondList;

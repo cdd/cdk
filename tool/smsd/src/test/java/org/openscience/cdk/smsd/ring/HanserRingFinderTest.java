@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,18 +22,18 @@
  */
 package org.openscience.cdk.smsd.ring;
 
-import java.util.List;
-import org.openscience.cdk.exception.CDKException;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collection;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
+import java.util.List;
+
+import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smsd.algorithm.vflib.Molecules;
+
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -55,6 +54,7 @@ public class HanserRingFinderTest {
         Collection result = instance.findRings(molecule);
         assertEquals(expResult, result);
     }
+
     private HanserRingFinder finder;
 
     @Before

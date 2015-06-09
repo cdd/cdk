@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -32,57 +30,53 @@ import org.openscience.cdk.tools.DataFeatures;
  * @cdk.module test-ioformats
  */
 abstract public class ChemFormatTest extends ResourceFormatTest {
-    
+
     private IChemFormat chemFormat;
-    
+
     public void setChemFormat(IChemFormat format) {
         super.setResourceFormat(format);
         this.chemFormat = format;
     }
-    
-    @Test public void testChemFormatSet() {
-        Assert.assertNotNull(
-            "You must use setChemFormat() to set the IChemFormat object.",
-            chemFormat
-        );
+
+    @Test
+    public void testChemFormatSet() {
+        Assert.assertNotNull("You must use setChemFormat() to set the IChemFormat object.", chemFormat);
     }
 
-    @Test public void testGetReaderClassName() throws Exception {
+    @Test
+    public void testGetReaderClassName() throws Exception {
         // two valid output options: NULL and non-zero, existing class
         if (chemFormat.getReaderClassName() != null) {
             String readerClass = chemFormat.getReaderClassName();
-            Assert.assertNotSame(
-                "Reader Class name String must be of non-zero length",
-                0, readerClass.length()
-            );
+            Assert.assertNotSame("Reader Class name String must be of non-zero length", 0, readerClass.length());
             Class<?> reader = Class.forName(readerClass);
             Assert.assertNotNull(reader);
         }
     }
-    
-    @Test public void testGetWriterClassName() throws Exception {
+
+    @Test
+    public void testGetWriterClassName() throws Exception {
         // two valid output options: NULL and non-zero, existing class
         if (chemFormat.getWriterClassName() != null) {
             String writerClass = chemFormat.getWriterClassName();
-            Assert.assertNotSame(
-                "Writer Class name String must be of non-zero length",
-                0, writerClass.length()
-            );
+            Assert.assertNotSame("Writer Class name String must be of non-zero length", 0, writerClass.length());
             Class<?> writer = Class.forName(writerClass);
             Assert.assertNotNull(writer);
         }
     }
 
-    @Test public void testGetSupportedDataFeatures() {
+    @Test
+    public void testGetSupportedDataFeatures() {
         int supported = chemFormat.getSupportedDataFeatures();
         Assert.assertTrue(supported >= DataFeatures.NONE);
-        Assert.assertTrue(supported <= 1<<13); // 13 features, so: all summed <= 1<<13
+        Assert.assertTrue(supported <= 1 << 13); // 13 features, so: all summed <= 1<<13
     }
 
-    @Test public void testGetRequiredDataFeatures() {
+    @Test
+    public void testGetRequiredDataFeatures() {
         int required = chemFormat.getRequiredDataFeatures();
         Assert.assertTrue(required >= DataFeatures.NONE);
-        Assert.assertTrue(required <= 1<<13); // 13 features, so: all summed <= 1<<13
+        Assert.assertTrue(required <= 1 << 13); // 13 features, so: all summed <= 1<<13
 
         // test that the required features is a subset of the supported features
         int supported = chemFormat.getSupportedDataFeatures();

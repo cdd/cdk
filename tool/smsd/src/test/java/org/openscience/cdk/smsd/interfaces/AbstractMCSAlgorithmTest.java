@@ -27,7 +27,7 @@ import org.junit.Test;
 /**
  * Unit test class to be extended by test classes for classes that
  * implement the {@link AbstractMCSAlgorithm} interface.
- * 
+ *
  * @author     egonw
  * @cdk.module test-smsd
  */
@@ -48,9 +48,7 @@ public abstract class AbstractMCSAlgorithmTest {
      */
     @Test
     public void testIsMCSAlgorithmSet() {
-        Assert.assertNotNull(
-                "The extending class has not set an IMCSAlgorithm with the"
-                + "setMCSAlgorithm() method.",
+        Assert.assertNotNull("The extending class has not set an IMCSAlgorithm with the" + "setMCSAlgorithm() method.",
                 AbstractMCSAlgorithmTest.algorithm);
     }
 

@@ -22,8 +22,6 @@
  */
 package org.openscience.cdk.geometry.cip;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -35,17 +33,14 @@ import org.openscience.cdk.interfaces.IBond;
  * @cdk.module cip
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.geometry.cip.LigandTest")
 public class Ligand implements ILigand {
 
     private IAtomContainer container;
-    private IAtom centralAtom;
-    private IAtom ligandAtom;
-    private VisitedAtoms visitedAtoms;
+    private IAtom          centralAtom;
+    private IAtom          ligandAtom;
+    private VisitedAtoms   visitedAtoms;
 
-    @TestMethod("testConstructorAndGetMethods")
-    public Ligand(IAtomContainer container, VisitedAtoms visitedAtoms,
-            IAtom centralAtom, IAtom ligandAtom) {
+    public Ligand(IAtomContainer container, VisitedAtoms visitedAtoms, IAtom centralAtom, IAtom ligandAtom) {
         this.container = container;
         this.centralAtom = centralAtom;
         this.ligandAtom = ligandAtom;
@@ -59,40 +54,40 @@ public class Ligand implements ILigand {
      *
      * @return the IAtomContainer
      */
-    @TestMethod("testConstructorAndGetMethods")
+    @Override
     public IAtomContainer getAtomContainer() {
         return container;
     }
-    
+
     /**
      * The central {@link IAtom} to which this ligand is connected via one {@link IBond}.
      *
      * @return the central atom
      */
-    @TestMethod("testConstructorAndGetMethods")
+    @Override
     public IAtom getCentralAtom() {
         return centralAtom;
     }
-    
+
     /**
      * {@link IAtom} of the ligand that is connected to the chiral {@link IAtom} via
      * one {@link IBond}.
      *
      * @return the ligand atom
      */
-    @TestMethod("testConstructorAndGetMethods")
+    @Override
     public IAtom getLigandAtom() {
         return ligandAtom;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testVisitedTracking")
+    /** {@inheritDoc} */
+    @Override
     public VisitedAtoms getVisitedAtoms() {
         return visitedAtoms;
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testVisitedTracking")
+    /** {@inheritDoc} */
+    @Override
     public boolean isVisited(IAtom atom) {
         return visitedAtoms.isVisited(atom);
     }

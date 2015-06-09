@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,12 +22,13 @@
  */
 package org.openscience.cdk.smsd.helper;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -38,31 +38,25 @@ import static org.junit.Assert.*;
  */
 public class BinaryTreeTest {
 
-    public BinaryTreeTest() {
-    }
+    public BinaryTreeTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of getValue method, of class BinaryTree.
      */
     @Test
     public void testGetValue() {
-        System.out.println("getValue");
         BinaryTree instance = new BinaryTree(15);
         int expResult = 15;
         int result = instance.getValue();
@@ -74,7 +68,6 @@ public class BinaryTreeTest {
      */
     @Test
     public void testGetEqual() {
-        System.out.println("getEqual");
         BinaryTree instance = new BinaryTree(15);
         BinaryTree equal = new BinaryTree(15);
         instance.setEqual(equal);
@@ -89,7 +82,6 @@ public class BinaryTreeTest {
      */
     @Test
     public void testSetEqual() {
-        System.out.println("setEqual");
         BinaryTree instance = new BinaryTree(15);
         BinaryTree equal = new BinaryTree(15);
         instance.setEqual(equal);
@@ -104,7 +96,6 @@ public class BinaryTreeTest {
      */
     @Test
     public void testGetNotEqual() {
-        System.out.println("getNotEqual");
         BinaryTree instance = new BinaryTree(15);
         BinaryTree equal = new BinaryTree(15);
         BinaryTree notEqual = new BinaryTree(10);
@@ -120,7 +111,6 @@ public class BinaryTreeTest {
      */
     @Test
     public void testSetNotEqual() {
-        System.out.println("setNotEqual");
         BinaryTree instance = new BinaryTree(15);
         BinaryTree equal = new BinaryTree(15);
         BinaryTree notEqual = new BinaryTree(10);

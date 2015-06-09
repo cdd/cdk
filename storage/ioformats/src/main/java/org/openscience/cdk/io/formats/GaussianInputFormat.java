@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,70 +18,71 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * See <a href="http://www.gaussian.com/g_ur/m_input.htm">here</a>.
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.GaussianInputFormatTest")
 public class GaussianInputFormat extends AbstractResourceFormat implements IChemFormat {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public GaussianInputFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new GaussianInputFormat();
-    	return myself;
+        if (myself == null) myself = new GaussianInputFormat();
+        return myself;
     }
-    
-    @TestMethod("testGetFormatName")
+
+    @Override
     public String getFormatName() {
         return "Gaussian Input";
     }
 
-    @TestMethod("testGetMIMEType")
+    @Override
     public String getMIMEType() {
         return "chemical/x-gaussian-input";
     }
-    @TestMethod("testGetPreferredNameExtension")
+
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
-    @TestMethod("testGetNameExtensions")
+
+    @Override
     public String[] getNameExtensions() {
-        return new String[]{"gau","com"};
+        return new String[]{"gau", "com"};
     }
 
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { return null; }
-    @TestMethod("testGetWriterClassName")
+    @Override
+    public String getReaderClassName() {
+        return null;
+    }
+
+    @Override
     public String getWriterClassName() {
-      return "org.openscience.cdk.io.program.GaussianInputWriter";
+        return "org.openscience.cdk.io.program.GaussianInputWriter";
     }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testIsXMLBased")
+    /** {@inheritDoc} */
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
+    /** {@inheritDoc} */
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-    /** {@inheritDoc} */ @Override
-	@TestMethod("testGetRequiredDataFeatures")
+    /** {@inheritDoc} */
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

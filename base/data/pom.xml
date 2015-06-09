@@ -7,7 +7,7 @@
     <parent>
         <artifactId>cdk-base</artifactId>
         <groupId>org.openscience.cdk</groupId>
-        <version>1.5.6-SNAPSHOT</version>
+        <version>1.5.11-SNAPSHOT</version>
     </parent>
 
     <artifactId>cdk-data</artifactId>
@@ -17,7 +17,6 @@
         <dependency>
             <groupId>java3d</groupId>
             <artifactId>vecmath</artifactId>
-            <version>1.5.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -32,11 +31,6 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cdk-annotation</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -80,5 +74,27 @@
             <scope>test</scope>            
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>/pmd/custom-data.xml</ruleset>
+                    </rulesets>
+                </configuration>
+                <dependencies>
+                  <dependency>
+                      <groupId>org.openscience.cdk</groupId>
+                      <artifactId>cdk-build-utils</artifactId>
+                      <version>1.0.1</version>
+                  </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

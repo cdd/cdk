@@ -47,7 +47,6 @@
  */
 package org.openscience.cdk.smsd.algorithm.vflib.interfaces;
 
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.interfaces.IAtom;
 
 /**
@@ -57,7 +56,6 @@ import org.openscience.cdk.interfaces.IAtom;
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
 
-@TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public interface IQuery {
 
     /**
@@ -95,7 +93,7 @@ public interface IQuery {
 
     /**
      * Returns an edge associated between two nodes.
-     * 
+     *
      * @param source get an between source.
      * @param target and target.
      * @return IEdge egde between source and target.

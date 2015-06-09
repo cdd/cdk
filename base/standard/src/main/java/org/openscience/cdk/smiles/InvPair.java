@@ -27,8 +27,6 @@
  *  */
 package org.openscience.cdk.smiles;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.math.Primes;
@@ -40,33 +38,30 @@ import org.openscience.cdk.math.Primes;
  * @cdk.module standard
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.smiles.InvPairTest")
-public class InvPair implements java.io.Serializable{
+public class InvPair implements java.io.Serializable {
 
-    private static final long serialVersionUID = -1397634098919863122L;
+    private static final long  serialVersionUID = -1397634098919863122L;
 
-  /** The description used to set the invariance numbers in the atom's property*/
-  public final static String INVARIANCE_PAIR = "InvariancePair";
-  public final static String CANONICAL_LABEL = "CanonicalLabel";
+    /** The description used to set the invariance numbers in the atom's property*/
+    public final static String INVARIANCE_PAIR  = "InvariancePair";
+    public final static String CANONICAL_LABEL  = "CanonicalLabel";
 
-  private long last = 0;
+    private long               last             = 0;
 
-  private long curr = 0;
+    private long               curr             = 0;
 
-  private IAtom atom;
+    private IAtom              atom;
 
-  private int prime;
+    private int                prime;
 
-  public InvPair() {
-  }
+    public InvPair() {}
 
-  public InvPair(long current, IAtom atom){
-    curr = current;
-    this.atom = atom;
-    atom.setProperty(INVARIANCE_PAIR, this);
-  }
+    public InvPair(long current, IAtom atom) {
+        curr = current;
+        this.atom = atom;
+        atom.setProperty(INVARIANCE_PAIR, this);
+    }
 
-    @TestMethod("testGetLast")
     public long getLast() {
         return last;
     }
@@ -83,7 +78,6 @@ public class InvPair implements java.io.Serializable{
      * @see #getCurr()
      * @see #setPrime()
      */
-    @TestMethod("testSetCurr_long")
     public void setCurr(long newCurr) {
         curr = newCurr;
     }
@@ -96,7 +90,6 @@ public class InvPair implements java.io.Serializable{
      * @see #setPrime()
      * @see #getPrime()
      */
-    @TestMethod("testGetCurr")
     public long getCurr() {
         return curr;
     }
@@ -107,33 +100,29 @@ public class InvPair implements java.io.Serializable{
      * @param object An instance of InvPair
      * @return true if they are equal, false otherwise
      */
-    @TestMethod("testEquals_Object")
+    @Override
     public boolean equals(Object object) {
         if (object instanceof InvPair) {
             InvPair o = (InvPair) object;
-//      logger.debug("Last " + last + "o.last " + o.getLast() + " curr " + curr + " o.curr " + o.getCurr() + " equals " +(last == o.getLast() && curr == o.getCurr()));
+            //      logger.debug("Last " + last + "o.last " + o.getLast() + " curr " + curr + " o.curr " + o.getCurr() + " equals " +(last == o.getLast() && curr == o.getCurr()));
             return (last == o.getLast() && curr == o.getCurr());
         } else {
             return false;
         }
     }
 
-    @TestMethod("testSetLast_long")
     public void setLast(long newLast) {
         last = newLast;
     }
 
-    @TestMethod("testSetAtom_IAtom")
     public void setAtom(IAtom newAtom) {
         atom = newAtom;
     }
 
-    @TestMethod("testGetAtom")
     public IAtom getAtom() {
         return atom;
     }
 
-    @TestMethod("testCommit")
     public void commit() {
         atom.setProperty(CANONICAL_LABEL, Long.valueOf(curr));
     }
@@ -143,11 +132,11 @@ public class InvPair implements java.io.Serializable{
      *
      * @return The string representation of the class.
      */
-    @TestMethod("testToString")
+    @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer();
+        StringBuilder buff = new StringBuilder();
         buff.append(curr);
-        buff.append("\t");
+        buff.append('\t');
         return buff.toString();
     }
 
@@ -157,7 +146,6 @@ public class InvPair implements java.io.Serializable{
      * @return The current prime number
      * @see #setPrime()
      */
-    @TestMethod("testGetPrime")
     public int getPrime() {
         return prime;
     }
@@ -172,7 +160,6 @@ public class InvPair implements java.io.Serializable{
      * @see #setCurr(long)
      * @see #getPrime()
      */
-    @TestMethod("testSetPrime")
     public void setPrime() {
         prime = Primes.getPrimeAt((int) curr - 1);
     }

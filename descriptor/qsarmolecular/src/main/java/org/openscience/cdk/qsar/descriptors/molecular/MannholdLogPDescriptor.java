@@ -6,20 +6,18 @@
  * the terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 2.1 of the License, or (at your option)
  * any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. 
+ * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Elements;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -45,26 +43,20 @@ import org.openscience.cdk.qsar.result.IDescriptorResult;
  * @cdk.keyword LogP
  * @cdk.keyword descriptor
  */
-@TestClass(
-    "org.openscience.cdk.qsar.descriptors.molecular.MannholdLogPDescriptorTest"
-)
 public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
-    private static final String[] names = {"MLogP"};
+    private static final String[] NAMES = {"MLogP"};
 
     /**
      * Gets the specification attribute of the MannholdLogPDescriptor object.
      *
      * @return    The specification value
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
-        return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/" +
-            "chemoinformatics-algorithms/#mannholdLogP",
-            this.getClass().getName(),
-            "The Chemistry Development Kit"
-        );
+        return new DescriptorSpecification("http://www.blueobelisk.org/ontologies/"
+                + "chemoinformatics-algorithms/#mannholdLogP", this.getClass().getName(),
+                "The Chemistry Development Kit");
     }
 
     /**
@@ -73,10 +65,10 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      *
      * @param  params            The new parameter value
      * @exception  CDKException  Exception throw when invalid parameter values
-     *                           are passed 
+     *                           are passed
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params != null && params.length > 0) {
             throw new CDKException("MannholdLogPDescriptor has no parameters.");
@@ -89,22 +81,20 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      * @return    A zero-length Object array.
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return new Object[0];
     }
 
-    @TestMethod("testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
+        return NAMES;
     }
 
     private DescriptorValue getDummyDescriptorValue(Exception e) {
-         return new DescriptorValue(getSpecification(), getParameterNames(),
-             getParameters(), new DoubleResult(Double.NaN),
-             getDescriptorNames(), e
-         );
-     }
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                Double.NaN), getDescriptorNames(), e);
+    }
 
     /**
      *  Calculates the Mannhold LogP for an atom container.
@@ -113,15 +103,15 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      *                            descriptor value for.
      * @return A descriptor value wrapping a {@link DoubleResult}.
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer atomContainer) {
         IAtomContainer ac = null;
         try {
-            ac = (IAtomContainer)atomContainer.clone();
+            ac = (IAtomContainer) atomContainer.clone();
         } catch (CloneNotSupportedException e) {
             return getDummyDescriptorValue(e);
         }
-        
+
         int carbonCount = 0;
         int heteroCount = 0;
         for (IAtom atom : ac.atoms()) {
@@ -133,12 +123,10 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
                 }
             }
         }
-        double mLogP = 1.46 + 0.11*carbonCount - 0.11*heteroCount;
+        double mLogP = 1.46 + 0.11 * carbonCount - 0.11 * heteroCount;
 
-        return new DescriptorValue(
-            getSpecification(), getParameterNames(), getParameters(),
-            new DoubleResult(mLogP), getDescriptorNames()
-        );
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(mLogP),
+                getDescriptorNames());
     }
 
     /**
@@ -146,7 +134,7 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      *
      * @return returns a {@link DoubleResult}.
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleResultType();
     }
@@ -156,7 +144,7 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      *
      * @return    A zero-length String array.
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -168,10 +156,9 @@ public class MannholdLogPDescriptor extends AbstractMolecularDescriptor implemen
      * @param  name  Name of the parameter for which the type is requested.
      * @return       The parameterType of the given parameter.
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 
 }
-

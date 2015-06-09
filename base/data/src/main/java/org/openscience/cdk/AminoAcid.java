@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
+/* Copyright (C) 2005-2007  Egon Willighagen <e.willighagen@science.ru.nl>
  *
- * Copyright (C) 2005-2007  Egon Willighagen <e.willighagen@science.ru.nl>
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -30,7 +28,7 @@ import org.openscience.cdk.interfaces.IAminoAcid;
 import org.openscience.cdk.interfaces.IAtom;
 
 /**
- * A AminoAcid is Monomer which stores additional amino acid specific 
+ * A AminoAcid is Monomer which stores additional amino acid specific
  * informations, like the N-terminus atom.
  *
  * @cdk.module data
@@ -49,13 +47,13 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      * of this class is incompatible with the old version. See Sun docs
      * for <a href=http://java.sun.com/products/jdk/1.1/docs/guide
      * /serialization/spec/version.doc.html>details</a>.
-	 */
-	private static final long serialVersionUID = -5032283549467862509L;
-	
-	/** The atom that constitutes the N-terminus. */
-    private IAtom nTerminus;
+     */
+    private static final long serialVersionUID = -5032283549467862509L;
+
+    /** The atom that constitutes the N-terminus. */
+    private IAtom             nTerminus;
     /** The atom that constitutes the C-terminus. */
-    private IAtom cTerminus;
+    private IAtom             cTerminus;
 
     /**
      * Constructs a new AminoAcid.
@@ -63,7 +61,7 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
     public AminoAcid() {
         super();
     }
-    
+
     /**
      * Retrieves the N-terminus atom.
      *
@@ -71,6 +69,7 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      *
      * @see    #addNTerminus(IAtom)
      */
+    @Override
     public IAtom getNTerminus() {
         return nTerminus;
     }
@@ -82,11 +81,12 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      *
      * @see    #getNTerminus
      */
+    @Override
     public void addNTerminus(IAtom atom) {
         super.addAtom(atom);
         nTerminus = atom;
     }
-    
+
     /**
      * Marks an Atom as being the N-terminus atom. It assumes that the Atom
      * is already added to the AminoAcid.
@@ -106,6 +106,7 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      *
      * @see    #addCTerminus(IAtom)
      */
+    @Override
     public IAtom getCTerminus() {
         return cTerminus;
     }
@@ -117,6 +118,7 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      *
      * @see    #getCTerminus
      */
+    @Override
     public void addCTerminus(IAtom atom) {
         super.addAtom(atom);
         setCTerminus(atom);
@@ -139,25 +141,25 @@ public class AminoAcid extends Monomer implements IAminoAcid, Serializable, Clon
      *
      * @return    The cloned object
      */
+    @Override
     public IAminoAcid clone() throws CloneNotSupportedException {
         AminoAcid clone = (AminoAcid) super.clone();
         // copying the new N-terminus and C-terminus pointers
-        if (getNTerminus() != null)
-        	clone.setNTerminus(clone.getAtom(getAtomNumber(getNTerminus())));
-        if (getCTerminus() != null)
-        	clone.setCTerminus(clone.getAtom(getAtomNumber(getCTerminus())));
+        if (getNTerminus() != null) clone.setNTerminus(clone.getAtom(getAtomNumber(getNTerminus())));
+        if (getCTerminus() != null) clone.setCTerminus(clone.getAtom(getAtomNumber(getCTerminus())));
         return clone;
     }
-    
+
+    @Override
     public String toString() {
         StringBuffer stringContent = new StringBuffer(32);
         stringContent.append("AminoAcid(");
         stringContent.append(this.hashCode());
         if (nTerminus != null) {
-        	stringContent.append(", N:").append(nTerminus.toString());
+            stringContent.append(", N:").append(nTerminus.toString());
         }
         if (cTerminus != null) {
-        	stringContent.append(", C:").append(cTerminus.toString());
+            stringContent.append(", C:").append(cTerminus.toString());
         }
         stringContent.append(", ").append(super.toString());
         stringContent.append(')');

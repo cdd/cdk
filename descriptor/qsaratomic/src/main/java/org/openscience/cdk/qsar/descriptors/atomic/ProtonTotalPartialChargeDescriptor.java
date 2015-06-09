@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.charges.GasteigerMarsiliPartialCharges;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -53,19 +45,16 @@ import java.util.List;
  * @cdk.set qsar-descriptors
  * @cdk.dictref qsar-descriptors:protonPartialCharge
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.ProtonTotalPartialChargeDescriptorTest")
 public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
-    private GasteigerMarsiliPartialCharges peoe = null;
-    private List<IAtom> neighboors;
-    private final int MAX_PROTON_COUNT = 5;
-
+    private GasteigerMarsiliPartialCharges peoe             = null;
+    private List<IAtom>                    neighboors;
+    private final int                      MAX_PROTON_COUNT = 5;
 
     /**
      *  Constructor for the ProtonTotalPartialChargeDescriptor object
      */
-    public ProtonTotalPartialChargeDescriptor() { }
-
+    public ProtonTotalPartialChargeDescriptor() {}
 
     /**
      *  Gets the specification attribute of the ProtonTotalPartialChargeDescriptor
@@ -73,23 +62,20 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
      *
      *@return    The specification value
      */
-    @TestMethod(value="testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#protonPartialCharge",
-            this.getClass().getName(),
-            "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#protonPartialCharge", this
+                        .getClass().getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * This descriptor does not have any parameter to be set.
      */
-    @TestMethod(value="testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
-    	// no parameters
+        // no parameters
     }
-
 
     /**
      *  Gets the parameters attribute of the ProtonTotalPartialChargeDescriptor
@@ -98,26 +84,26 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
      *@return    The parameters value
      *@see #setParameters
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-       String[] labels = new String[MAX_PROTON_COUNT];
+        String[] labels = new String[MAX_PROTON_COUNT];
         for (int i = 0; i < MAX_PROTON_COUNT; i++) {
-            labels[i] = "protonTotalPartialCharge" + (i+1);
+            labels[i] = "protonTotalPartialCharge" + (i + 1);
         }
         return labels;
     }
 
-
     private DescriptorValue getDummyDescriptorValue(Exception e) {
         DoubleArrayResult result = new DoubleArrayResult(MAX_PROTON_COUNT);
-        for (int i = 0; i < neighboors.size() + 1; i++) result.add(Double.NaN);
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                result, getDescriptorNames(), e);
+        for (int i = 0; i < neighboors.size() + 1; i++)
+            result.add(Double.NaN);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), result,
+                getDescriptorNames(), e);
     }
 
     /**
@@ -128,7 +114,7 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
      *@param  ac                AtomContainer
      *@return                   an array of doubles with partial charges of [heavy, proton_1 ... proton_n]
      */
-    @TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer ac) {
         neighboors = ac.getConnectedAtomsList(atom);
 
@@ -157,22 +143,21 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
         DoubleArrayResult protonPartialCharge = new DoubleArrayResult(MAX_PROTON_COUNT);
         assert (neighboors.size() < MAX_PROTON_COUNT);
 
-
         protonPartialCharge.add(localAtom.getCharge());
         int hydrogenNeighbors = 0;
         for (IAtom neighboor : neighboors) {
             if (neighboor.getSymbol().equals("H")) {
-            	hydrogenNeighbors++;
+                hydrogenNeighbors++;
                 protonPartialCharge.add(neighboor.getCharge());
             }
         }
         int remainder = MAX_PROTON_COUNT - (hydrogenNeighbors + 1);
-        for (int i = 0; i < remainder; i++) protonPartialCharge.add(Double.NaN);
+        for (int i = 0; i < remainder; i++)
+            protonPartialCharge.add(Double.NaN);
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                protonPartialCharge, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), protonPartialCharge,
+                getDescriptorNames());
     }
-
 
     /**
      *  Gets the parameterNames attribute of the ProtonTotalPartialChargeDescriptor
@@ -180,11 +165,10 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
      *
      * @return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
-
 
     /**
      *  Gets the parameterType attribute of the ProtonTotalPartialChargeDescriptor
@@ -193,9 +177,8 @@ public class ProtonTotalPartialChargeDescriptor extends AbstractAtomicDescriptor
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

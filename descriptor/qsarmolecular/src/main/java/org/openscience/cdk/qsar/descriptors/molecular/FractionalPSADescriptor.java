@@ -1,7 +1,4 @@
-
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (c) 2014 Collaborative Drug Discovery, Inc. <alex@collaborativedrug.com>
+/* Copyright (c) 2014 Collaborative Drug Discovery, Inc. <alex@collaborativedrug.com>
  *
  * Implemented by Alex M. Clark, produced by Collaborative Drug Discovery, Inc.
  * Made available to the CDK community under the terms of the GNU LGPL.
@@ -31,19 +28,27 @@
 
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.*;
-import org.openscience.cdk.atomtype.*;
-import org.openscience.cdk.config.*;
+import java.io.IOException;
+
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.atomtype.CDKAtomTypeMatcher;
+import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.*;
-import org.openscience.cdk.qsar.*;
-import org.openscience.cdk.qsar.result.*;
-import org.openscience.cdk.tools.*;
-import org.openscience.cdk.tools.manipulator.*;
-import org.openscience.cdk.annotations.*;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomType;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
+import org.openscience.cdk.qsar.DescriptorSpecification;
+import org.openscience.cdk.qsar.DescriptorValue;
+import org.openscience.cdk.qsar.IMolecularDescriptor;
+import org.openscience.cdk.qsar.result.DoubleResult;
+import org.openscience.cdk.qsar.result.DoubleResultType;
+import org.openscience.cdk.qsar.result.IDescriptorResult;
+import org.openscience.cdk.tools.CDKHydrogenAdder;
+import org.openscience.cdk.tools.manipulator.AtomTypeManipulator;
 
 /**
- * Polar surface area expressed as a ratio to molecular size. Calculates <b>tpsaEfficiency</b>, which is 
+ * Polar surface area expressed as a ratio to molecular size. Calculates <b>tpsaEfficiency</b>, which is
  * to {@link TPSADescriptor} / <b>molecular weight</b>, in units of square Angstroms per Dalton.
  *
  * Other related descriptors may also be useful to add, e.g. ratio of polar to hydrophobic surface area.
@@ -56,136 +61,105 @@ import org.openscience.cdk.annotations.*;
  * @cdk.keyword volume
  * @cdk.keyword descriptor
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.FractionalPSADescriptorTest")
-public class FractionalPSADescriptor implements IMolecularDescriptor 
-{
-	public FractionalPSADescriptor()
-	{
-	}
-	
-    @TestMethod("nop")
+public class FractionalPSADescriptor implements IMolecularDescriptor {
+
+    public FractionalPSADescriptor() {}
+
+    @Override
     public void initialise(IChemObjectBuilder builder) {}
 
     /**
      * {@inheritDoc}
      */
-    @TestMethod("nop")
-    public DescriptorSpecification getSpecification() 
-    {
+    @Override
+    public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-            "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#fractionalPSA",
-            this.getClass().getName(),
-            "The Chemistry Development Kit"
-        );
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#fractionalPSA", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
 
     /** {@inheritDoc} */
-    @TestMethod("nop")
-    public void setParameters(Object[] params) throws CDKException 
-    {
-        if (params.length!=0) 
-        {
+    @Override
+    public void setParameters(Object[] params) throws CDKException {
+        if (params.length != 0) {
             throw new CDKException("The FractionalPSADescriptor expects zero parameters");
         }
     }
 
     /** {@inheritDoc} */
-    @TestMethod("nop")
-    public Object[] getParameters()
-    {
+    @Override
+    public Object[] getParameters() {
         return new Object[0];
     }
 
-    @TestMethod("nop")
-    public String[] getDescriptorNames() 
-    {
+    @Override
+    public String[] getDescriptorNames() {
         return new String[]{"tpsaEfficiency"};
     }
 
-    @TestMethod("nop")
-    private DescriptorValue getDummyDescriptorValue(Exception e)
-    {
-        return new DescriptorValue
-        (
-        	getSpecification(),
-        	getParameterNames(),
-            getParameters(),
-            new DoubleResult(Double.NaN),
-            getDescriptorNames(),
-            e
-		);
+    private DescriptorValue getDummyDescriptorValue(Exception e) {
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                Double.NaN), getDescriptorNames(), e);
     }
 
     /**
      * Calculates the topological polar surface area and expresses it as a ratio to molecule size.
-     * 
+     *
      * @param atomContainer The {@link IAtomContainer} whose volume is to be calculated
      * @return descriptor(s) retaining to polar surface area
      */
-    @TestMethod("testDescriptors")
-    public DescriptorValue calculate(IAtomContainer mol)
-    {
-    	try {mol=mol.clone();} catch (CloneNotSupportedException ex) {}
-        double polar=0,weight=0;
-        try 
-        {
-        	// type & assign implicit hydrogens
-        	IChemObjectBuilder builder=mol.getBuilder();
-        	CDKAtomTypeMatcher matcher=CDKAtomTypeMatcher.getInstance(builder);
-		   	for (IAtom atom : mol.atoms())
-		   	{
-            	IAtomType type=matcher.findMatchingAtomType(mol, atom);
-            	AtomTypeManipulator.configure(atom,type);
-			}
-			CDKHydrogenAdder adder=CDKHydrogenAdder.getInstance(builder);
-			adder.addImplicitHydrogens(mol);
-           	
-        	// polar surface area: chain it off the TPSADescriptor
-        	TPSADescriptor tpsa=new TPSADescriptor();
-        	DescriptorValue value=tpsa.calculate(mol);
-        	polar=((DoubleResult)value.getValue()).doubleValue();
-        	
-        	//  molecular weight
-            for (IAtom atom : mol.atoms())
-            {
-                weight+=Isotopes.getInstance().getMajorIsotope(atom.getSymbol()).getExactMass();
-                Integer hcount=atom.getImplicitHydrogenCount();
-                if (hcount!=CDKConstants.UNSET) weight+=hcount*1.00782504;
-            }
+    @Override
+    public DescriptorValue calculate(IAtomContainer mol) {
+        try {
+            mol = mol.clone();
+        } catch (CloneNotSupportedException ex) {
         }
-        catch (Exception exception)
-        {
+        double polar = 0, weight = 0;
+        try {
+            // type & assign implicit hydrogens
+            IChemObjectBuilder builder = mol.getBuilder();
+            CDKAtomTypeMatcher matcher = CDKAtomTypeMatcher.getInstance(builder);
+            for (IAtom atom : mol.atoms()) {
+                IAtomType type = matcher.findMatchingAtomType(mol, atom);
+                AtomTypeManipulator.configure(atom, type);
+            }
+            CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(builder);
+            adder.addImplicitHydrogens(mol);
+
+            // polar surface area: chain it off the TPSADescriptor
+            TPSADescriptor tpsa = new TPSADescriptor();
+            DescriptorValue value = tpsa.calculate(mol);
+            polar = ((DoubleResult) value.getValue()).doubleValue();
+
+            //  molecular weight
+            for (IAtom atom : mol.atoms()) {
+                weight += Isotopes.getInstance().getMajorIsotope(atom.getSymbol()).getExactMass();
+                Integer hcount = atom.getImplicitHydrogenCount();
+                if (hcount != CDKConstants.UNSET) weight += hcount * 1.00782504;
+            }
+        } catch (CDKException | IOException exception) {
             return getDummyDescriptorValue(exception);
         }
-        
-        return new DescriptorValue
-        (
-            getSpecification(),
-            getParameterNames(),
-            getParameters(),
-            new DoubleResult(weight==0 ? 0 : polar/weight),
-            getDescriptorNames()
-        );
+
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(
+                weight == 0 ? 0 : polar / weight), getDescriptorNames());
     }
 
     /** {@inheritDoc} */
-    @TestMethod("nop")
-    public IDescriptorResult getDescriptorResultType()
-    {
+    @Override
+    public IDescriptorResult getDescriptorResultType() {
         return new DoubleResultType();
     }
 
     /** {@inheritDoc} */
-    @TestMethod("nop")
-    public String[] getParameterNames() 
-    {
+    @Override
+    public String[] getParameterNames() {
         return new String[0];
     }
 
     /** {@inheritDoc} */
-    @TestMethod("nop")
-    public Object getParameterType(String name) 
-    {
+    @Override
+    public Object getParameterType(String name) {
         return null;
     }
 }

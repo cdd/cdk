@@ -23,13 +23,15 @@
 
 package org.openscience.cdk.smsd.algorithm.mcsplus;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @cdk.module test-smsd
@@ -37,28 +39,22 @@ import static org.junit.Assert.*;
  */
 public class BKKCKCFTest {
 
-    public BKKCKCFTest() {
-    }
+    public BKKCKCFTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     @Test
     public void testSomeMethod() {
-        System.out.println("BKKCKCF");
         // TODO review the generated test code and remove the default call to fail.
         assertNotNull(new BKKCKCF(new ArrayList<Integer>(), new ArrayList<Integer>(), new ArrayList<Integer>()));
     }

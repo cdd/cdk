@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author: egonw $
- * $Date: 2008-09-10 08:13:15 +0200 (Wed, 10 Sep 2008) $
- * $Revision: 12257 $
- *
- * Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2005-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -32,31 +27,33 @@ import javax.swing.undo.UndoableEdit;
  * An undo adapter for updating the state of the undo components according to
  * the new state of the undo history list. Is registered as a listener to the
  * undoSupport which is receiving the undo/redo events.
- * 
+ *
  * @author      tohel
  * @cdk.module  control
  * @cdk.githash
  */
 public class UndoAdapter implements UndoableEditListener {
 
-	private UndoManager undoManager;
+    private UndoManager undoManager;
 
-	/**
-	 * @param undoManager
-	 *            The undoManager handling the undo/redo history list
-	 */
-	public UndoAdapter(UndoManager undoManager) {
-		this.undoManager = undoManager;
-	}
+    /**
+     * @param undoManager
+     *            The undoManager handling the undo/redo history list
+     */
+    public UndoAdapter(UndoManager undoManager) {
+        this.undoManager = undoManager;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.swing.event.UndoableEditListener#undoableEditHappened(javax.swing.event.UndoableEditEvent)
-	 */
-	public void undoableEditHappened(UndoableEditEvent arg0) {
-		UndoableEdit edit = arg0.getEdit();
-		undoManager.addEdit(edit);
-	}
+    /*
+     * (non-Javadoc)
+     * @see
+     * javax.swing.event.UndoableEditListener#undoableEditHappened(javax.swing
+     * .event.UndoableEditEvent)
+     */
+    @Override
+    public void undoableEditHappened(UndoableEditEvent arg0) {
+        UndoableEdit edit = arg0.getEdit();
+        undoManager.addEdit(edit);
+    }
 
 }

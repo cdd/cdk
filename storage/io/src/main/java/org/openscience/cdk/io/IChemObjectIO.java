@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$  
- *
- * Copyright (C) 1997-2008  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2008  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,7 +22,6 @@
  */
 package org.openscience.cdk.io;
 
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.listener.IChemObjectIOListener;
@@ -63,13 +60,13 @@ public interface IChemObjectIO extends Closeable {
      * @return true, if the {@link IChemObject} can be handled.
      */
     public boolean accepts(Class<? extends IChemObject> classObject);
-    
+
     /**
      * Closes this IChemObjectIO's resources.
      *
      * @throws throws an {@link IOException} when the wrapper IO class cannot be closed.
      */
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException;
 
     /**
@@ -78,7 +75,7 @@ public interface IChemObjectIO extends Closeable {
      * @return the {@link IOSetting}s for this class.
      */
     public IOSetting[] getIOSettings();
-    
+
     /**
      * Adds a {@link IChemObjectIOListener} to this IChemObjectIO.
      *
@@ -200,6 +197,4 @@ public interface IChemObjectIO extends Closeable {
      */
     public Collection<IOSetting> getSettings();
 
-
 }
-

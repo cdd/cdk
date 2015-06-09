@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2002-2007  The Jmol Development Team
+/* Copyright (C) 2002-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -35,14 +30,11 @@ import org.openscience.cdk.io.ReaderEvent;
  */
 public interface IReaderListener extends IChemObjectIOListener {
 
-  /**
-   * Indicates that a new frame has been read.
-   *
-   * @param event information about the event.
-   */
-  public void frameRead(ReaderEvent event);
-  
+    /**
+     * Indicates that a new frame has been read.
+     *
+     * @param event information about the event.
+     */
+    public void frameRead(ReaderEvent event);
+
 }
-
-
-

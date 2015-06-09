@@ -1,7 +1,5 @@
 package org.openscience.cdk.similarity;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -36,7 +34,6 @@ import java.util.Iterator;
  * @cdk.githash
  * @cdk.module fingerprint
  */
-@TestClass("org.openscience.cdk.similarity.DistanceMomentTest")
 public class DistanceMoment {
 
     private static Point3d getGeometricCenter(IAtomContainer atomContainer) throws CDKException {
@@ -88,7 +85,6 @@ public class DistanceMoment {
      * @return A 12 element array containing the descriptors.
      * @throws CDKException if there are no 3D coordinates
      */
-    @TestMethod("testGenerateMoments")
     public static float[] generateMoments(IAtomContainer atomContainer) throws CDKException {
         // lets check if we have 3D coordinates
         Iterator<IAtom> atoms;
@@ -185,7 +181,6 @@ public class DistanceMoment {
         moments[4] = sigma2;
         moments[5] = skewness;
 
-
         mean = mu1(distFct);
         sigma2 = mu2(distFct, mean);
         skewness = mu3(distFct, mean, Math.sqrt(sigma2));
@@ -214,7 +209,6 @@ public class DistanceMoment {
      * @return The similarity between the two molecules (ranging from 0 to 1)
      * @throws CDKException if either molecule does not have 3D coordinates
      */
-    @TestMethod("test3DSim1,test3DSim2")
     public static float calculate(IAtomContainer query, IAtomContainer target) throws CDKException {
         float[] mom1 = generateMoments(query);
         float[] mom2 = generateMoments(target);
@@ -222,6 +216,6 @@ public class DistanceMoment {
         for (int i = 0; i < mom1.length; i++) {
             sum += Math.abs(mom1[i] - mom2[i]);
         }
-        return (float) (1.0 / (1.0 + sum/12.0));
+        return (float) (1.0 / (1.0 + sum / 12.0));
     }
 }

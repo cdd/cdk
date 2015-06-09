@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -29,11 +27,12 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openscience.cdk.config.OWLBasedAtomTypeConfigurator;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -44,20 +43,17 @@ import org.xml.sax.XMLReader;
  * @cdk.module  atomtype
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.config.atomtypes.OWLAtomTypeMappingReaderTest")
 public class OWLAtomTypeMappingReader {
 
-    private XMLReader parser;
-    private Reader input;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(OWLAtomTypeReader.class);
+    private XMLReader           parser;
+    private Reader              input;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(OWLAtomTypeReader.class);
 
     /**
      * Instantiates the XML based AtomTypeReader.
-     * 
+     *
      * @param input The Reader to read the IAtomType's from.
      */
-    @TestMethod("testOWLAtomTypeMappingReader_Reader")
     public OWLAtomTypeMappingReader(Reader input) {
         this.init();
         this.input = input;
@@ -74,7 +70,7 @@ public class OWLAtomTypeMappingReader {
                 parser = saxParser.getXMLReader();
                 logger.info("Using JAXP/SAX XML parser.");
                 success = true;
-            } catch (Exception exception) {
+            } catch (ParserConfigurationException | SAXException exception) {
                 logger.warn("Could not instantiate JAXP/SAX XML reader!");
                 logger.debug(exception);
             }
@@ -82,12 +78,11 @@ public class OWLAtomTypeMappingReader {
         // Xerces is an alternative
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("org.apache.xerces.parsers.SAXParser").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("org.apache.xerces.parsers.SAXParser")
+                        .newInstance();
                 logger.info("Using Xerces XML parser.");
                 success = true;
-            } catch (Exception exception) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException exception) {
                 logger.warn("Could not instantiate Xerces XML reader!");
                 logger.debug(exception);
             }
@@ -102,9 +97,8 @@ public class OWLAtomTypeMappingReader {
      *
      * @return         a Map with atom type mappings. Null, if some reading error occurred.
      */
-    @TestMethod("testReadAtomTypeMappings,testReadAtomTypes_CDK2Sybyl")
-    public Map<String,String> readAtomTypeMappings() {
-    	Map<String,String> mappings = null;
+    public Map<String, String> readAtomTypeMappings() {
+        Map<String, String> mappings = null;
         try {
             parser.setFeature("http://xml.org/sax/features/validation", false);
             logger.info("Deactivated validation");
@@ -118,14 +112,13 @@ public class OWLAtomTypeMappingReader {
             parser.parse(new InputSource(input));
             mappings = handler.getAtomTypeMappings();
         } catch (IOException exception) {
-            logger.error("IOException: ",exception.getMessage());
+            logger.error("IOException: ", exception.getMessage());
             logger.debug(exception);
         } catch (SAXException saxe) {
             logger.error("SAXException: ", saxe.getMessage());
             logger.debug(saxe);
         }
-        return mappings == null ? new HashMap<String,String>() : mappings;
+        return mappings == null ? new HashMap<String, String>() : mappings;
     }
 
 }
-

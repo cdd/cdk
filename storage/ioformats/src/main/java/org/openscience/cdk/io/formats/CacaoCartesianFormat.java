@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,67 +18,70 @@
  */
 package org.openscience.cdk.io.formats;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.tools.DataFeatures;
 
 /**
  * See <a href="http://www.chembio.uoguelph.ca/oakley/310/cacao/cacao.htm">here</a>.
- * 
+ *
  * @author Miguel Rojas
- * 
+ *
  * @cdk.module ioformats
  * @cdk.githash
  * @cdk.set    io-formats
  */
-@TestClass("org.openscience.cdk.io.formats.CacaoCartesianFormatTest")
 public class CacaoCartesianFormat extends AbstractResourceFormat implements IChemFormat {
 
-	private static IResourceFormat myself = null;
-	
+    private static IResourceFormat myself = null;
+
     public CacaoCartesianFormat() {}
-    
-    @TestMethod("testResourceFormatSet")
+
     public static IResourceFormat getInstance() {
-    	if (myself == null) myself = new CacaoCartesianFormat();
-    	return myself;
+        if (myself == null) myself = new CacaoCartesianFormat();
+        return myself;
     }
 
-    @TestMethod("testGetFormatName")
+    @Override
     public String getFormatName() {
         return "Cacao Cartesian";
     }
 
-    @TestMethod("testGetMIMEType")
+    @Override
     public String getMIMEType() {
         return null;
     }
-    @TestMethod("testGetPreferredNameExtension")
+
+    @Override
     public String getPreferredNameExtension() {
         return getNameExtensions()[0];
     }
-    @TestMethod("testGetNameExtensions")
+
+    @Override
     public String[] getNameExtensions() {
         return new String[]{"caccrt"};
     }
 
-    @TestMethod("testGetReaderClassName")
-    public String getReaderClassName() { return null; }
-    @TestMethod("testGetWriterClassName")
-    public String getWriterClassName() { return null; }
+    @Override
+    public String getReaderClassName() {
+        return null;
+    }
 
-	@TestMethod("testIsXMLBased")
+    @Override
+    public String getWriterClassName() {
+        return null;
+    }
+
+    @Override
     public boolean isXMLBased() {
-		return false;
-	}
+        return false;
+    }
 
-	@TestMethod("testGetSupportedDataFeatures")
-	public int getSupportedDataFeatures() {
-		return DataFeatures.NONE;
-	}
+    @Override
+    public int getSupportedDataFeatures() {
+        return DataFeatures.NONE;
+    }
 
-	@TestMethod("testGetRequiredDataFeatures")
+    @Override
     public int getRequiredDataFeatures() {
-		return DataFeatures.NONE;
-	}
+        return DataFeatures.NONE;
+    }
 }

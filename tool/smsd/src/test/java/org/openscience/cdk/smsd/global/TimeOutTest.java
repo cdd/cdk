@@ -21,13 +21,15 @@
  */
 package org.openscience.cdk.smsd.global;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Unit testing for the {@link TimeOut} class.
- * 
+ *
  * @author     egonw
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  *
@@ -55,7 +57,6 @@ public class TimeOutTest {
      */
     @Test
     public void testGetTimeOut() {
-        System.out.println("getTimeOut");
         TimeOut instance = new TimeOut();
         instance.setTimeOut(10);
         double expResult = 10.0;
@@ -68,7 +69,6 @@ public class TimeOutTest {
      */
     @Test
     public void testIsTimeOutFlag() {
-        System.out.println("isTimeOutFlag");
         TimeOut instance = new TimeOut();
         instance.setTimeOut(10);
         instance.setTimeOutFlag(true);
@@ -82,7 +82,6 @@ public class TimeOutTest {
      */
     @Test
     public void testSetTimeOutFlag() {
-        System.out.println("setTimeOutFlag");
         boolean timeOut = true;
         TimeOut instance = new TimeOut();
         instance.setTimeOut(10);

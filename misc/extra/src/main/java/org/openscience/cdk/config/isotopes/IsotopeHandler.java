@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2003-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sf.net
  *
@@ -19,15 +14,13 @@
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
- *  Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ *  Foundation, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.config.isotopes;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IIsotope;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 import org.openscience.cdk.tools.ILoggingTool;
@@ -55,26 +48,23 @@ import org.xml.sax.helpers.DefaultHandler;
  * @cdk.module  extra
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.config.isotopes.IsotopeHandlerTest")
 public class IsotopeHandler extends DefaultHandler {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(IsotopeHandler.class);
-    private String currentChars;
-    private List<IIsotope> isotopes;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(IsotopeHandler.class);
+    private String              currentChars;
+    private List<IIsotope>      isotopes;
 
-    private IIsotope workingIsotope;
-    private String currentElement;
-    private String dictRef;
+    private IIsotope            workingIsotope;
+    private String              currentElement;
+    private String              dictRef;
 
-    private IChemObjectBuilder builder;
+    private IChemObjectBuilder  builder;
 
     /**
      * Constructs an IsotopeHandler used by the IsotopeReader.
      *
      * @param builder The IChemObjectBuilder used to create new IIsotope's.
      */
-    @TestMethod("testIsotopeHandler_IChemObjectBuilder")
     public IsotopeHandler(IChemObjectBuilder builder) {
         this.builder = builder;
     }
@@ -84,26 +74,24 @@ public class IsotopeHandler extends DefaultHandler {
      *
      * @return A List object with all isotopes
      */
-    @TestMethod("testGetIsotopes")
     public List<IIsotope> getIsotopes() {
         return isotopes;
     }
 
     // SAX Parser methods
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testStartDocument")
+    /** {@inheritDoc} */
+    @Override
     public void startDocument() {
         isotopes = new ArrayList<IIsotope>();
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testEndElement_String_String_String")
+    /** {@inheritDoc} */
+    @Override
     public void endElement(String uri, String local, String raw) {
         logger.debug("end element: ", raw);
         if ("isotope".equals(local)) {
-            if (workingIsotope != null)
-                isotopes.add(workingIsotope);
+            if (workingIsotope != null) isotopes.add(workingIsotope);
             workingIsotope = null;
         } else if ("isotopeList".equals(local)) {
             currentElement = null;
@@ -123,10 +111,9 @@ public class IsotopeHandler extends DefaultHandler {
         }
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testEndElement_String_String_String")
-    public void startElement(String uri, String local,
-                             String raw, Attributes atts) {
+    /** {@inheritDoc} */
+    @Override
+    public void startElement(String uri, String local, String raw, Attributes atts) {
         currentChars = "";
         dictRef = "";
         logger.debug("startElement: ", raw);
@@ -146,8 +133,8 @@ public class IsotopeHandler extends DefaultHandler {
         }
     }
 
-    /** {@inheritDoc} */ @Override
-    @TestMethod("testCharacters_arraychar_int_int")
+    /** {@inheritDoc} */
+    @Override
     public void characters(char chars[], int start, int length) {
         currentChars += new String(chars, start, length);
     }
@@ -155,7 +142,7 @@ public class IsotopeHandler extends DefaultHandler {
     private IIsotope createIsotopeOfElement(String currentElement, Attributes atts) {
         IIsotope isotope = builder.newInstance(IIsotope.class, currentElement);
 
-        for (int i = 0; i < atts.getLength(); i++) {            
+        for (int i = 0; i < atts.getLength(); i++) {
             try {
                 if ("id".equals(atts.getQName(i))) {
                     isotope.setID(atts.getValue(i));

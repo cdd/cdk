@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -39,7 +37,6 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  */
 public interface IDeduceBondOrderTool {
 
-	public void saturate(IAtomContainer ac) throws CDKException;
+    public void saturate(IAtomContainer ac) throws CDKException;
 
 }
-

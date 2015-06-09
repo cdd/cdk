@@ -24,7 +24,6 @@ package org.openscience.cdk.smsd.interfaces;
 
 import java.util.List;
 import java.util.Map;
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -37,10 +36,9 @@ import org.openscience.cdk.smsd.tools.MolHandler;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.interfaces.IMCSBaseTest")
 public interface IMCSBase {
 
-    /** 
+    /**
      * Initialise the query and target molecule.
      *
      * @param source source molecule

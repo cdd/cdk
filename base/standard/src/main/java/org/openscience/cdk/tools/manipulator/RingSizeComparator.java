@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$ 
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -29,24 +24,21 @@ package org.openscience.cdk.tools.manipulator;
 
 import java.util.Comparator;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IRing;
 
 /**
  * @cdk.module standard
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.tools.manipulator.RingSizeComparatorTest")
 public class RingSizeComparator implements Comparator<IRing> {
-    
+
     /** Flag to denote that the set is order with the largest ring first */
     public final static int LARGE_FIRST = 1;
     /** Flag to denote that the set is order with the smallest ring first */
     public final static int SMALL_FIRST = 2;
-    
-    int sortOrder = SMALL_FIRST;
-    
+
+    int                     sortOrder   = SMALL_FIRST;
+
     /**
     * Constructs a new comparator to sort rings by size.
     *
@@ -57,9 +49,8 @@ public class RingSizeComparator implements Comparator<IRing> {
         sortOrder = order;
     }
 
-    @TestMethod("testCompare")
-    public int compare(IRing object1, IRing object2) throws ClassCastException
-    {
+    @Override
+    public int compare(IRing object1, IRing object2) throws ClassCastException {
         int size1 = object1.getAtomCount();
         int size2 = object2.getAtomCount();
         if (size1 == size2) return 0;
@@ -78,4 +69,3 @@ public class RingSizeComparator implements Comparator<IRing> {
         return 0;
     }
 }
-

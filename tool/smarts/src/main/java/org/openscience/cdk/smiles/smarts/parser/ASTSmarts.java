@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +18,7 @@
 package org.openscience.cdk.smiles.smarts.parser;
 
 /**
- * An AST node. It represents a sub structure expression in smarts. The 
+ * An AST node. It represents a sub structure expression in smarts. The
  * 'componentId' indicates whether the component level grouping should be
  * applied and which component this expression belongs.
  *
@@ -34,7 +32,7 @@ class ASTSmarts extends SimpleNode {
 
     /** Component level grouping. */
     private int componentId;
-    
+
     /**
      * Creates a new instance.
      */
@@ -52,26 +50,30 @@ class ASTSmarts extends SimpleNode {
     /**
      * Get the component id of this SMARTS expression. The default component is
      * '0' which means 'ungrouped'.
-     * 
+     *
      * @return the component id
      */
     public int componentId() {
         return componentId;
     }
-    
+
     /**
      * Indicate that component-level grouping should applied and this expression
      * belongs to the specified component.
-     * 
+     *
      * @param id the component id
      */
     public void setComponentId(int id) {
         componentId = id;
     }
 
-    /* (non-Javadoc)
-     * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
      */
+    @Override
     public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }

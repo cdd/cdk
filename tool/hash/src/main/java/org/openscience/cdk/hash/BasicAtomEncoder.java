@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomType;
@@ -46,7 +44,6 @@ import org.openscience.cdk.interfaces.IAtomType;
  *      archive</a>
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.BasicAtomEncoderTest")
 public enum BasicAtomEncoder implements AtomEncoder {
 
     /**
@@ -55,11 +52,12 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtom#getAtomicNumber()
      */
     ATOMIC_NUMBER {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testAtomicNumber,testAtomicNumber_Null")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             Integer atomicNumber = atom.getAtomicNumber();
             return atomicNumber != null ? atomicNumber : 32451169;
         }
@@ -70,11 +68,12 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtom#getMassNumber()
      */
     MASS_NUMBER {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testMassNumber,testMassNumber_Null")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             Integer massNumber = atom.getMassNumber();
             return massNumber != null ? massNumber : 32451179;
         }
@@ -86,11 +85,12 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtom#getFormalCharge()
      */
     FORMAL_CHARGE {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testFormalCharge,testFormalCharge_Null")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             Integer formalCharge = atom.getFormalCharge();
             return formalCharge != null ? formalCharge : 32451193;
         }
@@ -101,11 +101,12 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtomContainer#getConnectedAtomsCount(IAtom)
      */
     N_CONNECTED_ATOMS {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testNConnectedAtoms")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             return container.getConnectedAtomsCount(atom);
         }
     },
@@ -115,12 +116,13 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtomContainer#getBondOrderSum(IAtom)
      */
     BOND_ORDER_SUM {
+
         /**
          * @inheritDoc
          */
-        @Override public int encode(IAtom atom, IAtomContainer container) {
-            return ((Double) container.getBondOrderSum(atom))
-                    .hashCode();
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
+            return ((Double) container.getBondOrderSum(atom)).hashCode();
         }
     },
     /**
@@ -129,14 +131,14 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtom#getHybridization()
      */
     ORBITAL_HYBRIDIZATION {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testOrbitalHybridization,testOrbitalHybridization_Null")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             IAtomType.Hybridization hybridization = atom.getHybridization();
-            return hybridization != null ? hybridization.ordinal()
-                                         : 32451301;
+            return hybridization != null ? hybridization.ordinal() : 32451301;
         }
     },
     /**
@@ -145,11 +147,12 @@ public enum BasicAtomEncoder implements AtomEncoder {
      * @see IAtomContainer#getConnectedSingleElectronsCount(IAtom)
      */
     FREE_RADICALS {
+
         /**
          * @inheritDoc
          */
-        @TestMethod("testFreeRadicals")
-        @Override public int encode(IAtom atom, IAtomContainer container) {
+        @Override
+        public int encode(IAtom atom, IAtomContainer container) {
             return container.getConnectedSingleElectronsCount(atom);
         }
     };

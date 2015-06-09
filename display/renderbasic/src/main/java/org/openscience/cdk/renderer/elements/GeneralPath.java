@@ -30,8 +30,6 @@ import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.renderer.elements.path.Close;
 import org.openscience.cdk.renderer.elements.path.CubicTo;
 import org.openscience.cdk.renderer.elements.path.LineTo;
@@ -41,38 +39,37 @@ import org.openscience.cdk.renderer.elements.path.QuadTo;
 
 /**
  * A path of rendering elements from the elements.path package.
- * 
+ *
  * @author Arvid
  * @cdk.module renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.elements.GeneralPathTest")
-public class GeneralPath implements IRenderingElement{
+public class GeneralPath implements IRenderingElement {
 
     /** The color of the path. */
-    public final Color color;
-    
+    public final Color             color;
+
     /** The width of the stroke. */
-    public final double stroke;
+    public final double            stroke;
 
     /** Fill the shape instead of drawing outline. */
-    public final boolean fill;
+    public final boolean           fill;
 
     /** The elements in the path. */
     public final List<PathElement> elements;
 
     /** Winding rule for determining path interior. */
-    public final int winding;
+    public final int               winding;
 
     /**
      * @see PathIterator#WIND_EVEN_ODD
      */
-    public static final int WIND_EVEN_ODD = 0;
+    public static final int        WIND_EVEN_ODD = 0;
 
     /**
      * @see PathIterator#WIND_NON_ZERO
      */
-    public static final int WIND_NON_ZERO = 1;
+    public static final int        WIND_NON_ZERO = 1;
 
     /**
      * Make a path from a list of path elements.
@@ -80,10 +77,9 @@ public class GeneralPath implements IRenderingElement{
      * @param elements the elements that make up the path
      * @param color the color of the path
      */
-    @TestMethod("testConstructor")
     public GeneralPath(List<PathElement> elements, Color color) {
         this(elements, color, WIND_EVEN_ODD, 1, true);
-        
+
     }
 
     /**
@@ -94,21 +90,41 @@ public class GeneralPath implements IRenderingElement{
      */
     private GeneralPath(List<PathElement> elements, Color color, int winding, double stroke, boolean fill) {
         this.elements = elements;
-        this.color    = color;
-        this.winding  = winding;
-        this.fill     = fill;
-        this.stroke   = stroke;
+        this.color = color;
+        this.winding = winding;
+        this.fill = fill;
+        this.stroke = stroke;
+    }
+
+    /**
+     * Recolor the path with the specified color.
+     *
+     * @param newColor new path color
+     * @return the recolored path
+     */
+    public GeneralPath recolor(Color newColor) {
+        return new GeneralPath(elements, newColor, winding, stroke, fill);
+    }
+
+    /**
+     * Outline the general path with the specified stroke size.
+     *
+     * @param newStroke new stroke size
+     * @return the outlined path
+     */
+    public GeneralPath outline(double newStroke) {
+        return new GeneralPath(elements, color, winding, newStroke, false);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testAccept")
+    @Override
     public void accept(IRenderingVisitor v) {
         v.visit(this);
     }
 
     /**
-     * Create a filled path of the specified Java 2D Shape and color. 
-     * 
+     * Create a filled path of the specified Java 2D Shape and color.
+     *
      * @param shape Java 2D shape
      * @param color the color to fill the shape with
      * @return a new general path
@@ -141,7 +157,7 @@ public class GeneralPath implements IRenderingElement{
     }
 
     /**
-     * Create an outline path of the specified Java 2D Shape and color. 
+     * Create an outline path of the specified Java 2D Shape and color.
      *
      * @param shape Java 2D shape
      * @param color the color to draw the outline with

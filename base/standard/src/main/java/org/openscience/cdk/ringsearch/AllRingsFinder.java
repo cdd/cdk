@@ -2,6 +2,7 @@
  *                    2009  Mark Rijnbeek <mark_rynbeek@users.sf.net>
  *                    2013  European Bioinformatics Institute (EMBL-EBI)
  *                          John May <jwmay@users.sf.net>
+ *                    2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,10 +26,7 @@
  */
 package org.openscience.cdk.ringsearch;
 
-import com.google.common.collect.Maps;
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.graph.AllCycles;
 import org.openscience.cdk.graph.GraphUtil;
@@ -38,11 +36,7 @@ import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
-
 
 /**
  * Compute the set of all rings in a molecule. This set includes <i>every</i>
@@ -74,7 +68,6 @@ import static org.openscience.cdk.graph.GraphUtil.EdgeToBondMap;
  * @cdk.keyword all rings
  * @see AllCycles
  */
-@TestClass("org.openscience.cdk.ringsearch.AllRingsFinderTest")
 public final class AllRingsFinder {
 
     /** Precomputed threshold - stops the computation running forever. */
@@ -114,7 +107,6 @@ public final class AllRingsFinder {
      * @see #findAllRings(IAtomContainer, int)
      * @see #findAllRingsInIsolatedRingSystem(IAtomContainer)
      */
-    @TestMethod("testFindAllRings_IAtomContainer,testBondsWithinRing")
     public IRingSet findAllRings(IAtomContainer container) throws CDKException {
         return findAllRings(container, container.getAtomCount());
     }
@@ -131,25 +123,20 @@ public final class AllRingsFinder {
      * @return A RingSet with all rings in the AtomContainer
      * @throws CDKException An exception thrown if the threshold was exceeded
      */
-    public IRingSet findAllRings(IAtomContainer container,
-                                 int maxRingSize) throws CDKException {
+    public IRingSet findAllRings(IAtomContainer container, int maxRingSize) throws CDKException {
 
-        final int m = container.getBondCount();
         final EdgeToBondMap edges = EdgeToBondMap.withSpaceFor(container);
-        final int[][]       graph = GraphUtil.toAdjList(container, edges);
+        final int[][] graph = GraphUtil.toAdjList(container, edges);
 
         RingSearch rs = new RingSearch(container, graph);
 
-        IRingSet ringSet = container.getBuilder()
-                                    .newInstance(IRingSet.class);
+        IRingSet ringSet = container.getBuilder().newInstance(IRingSet.class);
 
         // don't need to run on isolated rings, just need to put vertices in
         // cyclic order
         for (int[] isolated : rs.isolated()) {
             if (isolated.length <= maxRingSize) {
-                IRing ring = toRing(container,
-                                    edges,
-                                    GraphUtil.cycle(graph, isolated));
+                IRing ring = toRing(container, edges, GraphUtil.cycle(graph, isolated));
                 ringSet.addAtomContainer(ring);
             }
         }
@@ -157,23 +144,19 @@ public final class AllRingsFinder {
         // for each set of fused cyclic vertices run the separate search
         for (int[] fused : rs.fused()) {
 
-            AllCycles ac = new AllCycles(GraphUtil.subgraph(graph, fused),
-                                         Math.min(maxRingSize, fused.length),
-                                         threshold.value);
+            AllCycles ac = new AllCycles(GraphUtil.subgraph(graph, fused), Math.min(maxRingSize, fused.length),
+                    threshold.value);
 
-            if (!ac.completed())
-                throw new CDKException("Threshold exceeded for AllRingsFinder");
+            if (!ac.completed()) throw new CDKException("Threshold exceeded for AllRingsFinder");
 
             for (int[] path : ac.paths()) {
-                IRing ring = toRing(container,
-                                    edges, path, fused);
+                IRing ring = toRing(container, edges, path, fused);
                 ringSet.addAtomContainer(ring);
             }
         }
 
         return ringSet;
     }
-
 
     /**
      * Compute all rings in the given {@link IAtomContainer}. No pre-processing
@@ -183,10 +166,8 @@ public final class AllRingsFinder {
      * @return RingSet for the container
      * @throws CDKException An exception thrown if the threshold was exceeded
      */
-    public IRingSet findAllRingsInIsolatedRingSystem(IAtomContainer container) throws
-                                                                               CDKException {
-        return findAllRingsInIsolatedRingSystem(container,
-                                                container.getAtomCount());
+    public IRingSet findAllRingsInIsolatedRingSystem(IAtomContainer container) throws CDKException {
+        return findAllRingsInIsolatedRingSystem(container, container.getAtomCount());
     }
 
     /**
@@ -199,23 +180,16 @@ public final class AllRingsFinder {
      * @return a RingSet containing the rings in molecule
      * @throws CDKException An exception thrown if the threshold was exceeded
      */
-    public IRingSet findAllRingsInIsolatedRingSystem(IAtomContainer atomContainer,
-                                                     int maxRingSize) throws
-                                                                      CDKException {
+    public IRingSet findAllRingsInIsolatedRingSystem(IAtomContainer atomContainer, int maxRingSize) throws CDKException {
 
-        final int m = atomContainer.getBondCount();
         final EdgeToBondMap edges = EdgeToBondMap.withSpaceFor(atomContainer);
-        final int[][]       graph = GraphUtil.toAdjList(atomContainer, edges);
+        final int[][] graph = GraphUtil.toAdjList(atomContainer, edges);
 
-        AllCycles ac = new AllCycles(graph,
-                                     maxRingSize,
-                                     threshold.value);
+        AllCycles ac = new AllCycles(graph, maxRingSize, threshold.value);
 
-        if (!ac.completed())
-            throw new CDKException("Threshold exceeded for AllRingsFinder");
+        if (!ac.completed()) throw new CDKException("Threshold exceeded for AllRingsFinder");
 
-        IRingSet ringSet = atomContainer.getBuilder()
-                                        .newInstance(IRingSet.class);
+        IRingSet ringSet = atomContainer.getBuilder().newInstance(IRingSet.class);
 
         for (int[] path : ac.paths()) {
             ringSet.addAtomContainer(toRing(atomContainer, edges, path));
@@ -232,12 +206,10 @@ public final class AllRingsFinder {
      * @throws CDKException The exception thrown in case of hitting the timeout
      * @deprecated timeout not used
      */
-    @TestMethod("testCheckTimeout")
     @Deprecated
     public void checkTimeout() throws CDKException {
         // unused
     }
-
 
     /**
      * Sets the timeout value in milliseconds of the AllRingsFinder object This
@@ -248,14 +220,11 @@ public final class AllRingsFinder {
      * @return a reference to the instance this method was called for
      * @deprecated use the new threshold (during construction)
      */
-    @TestMethod("testSetTimeout_long")
     @Deprecated
     public AllRingsFinder setTimeout(long timeout) {
-        System.err.println("AllRingsFinder.setTimeout() is not used, please" +
-                                   "use the new threshold values");
+        System.err.println("AllRingsFinder.setTimeout() is not used, please " + "use the new threshold values");
         return this;
     }
-
 
     /**
      * Gets the timeout values in milliseconds of the AllRingsFinder object
@@ -263,7 +232,6 @@ public final class AllRingsFinder {
      * @return The timeout value
      * @deprecated timeout not used
      */
-    @TestMethod("testGetTimeout")
     @Deprecated
     public long getTimeout() {
         return 0;
@@ -278,9 +246,7 @@ public final class AllRingsFinder {
      *                  same
      * @return a new ring
      */
-    private IRing toRing(IAtomContainer container,
-                         EdgeToBondMap edges,
-                         int[] cycle) {
+    private IRing toRing(IAtomContainer container, EdgeToBondMap edges, int[] cycle) {
         IRing ring = container.getBuilder().newInstance(IRing.class, 0);
 
         int len = cycle.length - 1;
@@ -310,10 +276,7 @@ public final class AllRingsFinder {
      *                  same
      * @return a new ring
      */
-    private IRing toRing(IAtomContainer container,
-                         EdgeToBondMap edges,
-                         int[] cycle,
-                         int[] mapping) {
+    private IRing toRing(IAtomContainer container, EdgeToBondMap edges, int[] cycle, int[] mapping) {
         IRing ring = container.getBuilder().newInstance(IRing.class, 0);
 
         int len = cycle.length - 1;
@@ -323,8 +286,7 @@ public final class AllRingsFinder {
 
         for (int i = 0; i < len; i++) {
             atoms[i] = container.getAtom(mapping[cycle[i]]);
-            bonds[i] = edges.get(mapping[cycle[i]],
-                                 mapping[cycle[i + 1]]);
+            bonds[i] = edges.get(mapping[cycle[i]], mapping[cycle[i + 1]]);
             atoms[i].setFlag(CDKConstants.ISINRING, true);
         }
 
@@ -435,4 +397,3 @@ public final class AllRingsFinder {
         return new AllRingsFinder(threshold);
     }
 }
-

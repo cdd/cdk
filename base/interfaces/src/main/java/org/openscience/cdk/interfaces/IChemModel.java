@@ -1,26 +1,26 @@
 /* Copyright (C) 2006-2007,2011  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.interfaces;
 
-/** 
- * An object containing multiple MoleculeSet and 
- * the other lower level concepts like rings, sequences, 
+/**
+ * An object containing multiple MoleculeSet and
+ * the other lower level concepts like rings, sequences,
  * fragments, etc.
  *
  * @cdk.module interfaces
@@ -28,37 +28,37 @@ package org.openscience.cdk.interfaces;
  */
 public interface IChemModel extends IChemObject {
 
-	/**
-	 * Returns the IAtomContainerSet of this ChemModel.
-	 *
-	 * @return   The {@link IAtomContainerSet} of this ChemModel
+    /**
+     * Returns the IAtomContainerSet of this ChemModel.
+     *
+     * @return   The {@link IAtomContainerSet} of this ChemModel
      * @see      #setMoleculeSet
-	 */
-	public IAtomContainerSet getMoleculeSet();
+     */
+    public IAtomContainerSet getMoleculeSet();
 
-	/**
-	 * Sets the IAtomContainerSet of this ChemModel.
-	 *
-	 * @param   setOfMolecules  the content of this model
+    /**
+     * Sets the IAtomContainerSet of this ChemModel.
+     *
+     * @param   setOfMolecules  the content of this model
      * @see      #getMoleculeSet
-	 */
-	public void setMoleculeSet(IAtomContainerSet setOfMolecules);	
+     */
+    public void setMoleculeSet(IAtomContainerSet setOfMolecules);
 
-	/**
-	 * Returns the RingSet of this ChemModel.
-	 *
-	 * @return the ringset of this model
+    /**
+     * Returns the RingSet of this ChemModel.
+     *
+     * @return the ringset of this model
      * @see      #setRingSet
-	 */
-	public IRingSet getRingSet();
+     */
+    public IRingSet getRingSet();
 
-	/**
-	 * Sets the RingSet of this ChemModel.
-	 *
-	 * @param   ringSet         the content of this model
+    /**
+     * Sets the RingSet of this ChemModel.
+     *
+     * @param   ringSet         the content of this model
      * @see      #getRingSet
-	 */
-	public void setRingSet(IRingSet ringSet);
+     */
+    public void setRingSet(IRingSet ringSet);
 
     /**
      * Gets the Crystal contained in this ChemModel.
@@ -94,10 +94,9 @@ public interface IChemModel extends IChemObject {
 
     /**
      * Returns true if this ChemModel is empty.
-     * 
+     *
      * @return a boolean indicating if this model has no content
      */
     public boolean isEmpty();
 
 }
-

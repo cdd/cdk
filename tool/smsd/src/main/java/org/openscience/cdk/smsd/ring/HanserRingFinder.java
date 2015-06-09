@@ -72,11 +72,11 @@ import org.openscience.cdk.interfaces.IRingSet;
  * The paths that join source and sink node are step by step fused and the joined
  * nodes are deleted from the path graph (collapsed path). What remains is a graph
  * of paths that have the same start and endpoint and are thus rings (source=sink=ring).
- * 
+ *
  * @cdk.module smsd
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk> 2009-2010
- * 
+ *
  */
 public class HanserRingFinder implements RingFinder {
 
@@ -88,14 +88,14 @@ public class HanserRingFinder implements RingFinder {
 
     /**
      * Returns a collection of rings.
-     * 
+     *
      * @param  molecule
      * @return a {@link Collection} of {@link List}s containing one ring each
      * @see org.openscience.cdk.smsd.ring.RingFinder#findRings(org.openscience.cdk.interfaces.IAtomContainer)
      */
+    @Override
     public Collection<List<IAtom>> findRings(IAtomContainer molecule) {
-        if (molecule == null)
-            return null;
+        if (molecule == null) return null;
         rings.clear();
         PathGraph graph = new PathGraph(molecule);
 
@@ -117,6 +117,7 @@ public class HanserRingFinder implements RingFinder {
      * @return report collected the rings
      * @see org.openscience.cdk.smsd.ring.RingFinder#getRingSet(org.openscience.cdk.interfaces.IAtomContainer)
      */
+    @Override
     public IRingSet getRingSet(IAtomContainer molecule) throws CDKException {
 
         Collection<List<IAtom>> cycles = findRings(molecule);

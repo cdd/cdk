@@ -21,13 +21,14 @@
  */
 package org.openscience.cdk.smsd.helper;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Unit testing for the {@link LabelContainer} class.
- * 
+ *
  * @author     Syed Asad Rahman
  * @cdk.module test-smsd
  */
@@ -43,7 +44,6 @@ public class LabelContainerTest {
      */
     @Test
     public void testAddLabel() {
-        System.out.println("addLabel");
         String label = "R3";
         LabelContainer instance = new LabelContainer();
         instance.addLabel(label);
@@ -57,7 +57,6 @@ public class LabelContainerTest {
      */
     @Test
     public void testGetLabelID() {
-        System.out.println("getLabelID");
         String label = "R3";
         LabelContainer instance = new LabelContainer();
         instance.addLabel(label);
@@ -70,7 +69,6 @@ public class LabelContainerTest {
      */
     @Test
     public void testGetLabel() {
-        System.out.println("getLabel");
         String label = "R3";
         LabelContainer instance = new LabelContainer();
         instance.addLabel(label);
@@ -84,7 +82,6 @@ public class LabelContainerTest {
      */
     @Test
     public void testGetSize() {
-        System.out.println("getSize");
         String label = "R3";
         LabelContainer instance = new LabelContainer();
         instance.addLabel(label);

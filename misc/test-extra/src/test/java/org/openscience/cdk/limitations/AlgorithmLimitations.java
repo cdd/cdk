@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -34,8 +29,7 @@ import org.openscience.cdk.limitations.tools.SaturationCheckerTest;
  *
  * @cdk.module test-extra
  */
-@RunWith(value=Suite.class)
-@SuiteClasses(value={
-    SaturationCheckerTest.class
-})
-public class AlgorithmLimitations {}
+@RunWith(value = Suite.class)
+@SuiteClasses(value = {SaturationCheckerTest.class})
+public class AlgorithmLimitations {
+}

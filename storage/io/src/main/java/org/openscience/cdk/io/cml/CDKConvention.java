@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -36,7 +34,7 @@ import org.xml.sax.Attributes;
  *
  * @cdk.module io
  * @cdk.githash
- * 
+ *
  * @author egonw
  */
 public class CDKConvention extends CMLCoreModule {
@@ -50,18 +48,19 @@ public class CDKConvention extends CMLCoreModule {
     public CDKConvention(ICMLModule conv) {
         super(conv);
     }
-    
+
+    @Override
     public void startDocument() {
         super.startDocument();
         isBond = false;
     }
 
+    @Override
     public void startElement(CMLStack xpath, String uri, String local, String raw, Attributes atts) {
         isBond = false;
         if (xpath.toString().endsWith("string/")) {
             for (int i = 0; i < atts.getLength(); i++) {
-                if (atts.getQName(i).equals("buildin") &&
-                    atts.getValue(i).equals("order")) {
+                if (atts.getQName(i).equals("buildin") && atts.getValue(i).equals("order")) {
                     isBond = true;
                 }
             }
@@ -70,19 +69,18 @@ public class CDKConvention extends CMLCoreModule {
         }
     }
 
+    @Override
     public void characterData(CMLStack xpath, char ch[], int start, int length) {
         String s = new String(ch, start, length).trim();
         if (isBond) {
             logger.debug("CharData (bond): " + s);
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreElements()) {
-                String border = (String)st.nextElement();
+                String border = (String) st.nextElement();
                 logger.debug("new bond order: " + border);
                 // assume cdk bond object has already started
-//                cdo.setObjectProperty("Bond", "order", border);
-                currentBond.setOrder(
-                	BondManipulator.createBondOrder(Double.parseDouble(border))
-                );
+                //                cdo.setObjectProperty("Bond", "order", border);
+                currentBond.setOrder(BondManipulator.createBondOrder(Double.parseDouble(border)));
             }
         } else {
             super.characterData(xpath, ch, start, length);

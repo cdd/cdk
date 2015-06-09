@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash.stereo;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 import javax.vecmath.Point3d;
 
@@ -42,7 +40,6 @@ import javax.vecmath.Point3d;
  *      T and Wisniewski, J.L. 2001</a>
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.stereo.Tetrahedral3DParityTest")
 final class Tetrahedral3DParity extends GeometricParity {
 
     /* array of four 3D coordinates */
@@ -55,11 +52,9 @@ final class Tetrahedral3DParity extends GeometricParity {
      * @param coordinates non-null, 4 3D coordinates
      * @throws IllegalArgumentException if the number of coordinates was not 4
      */
-    @TestMethod("testConstruction_Empty")
     public Tetrahedral3DParity(Point3d[] coordinates) {
 
-        if (coordinates.length != 4)
-            throw new IllegalArgumentException("4 coordinates expected");
+        if (coordinates.length != 4) throw new IllegalArgumentException("4 coordinates expected");
 
         this.coordinates = coordinates;
     }
@@ -67,9 +62,8 @@ final class Tetrahedral3DParity extends GeometricParity {
     /**
      * @inheritDoc
      */
-    @TestMethod("testParity_Three_Clockwise,testParity_Three_Anticlockwise," +
-                        "testParity_Four_Clockwise,testParity_Four_Anticlockwise")
-    @Override public int parity() {
+    @Override
+    public int parity() {
 
         double x1 = coordinates[0].x;
         double x2 = coordinates[1].x;
@@ -86,10 +80,8 @@ final class Tetrahedral3DParity extends GeometricParity {
         double z3 = coordinates[2].z;
         double z4 = coordinates[3].z;
 
-        double det = (z1 * det(x2, y2, x3, y3, x4, y4)) -
-                     (z2 * det(x1, y1, x3, y3, x4, y4)) +
-                     (z3 * det(x1, y1, x2, y2, x4, y4)) -
-                     (z4 * det(x1, y1, x2, y2, x3, y3));
+        double det = (z1 * det(x2, y2, x3, y3, x4, y4)) - (z2 * det(x1, y1, x3, y3, x4, y4))
+                + (z3 * det(x1, y1, x2, y2, x4, y4)) - (z4 * det(x1, y1, x2, y2, x3, y3));
 
         return (int) Math.signum(det);
     }

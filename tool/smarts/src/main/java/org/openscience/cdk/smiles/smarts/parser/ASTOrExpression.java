@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +20,7 @@ package org.openscience.cdk.smiles.smarts.parser;
 /**
  * An AST node. It represents the OR logical operator (,) used between atomic
  * primitives or recursive smarts in smarts.
- * 
+ *
  * @author Dazhi Jiao
  * @cdk.created 2007-04-24
  * @cdk.module smarts
@@ -30,24 +28,29 @@ package org.openscience.cdk.smiles.smarts.parser;
  * @cdk.keyword SMARTS
  */
 class ASTOrExpression extends SimpleNode {
-	/**
-	 * Creates a new instance.
-	 */
-	public ASTOrExpression(int id) {
-		super(id);
-	}
 
-	/**
-	 * Creates a new instance.
-	 */
-	public ASTOrExpression(SMARTSParser p, int id) {
-		super(p, id);
-	}
+    /**
+     * Creates a new instance.
+     */
+    public ASTOrExpression(int id) {
+        super(id);
+    }
 
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience.cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
-	 */
-	public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
-		return visitor.visit(this, data);
-	}
+    /**
+     * Creates a new instance.
+     */
+    public ASTOrExpression(SMARTSParser p, int id) {
+        super(p, id);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.smiles.smarts.parser.SimpleNode#jjtAccept(org.openscience
+     * .cdk.smiles.smarts.parser.SMARTSParserVisitor, java.lang.Object)
+     */
+    @Override
+    public Object jjtAccept(SMARTSParserVisitor visitor, Object data) {
+        return visitor.visit(this, data);
+    }
 }

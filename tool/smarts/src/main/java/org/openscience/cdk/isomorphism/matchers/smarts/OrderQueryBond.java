@@ -1,22 +1,17 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -32,7 +27,7 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  *
  * Daylight spec indicates that if match a single bond
  * using '-', it should be an aliphatic single bond
- * 
+ *
  * @cdk.module  smarts
  * @cdk.githash
  * @cdk.keyword SMARTS
@@ -47,13 +42,17 @@ public class OrderQueryBond extends SMARTSBond {
      * @param order the order of bond
      */
     public OrderQueryBond(IBond.Order order, IChemObjectBuilder builder) {
-    	super(builder);
-    	this.setOrder(order);
+        super(builder);
+        this.setOrder(order);
     }
-    
-	/* (non-Javadoc)
-	 * @see org.openscience.cdk.isomorphism.matchers.smarts.SMARTSBond#matches(org.openscience.cdk.interfaces.IBond)
-	 */
+
+    /*
+     * (non-Javadoc)
+     * @see
+     * org.openscience.cdk.isomorphism.matchers.smarts.SMARTSBond#matches(org
+     * .openscience.cdk.interfaces.IBond)
+     */
+    @Override
     public boolean matches(IBond bond) {
         if (bond.getFlag(CDKConstants.ISAROMATIC) ^ getFlag(CDKConstants.ISAROMATIC)) return false;
 
@@ -65,16 +64,17 @@ public class OrderQueryBond extends SMARTSBond {
         return bond.getOrder() == getOrder();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
      * @see org.openscience.cdk.Bond#toString()
      */
+    @Override
     public String toString() {
-		StringBuffer s = new StringBuffer();
-		s.append("OrderQueryBond(");
+        StringBuilder s = new StringBuilder();
+        s.append("OrderQueryBond(");
         s.append(this.hashCode() + ", ");
-		s.append("#O:" + getOrder());
-		s.append(")");
-		return s.toString();
+        s.append("#O:" + getOrder());
+        s.append(')');
+        return s.toString();
     }
 }
-

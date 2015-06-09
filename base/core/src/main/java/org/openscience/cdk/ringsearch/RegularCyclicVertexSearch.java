@@ -22,9 +22,6 @@
  */
 package org.openscience.cdk.ringsearch;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,26 +33,25 @@ import java.util.List;
  * @author John May
  * @cdk.module core
  */
-@TestClass("org.openscience.cdk.ringsearch.RegularCyclicVertexSearchTest")
 class RegularCyclicVertexSearch implements CyclicVertexSearch {
 
     /* graph representation */
-    private final int[][] g;
+    private final int[][]  g;
 
     /* set of known cyclic vertices */
-    private long cyclic;
+    private long           cyclic;
 
     /* cycle systems as they are discovered */
-    private List<Long> cycles = new ArrayList<Long>(1);
+    private List<Long>     cycles = new ArrayList<Long>(1);
 
     /* indicates if the 'cycle' at 'i' in 'cycles' is fused */
-    private List<Boolean> fused = new ArrayList<Boolean>(1);
+    private List<Boolean>  fused  = new ArrayList<Boolean>(1);
 
     /* set of visited vertices */
-    private long visited;
+    private long           visited;
 
     /* the vertices in our path at a given vertex index */
-    private long[] state;
+    private long[]         state;
 
     /** Vertex colors - which component does each vertex belong. */
     private volatile int[] colors;
@@ -65,7 +61,7 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      *
      * @param graph adjacency list representation of a graph
      */
-    @TestMethod("testEmpty") RegularCyclicVertexSearch(int[][] graph) {
+    RegularCyclicVertexSearch(int[][] graph) {
 
         this.g = graph;
         final int n = graph.length;
@@ -103,9 +99,9 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      */
     private void search(int v, long prev, long curr) {
 
-        state[v] = curr;        // store the state before we visited v
+        state[v] = curr; // store the state before we visited v
         curr = setBit(curr, v); // include v in our current state (state[v] is unmodified)
-        visited |= curr;        // mark v as visited (or being visited)
+        visited |= curr; // mark v as visited (or being visited)
 
         // neighbors of v
         for (int w : g[v]) {
@@ -139,7 +135,6 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
     private boolean visited(int v) {
         return isBitSet(visited, v);
     }
-
 
     /**
      * Add the cycle vertices to our discovered cycles. The cycle is first
@@ -235,7 +230,7 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      *
      * @return vertex colors
      */
-    @TestMethod("vertexColor")
+    @Override
     public int[] vertexColor() {
         int[] result = colors;
         if (result == null) {
@@ -248,7 +243,7 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
         }
         return result;
     }
-    
+
     /**
      * Build an indexed lookup of vertex color. The vertex color indicates which
      * cycle a given vertex belongs. If a vertex belongs to more then one cycle
@@ -263,44 +258,42 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
         Arrays.fill(color, -1);
         for (long cycle : cycles) {
             for (int i = 0; i < g.length; i++) {
-                if ((cycle & 0x1) == 0x1)
-                    color[i] = color[i] < 0 ? n : 0;
+                if ((cycle & 0x1) == 0x1) color[i] = color[i] < 0 ? n : 0;
                 cycle >>= 1;
             }
             n++;
-        }          
-        
+        }
+
         return color;
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic_Int")
-    @Override public boolean cyclic(int v) {
+    @Override
+    public boolean cyclic(int v) {
         return isBitSet(cyclic, v);
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic_IntInt")
-    @Override public boolean cyclic(int u, int v) {
+    @Override
+    public boolean cyclic(int u, int v) {
 
         final int[] colors = vertexColor();
-        
+
         // if either vertex has no color then the edge can not
         // be cyclic
-        if (colors[u] < 0 || colors[v] < 0)
-            return false;
+        if (colors[u] < 0 || colors[v] < 0) return false;
 
         // if the vertex color is 0 it is shared between
-        // two components (i.e. spiro-rings) we need to 
+        // two components (i.e. spiro-rings) we need to
         // check each component
         if (colors[u] == 0 || colors[v] == 0) {
             // either vertices are shared - need to do the expensive check
             for (final long cycle : cycles) {
-                if (isBitSet(cycle, u) && isBitSet(cycle, v)) {                    
+                if (isBitSet(cycle, u) && isBitSet(cycle, v)) {
                     return true;
                 }
             }
@@ -315,23 +308,19 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testCyclic")
-    @Override public int[] cyclic() {
+    @Override
+    public int[] cyclic() {
         return toArray(cyclic);
     }
 
     /**
      * @inheritDoc
      */
-    @TestMethod("testIsolated,testIsolated_NonCyclic,testIsolated_Empty," +
-                        "testIsolated_Spiro,testIsolated_SpiroMedium," +
-                        "testIsolated_Biphenyl,testIsolated_BenzylBenzene," +
-                        "testIsolatedFragments")
-    @Override public int[][] isolated() {
+    @Override
+    public int[][] isolated() {
         List<int[]> isolated = new ArrayList<int[]>(cycles.size());
         for (int i = 0; i < cycles.size(); i++) {
-            if (!fused.get(i))
-                isolated.add(toArray(cycles.get(i)));
+            if (!fused.get(i)) isolated.add(toArray(cycles.get(i)));
         }
         return isolated.toArray(new int[isolated.size()][]);
     }
@@ -339,19 +328,14 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
     /**
      * @inheritDoc
      */
-    @TestMethod("testFused,testFused_BiocycloEdgeLinked," +
-                        "testFused_BiocycloVertexLinked,testFused_Orthofused," +
-                        "testFused_Biorthofused,testFused_Cylclophane," +
-                        "testFused_Fullerene")
-    @Override public int[][] fused() {
+    @Override
+    public int[][] fused() {
         List<int[]> fused = new ArrayList<int[]>(cycles.size());
         for (int i = 0; i < cycles.size(); i++) {
-            if (this.fused.get(i))
-                fused.add(toArray(cycles.get(i)));
+            if (this.fused.get(i)) fused.add(toArray(cycles.get(i)));
         }
         return fused.toArray(new int[fused.size()][]);
     }
-
 
     /**
      * Convert the bits of a {@code long} to an array of integers. The size of
@@ -360,7 +344,6 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      * @param set value to convert
      * @return array of the set bits in the long value
      */
-    @TestMethod("testToArray_Empty,testToArray_Singleton")
     static int[] toArray(long set) {
 
         int[] vertices = new int[Long.bitCount(set)];
@@ -368,8 +351,7 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
 
         // fill the cyclic vertices with the bits that have been set
         for (int v = 0; i < vertices.length; v++) {
-            if (isBitSet(set, v))
-                vertices[i++] = v;
+            if (isBitSet(set, v)) vertices[i++] = v;
         }
 
         return vertices;
@@ -382,7 +364,6 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      * @param bit   bit to test
      * @return whether the specified bit is set
      */
-    @TestMethod("testIsBitSet,testIsBitSet_Empty,testIsBitSet_Universe,testIsBitSet_Singleton")
     static boolean isBitSet(long value, int bit) {
         return (value & 1L << bit) != 0;
     }
@@ -394,7 +375,6 @@ class RegularCyclicVertexSearch implements CyclicVertexSearch {
      * @param bit   the bit to set
      * @return modified value
      */
-    @TestMethod("testSetBit,testSetBit_Universe")
     static long setBit(long value, int bit) {
         return value | 1L << bit;
     }

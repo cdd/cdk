@@ -1,25 +1,20 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
@@ -40,6 +35,8 @@ import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.CDKHydrogenAdder;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
+import static org.hamcrest.Matchers.is;
+
 /**
  * TestSuite that runs all QSAR tests.
  *
@@ -48,17 +45,16 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 
 public class RotatableBondsCountDescriptorTest extends MolecularDescriptorTest {
 
-    public RotatableBondsCountDescriptorTest() {
-    }
+    public RotatableBondsCountDescriptorTest() {}
 
     @Before
     public void setUp() throws Exception {
-    	setDescriptor(RotatableBondsCountDescriptor.class);
+        setDescriptor(RotatableBondsCountDescriptor.class);
     }
 
     @Test
     public void testRotatableBondsCount() throws ClassNotFoundException, CDKException, java.lang.Exception {
-        Object[] params = {new Boolean(true)};
+        Object[] params = {true, false};
         descriptor.setParameters(params);
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol = sp.parseSmiles("CC2CCC(C1CCCCC1)CC2"); // molecule with 2 bridged cicloexane and 1 methyl
@@ -67,111 +63,144 @@ public class RotatableBondsCountDescriptorTest extends MolecularDescriptorTest {
 
     private IAtomContainer makeEthane() {
         IAtomContainer container = new AtomContainer();
-        container.addAtom(container.getBuilder().newInstance(IAtom.class,Elements.CARBON));
-        container.addAtom(container.getBuilder().newInstance(IAtom.class,Elements.CARBON));
+        container.addAtom(container.getBuilder().newInstance(IAtom.class, Elements.CARBON));
+        container.addAtom(container.getBuilder().newInstance(IAtom.class, Elements.CARBON));
         container.addBond(0, 1, IBond.Order.SINGLE);
         return container;
     }
 
     private IAtomContainer makeButane() {
         IAtomContainer container = makeEthane();
-        container.addAtom(container.getBuilder().newInstance(IAtom.class,Elements.CARBON));
-        container.addAtom(container.getBuilder().newInstance(IAtom.class,Elements.CARBON));
+        container.addAtom(container.getBuilder().newInstance(IAtom.class, Elements.CARBON));
+        container.addAtom(container.getBuilder().newInstance(IAtom.class, Elements.CARBON));
         container.addBond(1, 2, IBond.Order.SINGLE);
         container.addBond(2, 3, IBond.Order.SINGLE);
         return container;
     }
 
-    @Test public void testEthaneIncludeTerminals() throws Exception {
+    @Test
+    public void testEthaneIncludeTerminals() throws Exception {
         IAtomContainer container = makeEthane();
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.TRUE});
+        descriptor.setParameters(new Object[]{true, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(1, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(1, ((IntegerResult) result.getValue()).intValue());
     }
 
-    @Test public void testEthane() throws Exception {
+    @Test
+    public void testEthane() throws Exception {
         IAtomContainer container = makeEthane();
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.FALSE});
+        descriptor.setParameters(new Object[]{false, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(0, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(0, ((IntegerResult) result.getValue()).intValue());
     }
 
-    @Test public void testButaneIncludeTerminals() throws Exception {
+    @Test
+    public void testButaneIncludeTerminals() throws Exception {
         IAtomContainer container = makeButane();
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.TRUE});
+        descriptor.setParameters(new Object[]{true, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(3, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(3, ((IntegerResult) result.getValue()).intValue());
     }
 
-    @Test public void testButane() throws Exception {
+    @Test
+    public void testButane() throws Exception {
         IAtomContainer container = makeButane();
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.FALSE});
+        descriptor.setParameters(new Object[]{false, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(1, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(1, ((IntegerResult) result.getValue()).intValue());
     }
 
     /**
      * @cdk.bug 2449257
      */
-    @Test public void testEthaneIncludeTerminalsExplicitH() throws Exception {
-        IAtomContainer container = makeEthane();
-        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
-        CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(container.getBuilder());
-        adder.addImplicitHydrogens(container);
-        AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
-        IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.TRUE});
-        DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(1, ((IntegerResult)result.getValue()).intValue());
-    }
-
-    /**
-     * @cdk.bug 2449257
-     */
-    @Test public void testEthaneExplicitH() throws Exception {
+    @Test
+    public void testEthaneIncludeTerminalsExplicitH() throws Exception {
         IAtomContainer container = makeEthane();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
         CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(container.getBuilder());
         adder.addImplicitHydrogens(container);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.FALSE});
+        descriptor.setParameters(new Object[]{true, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(0, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(1, ((IntegerResult) result.getValue()).intValue());
     }
 
     /**
      * @cdk.bug 2449257
      */
-    @Test public void testButaneIncludeTerminalsExplicitH() throws Exception {
+    @Test
+    public void testEthaneExplicitH() throws Exception {
+        IAtomContainer container = makeEthane();
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
+        CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(container.getBuilder());
+        adder.addImplicitHydrogens(container);
+        AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
+        IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
+        descriptor.setParameters(new Object[]{false, false});
+        DescriptorValue result = descriptor.calculate(container);
+        Assert.assertEquals(0, ((IntegerResult) result.getValue()).intValue());
+    }
+
+    /**
+     * @cdk.bug 2449257
+     */
+    @Test
+    public void testButaneIncludeTerminalsExplicitH() throws Exception {
         IAtomContainer container = makeButane();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
         CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(container.getBuilder());
         adder.addImplicitHydrogens(container);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.TRUE});
+        descriptor.setParameters(new Object[]{true, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(3, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(3, ((IntegerResult) result.getValue()).intValue());
     }
 
     /**
      * @cdk.bug 2449257
      */
-    @Test public void testButaneExplicitH() throws Exception {
+    @Test
+    public void testButaneExplicitH() throws Exception {
         IAtomContainer container = makeButane();
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(container);
         CDKHydrogenAdder adder = CDKHydrogenAdder.getInstance(container.getBuilder());
         adder.addImplicitHydrogens(container);
         AtomContainerManipulator.convertImplicitToExplicitHydrogens(container);
         IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
-        descriptor.setParameters(new Object[]{Boolean.FALSE});
+        descriptor.setParameters(new Object[]{false, false});
         DescriptorValue result = descriptor.calculate(container);
-        Assert.assertEquals(1, ((IntegerResult)result.getValue()).intValue());
+        Assert.assertEquals(1, ((IntegerResult) result.getValue()).intValue());
+    }
+
+    @Test
+    public void testAmideIncluded() throws Exception {
+        String amide = "CCNC(=O)CC(C)C"; // N-ethyl-3-methylbutanamide
+        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+        IAtomContainer mol = sp.parseSmiles(amide);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        addExplicitHydrogens(mol);
+        IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
+        descriptor.setParameters(new Object[]{false, false});
+        DescriptorValue result = descriptor.calculate(mol);
+        Assert.assertThat(((IntegerResult) result.getValue()).intValue(), is(4));
+    }
+
+    @Test
+    public void testAmideExcluded() throws Exception {
+        String amide = "CCNC(=O)CC(C)C"; // N-ethyl-3-methylbutanamide
+        SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+        IAtomContainer mol = sp.parseSmiles(amide);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol);
+        addExplicitHydrogens(mol);
+        IMolecularDescriptor descriptor = new RotatableBondsCountDescriptor();
+        descriptor.setParameters(new Object[]{false, true});
+        DescriptorValue result = descriptor.calculate(mol);
+        Assert.assertThat(((IntegerResult) result.getValue()).intValue(), is(3));
     }
 }
-

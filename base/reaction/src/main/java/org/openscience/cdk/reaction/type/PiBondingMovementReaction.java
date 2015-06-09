@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2008 Miguel Rojas <miguelrojasch@users.sf.net>
+/* Copyright (C) 2008 Miguel Rojas <miguelrojasch@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,10 +18,7 @@
  */
 package org.openscience.cdk.reaction.type;
 
-
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
@@ -51,10 +42,10 @@ import java.util.Iterator;
 
 /**
  * <p>IReactionProcess which tries to reproduce the delocalization of electrons
- *  which are unsaturated bonds from conjugated rings. Only is allowed those 
+ *  which are unsaturated bonds from conjugated rings. Only is allowed those
  *  movements which produces from neutral to neutral structures and not take account the possible
- *  movements influenced from lone pairs, or empty orbitals. This movements are 
- *  typically from rings without any access or deficiency of charge and have a 
+ *  movements influenced from lone pairs, or empty orbitals. This movements are
+ *  typically from rings without any access or deficiency of charge and have a
  *  even number of atoms. </p>
  *  <p>The reaction don't care if the product are the same in symmetry.</p>
  *  IAtomContainerSet setOfReactants = DefaultChemObjectBuilder.getInstance().newAtomContainerSet();
@@ -64,178 +55,172 @@ import java.util.Iterator;
     type.setParameters(params);
  *  IReactionSet setOfReactions = type.initiate(setOfReactants, null);
  *  </pre>
- * 
+ *
  * <p>We have the possibility to localize the reactive center. Good method if you
  * want to localize the reaction in a fixed point</p>
  * <pre>atoms[0].setFlag(CDKConstants.REACTIVE_CENTER,true);</pre>
  * <p>Moreover you must put the parameter Boolean.TRUE</p>
  * <p>If the reactive center is not localized then the reaction process will
  * try to find automatically the possible reactive center.</p>
- * 
- * 
+ *
+ *
  * @author         Miguel Rojas
- * 
+ *
  * @cdk.created    2007-02-02
  * @cdk.module     reaction
  * @cdk.set        reaction-types
  * @cdk.githash
- * 
+ *
  **/
-@TestClass(value="org.openscience.cdk.reaction.type.PiBondingMovementReactionTest")
-public class PiBondingMovementReaction extends ReactionEngine implements IReactionProcess{
-	private static ILoggingTool logger =
-	    LoggingToolFactory.createLoggingTool(PiBondingMovementReaction.class);
-	
-	/**
-	 * Constructor of the PiBondingMovementReaction object
-	 *
-	 */
-	public PiBondingMovementReaction(){
-	}
+public class PiBondingMovementReaction extends ReactionEngine implements IReactionProcess {
 
-	/**
-	 *  Gets the specification attribute of the PiBondingMovementReaction object
-	 *
-	 *@return    The specification value
-	 */
-    @TestMethod("testGetSpecification")
-	public ReactionSpecification getSpecification() {
-		return new ReactionSpecification(
-				"http://almost.cubic.uni-koeln.de/jrg/Members/mrc/reactionDict/reactionDict#PiBondingMovement",
-				this.getClass().getName(),
-				"$Id$",
-				"The Chemistry Development Kit");
-	}
-	
-	
-	/**
-	 *  Initiate process.
-	 *  It is needed to call the addExplicitHydrogensToSatisfyValency
-	 *  from the class tools.HydrogenAdder.
-	 *
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(PiBondingMovementReaction.class);
+
+    /**
+     * Constructor of the PiBondingMovementReaction object
      *
-	 *@exception  CDKException  Description of the Exception
+     */
+    public PiBondingMovementReaction() {}
+
+    /**
+     *  Gets the specification attribute of the PiBondingMovementReaction object
+     *
+     *@return    The specification value
+     */
+    @Override
+    public ReactionSpecification getSpecification() {
+        return new ReactionSpecification(
+                "http://almost.cubic.uni-koeln.de/jrg/Members/mrc/reactionDict/reactionDict#PiBondingMovement", this
+                        .getClass().getName(), "$Id$", "The Chemistry Development Kit");
+    }
+
+    /**
+     *  Initiate process.
+     *  It is needed to call the addExplicitHydrogensToSatisfyValency
+     *  from the class tools.HydrogenAdder.
+     *
+     *
+     *@exception  CDKException  Description of the Exception
 
      * @param  reactants         reactants of the reaction.
     * @param  agents            agents of the reaction (Must be in this case null).
      */
-    @TestMethod("testInitiate_IAtomContainerSet_IAtomContainerSet")
-	public IReactionSet initiate(IAtomContainerSet reactants, IAtomContainerSet agents) throws CDKException{
+    @Override
+    public IReactionSet initiate(IAtomContainerSet reactants, IAtomContainerSet agents) throws CDKException {
 
-		logger.debug("initiate reaction: PiBondingMovementReaction");
-		
-		if (reactants.getAtomContainerCount() != 1) {
-			throw new CDKException("PiBondingMovementReaction only expects one reactant");
-		}
-		if (agents != null) {
-			throw new CDKException("PiBondingMovementReaction don't expects agents");
-		}
-		
-		IReactionSet setOfReactions = reactants.getBuilder().newInstance(IReactionSet.class);
-		IAtomContainer reactant = reactants.getAtomContainer(0);
-		
-		AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactant);
-		/* if the parameter hasActiveCenter is not fixed yet, set the active centers*/
-		IParameterReact ipr = super.getParameterClass(SetReactionCenter.class);
-		if( ipr != null && !ipr.isSetParameter())
-			setActiveCenters(reactant);
-		
-//		if((Boolean)paramsMap.get("lookingSymmetry")){
-//			CDKHueckelAromaticityDetector.detectAromaticity(reactant);
-//		}
-		
-		AllRingsFinder arf = new AllRingsFinder();
-		IRingSet ringSet = arf.findAllRings((IAtomContainer) reactant);
-		for (int ir = 0; ir < ringSet.getAtomContainerCount(); ir++) {
-			IRing ring = (IRing) ringSet.getAtomContainer(ir);
-	        
-			//only rings with even number of atoms
-			int nrAtoms = ring.getAtomCount(); 
-			if (nrAtoms%2 == 0){
-				int nrSingleBonds = 0;
-				Iterator<IBond> bondrs = ring.bonds().iterator();
-				while(bondrs.hasNext()){
-					if(bondrs.next().getOrder() == IBond.Order.SINGLE)
-						nrSingleBonds++;
-				}
-				//if exactly half (nrAtoms/2==nrSingleBonds)
-				if(nrSingleBonds != 0 && nrAtoms/2 == nrSingleBonds){
-					Iterator<IBond> bondfs = ring.bonds().iterator();
-					boolean ringCompletActive = false;
-					while(bondfs.hasNext()){
-						if(bondfs.next().getFlag(CDKConstants.REACTIVE_CENTER))
-							ringCompletActive = true;
-						else{
-							ringCompletActive = false;
-							break;
-						}
-					}
-					if(!ringCompletActive)
-						continue;
-					
-						
-					IReaction reaction = reactants.getBuilder().newInstance(IReaction.class);
-					reaction.addReactant(reactant);
-			        
-					IAtomContainer reactantCloned;
-					try {
-						reactantCloned = (IAtomContainer) reactant.clone();
-					} catch (CloneNotSupportedException e) {
-						throw new CDKException("Could not clone IAtomContainer!", e);
-					}
-					
-					Iterator<IBond> bondis = ring.bonds().iterator();
-					while(bondis.hasNext()){
-						IBond bondi = bondis.next();
-						int bondiP = reactant.getBondNumber(bondi);
-						if(bondi.getOrder() == IBond.Order.SINGLE)
-							BondManipulator.increaseBondOrder(reactantCloned.getBond(bondiP));
-						else
-							BondManipulator.decreaseBondOrder(reactantCloned.getBond(bondiP));
-						
-					}
-					
-					reaction.addProduct((IAtomContainer) reactantCloned);
-					setOfReactions.addReaction(reaction);
-				}
-				
-			}
-		}
-		
-		return setOfReactions;	
-	}
-	/**
-	 * Set the active center for this molecule. 
-	 * The active center will be those which correspond to a ring
-	 * with pi electrons with resonance.
-	 * 
-	 * FIXME REACT: It could be possible that a ring is a super ring of others small rings
-	 * 
-	 * @param reactant The molecule to set the activity
-	 * @throws CDKException 
-	 */
+        logger.debug("initiate reaction: PiBondingMovementReaction");
+
+        if (reactants.getAtomContainerCount() != 1) {
+            throw new CDKException("PiBondingMovementReaction only expects one reactant");
+        }
+        if (agents != null) {
+            throw new CDKException("PiBondingMovementReaction don't expects agents");
+        }
+
+        IReactionSet setOfReactions = reactants.getBuilder().newInstance(IReactionSet.class);
+        IAtomContainer reactant = reactants.getAtomContainer(0);
+
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(reactant);
+        /*
+         * if the parameter hasActiveCenter is not fixed yet, set the active
+         * centers
+         */
+        IParameterReact ipr = super.getParameterClass(SetReactionCenter.class);
+        if (ipr != null && !ipr.isSetParameter()) setActiveCenters(reactant);
+
+        //		if((Boolean)paramsMap.get("lookingSymmetry")){
+        //			Aromaticity.cdkLegacy().apply(reactant);
+        //		}
+
+        AllRingsFinder arf = new AllRingsFinder();
+        IRingSet ringSet = arf.findAllRings((IAtomContainer) reactant);
+        for (int ir = 0; ir < ringSet.getAtomContainerCount(); ir++) {
+            IRing ring = (IRing) ringSet.getAtomContainer(ir);
+
+            //only rings with even number of atoms
+            int nrAtoms = ring.getAtomCount();
+            if (nrAtoms % 2 == 0) {
+                int nrSingleBonds = 0;
+                Iterator<IBond> bondrs = ring.bonds().iterator();
+                while (bondrs.hasNext()) {
+                    if (bondrs.next().getOrder() == IBond.Order.SINGLE) nrSingleBonds++;
+                }
+                //if exactly half (nrAtoms/2==nrSingleBonds)
+                if (nrSingleBonds != 0 && nrAtoms / 2 == nrSingleBonds) {
+                    Iterator<IBond> bondfs = ring.bonds().iterator();
+                    boolean ringCompletActive = false;
+                    while (bondfs.hasNext()) {
+                        if (bondfs.next().getFlag(CDKConstants.REACTIVE_CENTER))
+                            ringCompletActive = true;
+                        else {
+                            ringCompletActive = false;
+                            break;
+                        }
+                    }
+                    if (!ringCompletActive) continue;
+
+                    IReaction reaction = reactants.getBuilder().newInstance(IReaction.class);
+                    reaction.addReactant(reactant);
+
+                    IAtomContainer reactantCloned;
+                    try {
+                        reactantCloned = (IAtomContainer) reactant.clone();
+                    } catch (CloneNotSupportedException e) {
+                        throw new CDKException("Could not clone IAtomContainer!", e);
+                    }
+
+                    Iterator<IBond> bondis = ring.bonds().iterator();
+                    while (bondis.hasNext()) {
+                        IBond bondi = bondis.next();
+                        int bondiP = reactant.getBondNumber(bondi);
+                        if (bondi.getOrder() == IBond.Order.SINGLE)
+                            BondManipulator.increaseBondOrder(reactantCloned.getBond(bondiP));
+                        else
+                            BondManipulator.decreaseBondOrder(reactantCloned.getBond(bondiP));
+
+                    }
+
+                    reaction.addProduct((IAtomContainer) reactantCloned);
+                    setOfReactions.addReaction(reaction);
+                }
+
+            }
+        }
+
+        return setOfReactions;
+    }
+
+    /**
+     * Set the active center for this molecule.
+     * The active center will be those which correspond to a ring
+     * with pi electrons with resonance.
+     *
+     * FIXME REACT: It could be possible that a ring is a super ring of others small rings
+     *
+     * @param reactant The molecule to set the activity
+     * @throws CDKException
+     */
     private void setActiveCenters(IAtomContainer reactant) throws CDKException {
-		AllRingsFinder arf = new AllRingsFinder();
-		IRingSet ringSet = arf.findAllRings(reactant);
-		for (int ir = 0; ir < ringSet.getAtomContainerCount(); ir++) {
-			IRing ring = (IRing) ringSet.getAtomContainer(ir);
-			//only rings with even number of atoms
-			int nrAtoms = ring.getAtomCount(); 
-			if (nrAtoms%2 == 0){
-				int nrSingleBonds = 0;
-				Iterator<IBond> bondrs = ring.bonds().iterator();
-				while(bondrs.hasNext()){
-					if(bondrs.next().getOrder() == IBond.Order.SINGLE)
-						nrSingleBonds++;
-				}
-				//if exactly half (nrAtoms/2==nrSingleBonds)
-				if(nrSingleBonds != 0 && nrAtoms/2 == nrSingleBonds){
-					Iterator<IBond> bondfs = ring.bonds().iterator();
-					while(bondfs.hasNext())
-						bondfs.next().setFlag(CDKConstants.REACTIVE_CENTER, true);
-					
-				}
-			}
-		}
+        AllRingsFinder arf = new AllRingsFinder();
+        IRingSet ringSet = arf.findAllRings(reactant);
+        for (int ir = 0; ir < ringSet.getAtomContainerCount(); ir++) {
+            IRing ring = (IRing) ringSet.getAtomContainer(ir);
+            //only rings with even number of atoms
+            int nrAtoms = ring.getAtomCount();
+            if (nrAtoms % 2 == 0) {
+                int nrSingleBonds = 0;
+                Iterator<IBond> bondrs = ring.bonds().iterator();
+                while (bondrs.hasNext()) {
+                    if (bondrs.next().getOrder() == IBond.Order.SINGLE) nrSingleBonds++;
+                }
+                //if exactly half (nrAtoms/2==nrSingleBonds)
+                if (nrSingleBonds != 0 && nrAtoms / 2 == nrSingleBonds) {
+                    Iterator<IBond> bondfs = ring.bonds().iterator();
+                    while (bondfs.hasNext())
+                        bondfs.next().setFlag(CDKConstants.REACTIVE_CENTER, true);
+
+                }
+            }
+        }
     }
 }

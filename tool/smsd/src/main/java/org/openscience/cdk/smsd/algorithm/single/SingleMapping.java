@@ -26,14 +26,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -50,19 +47,17 @@ import org.openscience.cdk.smsd.tools.BondEnergies;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.single.SingleMappingTest")
 public class SingleMapping {
 
-    private IAtomContainer source = null;
-    private IAtomContainer target = null;
-    private List<Map<IAtom, IAtom>> mappings = null;
-    private Map<Integer, Double> connectedBondOrder = null;
+    private IAtomContainer          source             = null;
+    private IAtomContainer          target             = null;
+    private List<Map<IAtom, IAtom>> mappings           = null;
+    private Map<Integer, Double>    connectedBondOrder = null;
 
     /**
      * Default
      */
-    public SingleMapping() {
-    }
+    public SingleMapping() {}
 
     /**
      * Returns single mapping solutions.
@@ -70,22 +65,20 @@ public class SingleMapping {
      * @param target
      * @param removeHydrogen
      * @return Mappings
-     * @throws CDKException 
+     * @throws CDKException
      */
-    @TestMethod("testGetOverLaps")
-    protected List<Map<IAtom, IAtom>> getOverLaps(IAtomContainer source, IAtomContainer target, boolean removeHydrogen) throws CDKException {
+    protected List<Map<IAtom, IAtom>> getOverLaps(IAtomContainer source, IAtomContainer target, boolean removeHydrogen)
+            throws CDKException {
 
         mappings = new ArrayList<Map<IAtom, IAtom>>();
         connectedBondOrder = new TreeMap<Integer, Double>();
         this.source = source;
         this.target = target;
 
-        if (source.getAtomCount() == 1
-                || (source.getAtomCount() > 0 && source.getBondCount() == 0)) {
+        if (source.getAtomCount() == 1 || (source.getAtomCount() > 0 && source.getBondCount() == 0)) {
             setSourceSingleAtomMap(removeHydrogen);
         }
-        if (target.getAtomCount() == 1
-                || (target.getAtomCount() > 0 && target.getBondCount() == 0)) {
+        if (target.getAtomCount() == 1 || (target.getAtomCount() > 0 && target.getBondCount() == 0)) {
             setTargetSingleAtomMap(removeHydrogen);
         }
 
@@ -101,19 +94,17 @@ public class SingleMapping {
      * @return Mappings
      * @throws CDKException
      */
-    @TestMethod("testGetOverLaps")
-    protected List<Map<IAtom, IAtom>> getOverLaps(IQueryAtomContainer source, IAtomContainer target, boolean removeHydrogen) throws CDKException {
+    protected List<Map<IAtom, IAtom>> getOverLaps(IQueryAtomContainer source, IAtomContainer target,
+            boolean removeHydrogen) throws CDKException {
         mappings = new ArrayList<Map<IAtom, IAtom>>();
         connectedBondOrder = new TreeMap<Integer, Double>();
         this.source = source;
         this.target = target;
 
-        if (source.getAtomCount() == 1
-                || (source.getAtomCount() > 0 && source.getBondCount() == 0)) {
+        if (source.getAtomCount() == 1 || (source.getAtomCount() > 0 && source.getBondCount() == 0)) {
             setSourceSingleAtomMap(source, removeHydrogen);
         }
-        if (target.getAtomCount() == 1
-                || (target.getAtomCount() > 0 && target.getBondCount() == 0)) {
+        if (target.getAtomCount() == 1 || (target.getAtomCount() > 0 && target.getBondCount() == 0)) {
             setTargetSingleAtomMap(removeHydrogen);
         }
 
@@ -131,10 +122,10 @@ public class SingleMapping {
                     Map<IAtom, IAtom> mapAtoms = new HashMap<IAtom, IAtom>();
                     if (smartAtom.matches(targetAtom)) {
                         mapAtoms.put(sourceAtom, targetAtom);
-                        List<IBond> Bonds = target.getConnectedBondsList(targetAtom);
+                        List<IBond> bonds = target.getConnectedBondsList(targetAtom);
 
                         double totalOrder = 0;
-                        for (IBond bond : Bonds) {
+                        for (IBond bond : bonds) {
                             Order order = bond.getOrder();
                             totalOrder += order.numeric() + be.getEnergies(bond);
                         }
@@ -160,10 +151,10 @@ public class SingleMapping {
                     Map<IAtom, IAtom> mapAtoms = new HashMap<IAtom, IAtom>();
                     if (sourceAtom.getSymbol().equalsIgnoreCase(targetAtom.getSymbol())) {
                         mapAtoms.put(sourceAtom, targetAtom);
-                        List<IBond> Bonds = target.getConnectedBondsList(targetAtom);
+                        List<IBond> bonds = target.getConnectedBondsList(targetAtom);
 
                         double totalOrder = 0;
-                        for (IBond bond : Bonds) {
+                        for (IBond bond : bonds) {
                             Order order = bond.getOrder();
                             totalOrder += order.numeric() + be.getEnergies(bond);
                         }
@@ -190,10 +181,10 @@ public class SingleMapping {
 
                     if (targetAtom.getSymbol().equalsIgnoreCase(sourceAtoms.getSymbol())) {
                         mapAtoms.put(sourceAtoms, targetAtom);
-                        List<IBond> Bonds = source.getConnectedBondsList(sourceAtoms);
+                        List<IBond> bonds = source.getConnectedBondsList(sourceAtoms);
 
                         double totalOrder = 0;
-                        for (IBond bond : Bonds) {
+                        for (IBond bond : bonds) {
                             Order order = bond.getOrder();
                             totalOrder += order.numeric() + be.getEnergies(bond);
                         }
@@ -221,10 +212,11 @@ public class SingleMapping {
     }
 
     private <K, V extends Comparable<V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K,V>> list = new LinkedList<Map.Entry<K,V>>(map.entrySet());
-        Collections.sort(list, new Comparator<Map.Entry<K,V>>() {
+        List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
 
-            public int compare(Map.Entry<K,V> object1, Map.Entry<K,V> object2) {
+            @Override
+            public int compare(Map.Entry<K, V> object1, Map.Entry<K, V> object2) {
                 return object1.getValue().compareTo(object2.getValue());
             }
         });

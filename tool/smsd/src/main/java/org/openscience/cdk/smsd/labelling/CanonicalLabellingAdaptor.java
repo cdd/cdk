@@ -12,17 +12,18 @@ import org.openscience.cdk.smiles.InvPair;
 
 public class CanonicalLabellingAdaptor implements ICanonicalMoleculeLabeller {
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public IAtomContainer getCanonicalMolecule(IAtomContainer container) {
-        return AtomContainerAtomPermutor.permute(
-                getCanonicalPermutation(container), container);
+        return AtomContainerAtomPermutor.permute(getCanonicalPermutation(container), container);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int[] getCanonicalPermutation(IAtomContainer container) {
         CanonicalLabeler labeler = new CanonicalLabeler();
         labeler.canonLabel(container);
@@ -30,7 +31,7 @@ public class CanonicalLabellingAdaptor implements ICanonicalMoleculeLabeller {
         int[] perm = new int[n];
         for (int i = 0; i < n; i++) {
             IAtom a = container.getAtom(i);
-            int x = ((Long) a.getProperty(InvPair.CANONICAL_LABEL)).intValue(); 
+            int x = ((Long) a.getProperty(InvPair.CANONICAL_LABEL)).intValue();
             perm[i] = x - 1;
         }
         return perm;

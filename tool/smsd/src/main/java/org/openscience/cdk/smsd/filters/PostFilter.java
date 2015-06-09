@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.smsd.helper.FinalMappings;
 
 /**
@@ -39,33 +37,31 @@ import org.openscience.cdk.smsd.helper.FinalMappings;
  * <lI>1: Stereo match, bond type, ring etc,
  * <lI>2: Fragment size,
  * <lI>3: Bond breaking energy
- * 
+ *
  * </OL>
  * @cdk.module smsd
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.filters.PostFilterTest")
 public class PostFilter {
 
-    /** 
-     * 
+    /**
+     *
      * Creates a new instance of Post Filter and removes
      * redundant mapping(s).
-     * 
+     *
      * @param mappings
      * @return Filtered non-redundant mappings
      */
-    @TestMethod("testFilter")
     public static List<Map<Integer, Integer>> filter(List<List<Integer>> mappings) {
-        FinalMappings final_MAPPINGS = FinalMappings.getInstance();
+        FinalMappings finalMappings = FinalMappings.getInstance();
         if (mappings != null && !mappings.isEmpty()) {
-            final_MAPPINGS.set(removeRedundantMapping(mappings));
+            finalMappings.set(removeRedundantMapping(mappings));
             mappings.clear();
         } else {
-            final_MAPPINGS.set(new ArrayList<Map<Integer, Integer>>());
+            finalMappings.set(new ArrayList<Map<Integer, Integer>>());
         }
-        return final_MAPPINGS.getFinalMapping();
+        return finalMappings.getFinalMapping();
     }
 
     private static boolean hasMap(Map<Integer, Integer> newMap, List<Map<Integer, Integer>> nonRedundantMapping) {
@@ -79,13 +75,13 @@ public class PostFilter {
 
     /**
      *
-     * @param mapping_org
+     * @param mappingOrg
      * @return
      */
-    private static List<Map<Integer, Integer>> removeRedundantMapping(List<List<Integer>> mapping_org) {
+    private static List<Map<Integer, Integer>> removeRedundantMapping(List<List<Integer>> mappingOrg) {
         List<Map<Integer, Integer>> nonRedundantMapping = new ArrayList<Map<Integer, Integer>>();
-        for (List<Integer> M : mapping_org) {
-            Map<Integer, Integer> newMap = getMappingMapFromList(M);
+        for (List<Integer> mapping : mappingOrg) {
+            Map<Integer, Integer> newMap = getMappingMapFromList(mapping);
             if (!hasMap(newMap, nonRedundantMapping)) {
                 nonRedundantMapping.add(newMap);
             }

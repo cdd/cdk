@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2009  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2009  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -41,34 +39,37 @@ import org.openscience.cdk.io.setting.IOSetting;
  */
 public class CustomWriter extends ChemObjectIO implements IChemObjectWriter {
 
-    public void setWriter(Writer writer) throws CDKException {
-    }
+    @Override
+    public void setWriter(Writer writer) throws CDKException {}
 
-    public void setWriter(OutputStream writer) throws CDKException {
-    }
+    @Override
+    public void setWriter(OutputStream writer) throws CDKException {}
 
-    public void write(IChemObject object) throws CDKException {
-    }
+    @Override
+    public void write(IChemObject object) throws CDKException {}
 
+    @Override
     public boolean accepts(Class<? extends IChemObject> classObject) {
         return false;
     }
 
-    public void addChemObjectIOListener(IChemObjectIOListener listener) {
-    }
+    @Override
+    public void addChemObjectIOListener(IChemObjectIOListener listener) {}
 
-    public void close() throws IOException {
-    }
+    @Override
+    public void close() throws IOException {}
 
+    @Override
     public IResourceFormat getFormat() {
         return null;
     }
 
+    @Override
     public IOSetting[] getIOSettings() {
         return null;
     }
 
-    public void removeChemObjectIOListener(IChemObjectIOListener listener) {
-    }
+    @Override
+    public void removeChemObjectIOListener(IChemObjectIOListener listener) {}
 
 }

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2002-2003  The Jmol Development Team
+/* Copyright (C) 2002-2003  The Jmol Development Team
  * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -25,6 +20,7 @@
 package org.openscience.cdk.io;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -33,8 +29,6 @@ import java.util.StringTokenizer;
 
 import javax.vecmath.Point3d;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
@@ -61,12 +55,10 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  *
  * @author Egon Willighagen <egonw@sci.kun.nl>
  */
-@TestClass("org.openscience.cdk.io.GhemicalMMReaderTest")
 public class GhemicalMMReader extends DefaultChemObjectReader {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(GhemicalMMReader.class);
-    private BufferedReader input = null;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(GhemicalMMReader.class);
+    private BufferedReader      input  = null;
 
     public GhemicalMMReader(Reader input) {
         this.input = new BufferedReader(input);
@@ -75,75 +67,75 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
     public GhemicalMMReader(InputStream input) {
         this(new InputStreamReader(input));
     }
-    
+
     public GhemicalMMReader() {
         this(new StringReader(""));
     }
 
-    @TestMethod("testGetFormat")
+    @Override
     public IResourceFormat getFormat() {
         return GhemicalMMFormat.getInstance();
     }
 
-    @TestMethod("testSetReader_Reader")
+    @Override
     public void setReader(Reader input) throws CDKException {
         if (input instanceof BufferedReader) {
-            this.input = (BufferedReader)input;
+            this.input = (BufferedReader) input;
         } else {
             this.input = new BufferedReader(input);
         }
     }
 
-    @TestMethod("testSetReader_InputStream")
+    @Override
     public void setReader(InputStream input) throws CDKException {
         setReader(new InputStreamReader(input));
     }
 
-    @TestMethod("testClose")
-    public void close() {
-    }
-    
-	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
+    @Override
+    public void close() {}
+
+    @Override
+    public boolean accepts(Class<? extends IChemObject> classObject) {
         if (IChemFile.class.equals(classObject)) return true;
         if (IChemModel.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IChemModel.class.equals(interfaces[i])) return true;
-			if (IChemFile.class.equals(interfaces[i])) return true;
-		}
-    Class superClass = classObject.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IChemModel.class.equals(interfaces[i])) return true;
+            if (IChemFile.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
 
-	public <T extends IChemObject> T read(T object) throws CDKException {
+    @Override
+    public <T extends IChemObject> T read(T object) throws CDKException {
         if (object instanceof IChemModel) {
-            return (T) readChemModel((IChemModel)object);
+            return (T) readChemModel((IChemModel) object);
         } else if (object instanceof IChemFile) {
-        	IChemSequence sequence = object.getBuilder().newInstance(IChemSequence.class);
-            sequence.addChemModel((IChemModel)this.readChemModel(object.getBuilder().newInstance(IChemModel.class)));
-        	((IChemFile)object).addChemSequence(sequence);
-        	return object;
+            IChemSequence sequence = object.getBuilder().newInstance(IChemSequence.class);
+            sequence.addChemModel((IChemModel) this.readChemModel(object.getBuilder().newInstance(IChemModel.class)));
+            ((IChemFile) object).addChemSequence(sequence);
+            return object;
         } else {
             throw new CDKException("Only supported is ChemModel.");
         }
     }
-    
+
     private IChemModel readChemModel(IChemModel model) throws CDKException {
         int[] atoms = new int[1];
         double[] atomxs = new double[1];
         double[] atomys = new double[1];
         double[] atomzs = new double[1];
         double[] atomcharges = new double[1];
-        
+
         int[] bondatomid1 = new int[1];
         int[] bondatomid2 = new int[1];
         IBond.Order[] bondorder = new IBond.Order[1];
-        
+
         int numberOfAtoms = 0;
         int numberOfBonds = 0;
-        
+
         try {
             String line = input.readLine();
             while (line != null) {
@@ -164,7 +156,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                         atomys = new double[numberOfAtoms];
                         atomzs = new double[numberOfAtoms];
                         atomcharges = new double[numberOfAtoms];
-                        
+
                         for (int i = 0; i < numberOfAtoms; i++) {
                             line = input.readLine();
                             StringTokenizer atomInfoFields = new StringTokenizer(line);
@@ -172,7 +164,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                             atoms[atomID] = Integer.parseInt(atomInfoFields.nextToken());
                             logger.debug("Set atomic number of atom (" + atomID + ") to: " + atoms[atomID]);
                         }
-                    } catch (Exception exception) {
+                    } catch (NumberFormatException | IOException exception) {
                         logger.error("Error while reading Atoms block");
                         logger.debug(exception);
                     }
@@ -184,7 +176,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                         bondatomid1 = new int[numberOfAtoms];
                         bondatomid2 = new int[numberOfAtoms];
                         bondorder = new IBond.Order[numberOfAtoms];
-                        
+
                         for (int i = 0; i < numberOfBonds; i++) {
                             line = input.readLine();
                             StringTokenizer bondInfoFields = new StringTokenizer(line);
@@ -203,7 +195,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                                 bondorder[i] = IBond.Order.SINGLE;
                             }
                         }
-                    } catch (Exception exception) {
+                    } catch (NumberFormatException | IOException exception) {
                         logger.error("Error while reading Bonds block");
                         logger.debug(exception);
                     }
@@ -221,7 +213,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                             atomys[atomID] = y;
                             atomzs[atomID] = z;
                         }
-                    } catch (Exception exception) {
+                    } catch (IOException | NumberFormatException exception) {
                         logger.error("Error while reading Coord block");
                         logger.debug(exception);
                     }
@@ -235,7 +227,7 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                             double charge = Double.valueOf(atomInfoFields.nextToken()).doubleValue();
                             atomcharges[atomID] = charge;
                         }
-                    } catch (Exception exception) {
+                    } catch (IOException | NumberFormatException exception) {
                         logger.error("Error while reading Charges block");
                         logger.debug(exception);
                     }
@@ -245,41 +237,42 @@ public class GhemicalMMReader extends DefaultChemObjectReader {
                     IAtomContainer container = model.getBuilder().newInstance(IAtomContainer.class);
                     for (int i = 0; i < numberOfAtoms; i++) {
                         try {
-                            IAtom atom = model.getBuilder().newInstance(IAtom.class,Isotopes.getInstance().getElementSymbol(atoms[i]));
+                            IAtom atom = model.getBuilder().newInstance(IAtom.class,
+                                    Isotopes.getInstance().getElementSymbol(atoms[i]));
                             atom.setAtomicNumber(atoms[i]);
                             atom.setPoint3d(new Point3d(atomxs[i], atomys[i], atomzs[i]));
                             atom.setCharge(atomcharges[i]);
                             container.addAtom(atom);
                             logger.debug("Stored atom: " + atom);
-                        } catch (Exception exception) {
+                        } catch (IOException | IllegalArgumentException exception) {
                             logger.error("Cannot create an atom with atomic number: " + atoms[i]);
                             logger.debug(exception);
                         }
                     }
-                    
+
                     // Store bonds
                     for (int i = 0; i < numberOfBonds; i++) {
                         container.addBond(bondatomid1[i], bondatomid2[i], bondorder[i]);
                     }
-                    
+
                     IAtomContainerSet moleculeSet = model.getBuilder().newInstance(IAtomContainerSet.class);
-                    moleculeSet.addAtomContainer(model.getBuilder().newInstance(IAtomContainer.class,container));
+                    moleculeSet.addAtomContainer(model.getBuilder().newInstance(IAtomContainer.class, container));
                     model.setMoleculeSet(moleculeSet);
-                    
+
                     return model;
                 } else {
                     logger.warn("Skipping line: " + line);
                 }
-                
+
                 line = input.readLine();
             }
-        } catch (Exception exception) {
+        } catch (IOException | IllegalArgumentException exception) {
             logger.error("Error while reading file");
             logger.debug(exception);
         }
-        
+
         // this should not happen, file is lacking !End command
         return null;
-        
+
     }
 }

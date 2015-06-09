@@ -25,38 +25,29 @@ package org.openscience.cdk.isomorphism.matchers;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IBond;
-import org.openscience.cdk.interfaces.IChemObject;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
  * Captures query bond types defined in the CTFile.
- * 
+ *
  * @cdk.module  isomorphism
  * @cdk.githash
  */
 public class CTFileQueryBond extends QueryBond implements IQueryBond {
 
-    /* Bond types, as stated in the CTFile manual
-       1 = Single, 2 = Double,
-       3 = Triple, 4 = Aromatic,
-       5 = Single or Double,
-       6 = Single or Aromatic,
-       7 = Double or Aromatic, 8 = Any
-    */
+    /*
+     * Bond types, as stated in the CTFile manual 1 = Single, 2 = Double, 3 =
+     * Triple, 4 = Aromatic, 5 = Single or Double, 6 = Single or Aromatic, 7 =
+     * Double or Aromatic, 8 = Any
+     */
     public enum Type {
-        SINGLE,
-        DOUBLE,
-        TRIPLE,
-        AROMATIC,
-        SINGLE_OR_DOUBLE,
-        SINGLE_OR_AROMATIC,
-        DOUBLE_OR_AROMATIC,
-        ANY
+        SINGLE, DOUBLE, TRIPLE, AROMATIC, SINGLE_OR_DOUBLE, SINGLE_OR_AROMATIC, DOUBLE_OR_AROMATIC, ANY
     }
 
-    public CTFileQueryBond(IChemObjectBuilder builder){
+    public CTFileQueryBond(IChemObjectBuilder builder) {
         super(builder);
     }
+
     /**
      * The type of this bond.
      */
@@ -78,6 +69,7 @@ public class CTFileQueryBond extends QueryBond implements IQueryBond {
         return type;
     }
 
+    @Override
     public boolean matches(IBond bond) {
         return false;
     }
@@ -86,7 +78,7 @@ public class CTFileQueryBond extends QueryBond implements IQueryBond {
      * Create a CTFileQueryBond of the specified type (from the MDL spec). The
      * bond copies the atoms and sets the type using the value 'type', 5 = single
      * or double, 8 = any, etc.
-     * 
+     *
      * @param bond an existing bond
      * @param type the specified type
      * @return a new CTFileQueryBond

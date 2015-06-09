@@ -1,22 +1,17 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -31,12 +26,12 @@ import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Bond;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IRing;
 import org.openscience.cdk.interfaces.IRingSet;
-import org.openscience.cdk.ringsearch.SSSRFinder;
 import org.openscience.cdk.templates.MoleculeFactory;
 import org.openscience.cdk.tools.SaturationChecker;
 
@@ -45,7 +40,7 @@ import org.openscience.cdk.tools.SaturationChecker;
  * class.
  *
  * @cdk.module test-extra
- * 
+ *
  * @author     egonw
  * @cdk.created    2003-11-02
  *
@@ -54,15 +49,17 @@ import org.openscience.cdk.tools.SaturationChecker;
 public class SaturationCheckerTest extends CDKTestCase {
 
     private static SaturationChecker satcheck = null;
-    
-    @BeforeClass public static void setup() throws Exception {
+
+    @BeforeClass
+    public static void setup() throws Exception {
         satcheck = new SaturationChecker();
     }
-    
+
     /**
      * Tests the method saturate().
      */
-    @Test public void testSaturate_WithNitrate() throws Exception {
+    @Test
+    public void testSaturate_WithNitrate() throws Exception {
         IAtomContainer mol = new AtomContainer();
         Atom a1 = new Atom("O");
         mol.addAtom(a1);
@@ -132,11 +129,12 @@ public class SaturationCheckerTest extends CDKTestCase {
         Assert.assertEquals(IBond.Order.DOUBLE, b1.getOrder());
         Assert.assertEquals(IBond.Order.DOUBLE, b2.getOrder());
     }
-    
+
     /**
      * Tests the method saturate().
      */
-    @Test public void testSaturation_S4AtomType() throws Exception {
+    @Test
+    public void testSaturation_S4AtomType() throws Exception {
         IAtomContainer mol = new AtomContainer();
         Atom a1 = new Atom("N");
         mol.addAtom(a1);
@@ -238,11 +236,12 @@ public class SaturationCheckerTest extends CDKTestCase {
         Assert.assertEquals(IBond.Order.DOUBLE, b6.getOrder());
         Assert.assertEquals(IBond.Order.DOUBLE, b7.getOrder());
     }
-    
+
     /**
      * Tests the method saturate().
      */
-    @Test public void testSaturate_NumberingProblem() throws Exception {
+    @Test
+    public void testSaturate_NumberingProblem() throws Exception {
         IAtomContainer mol = new AtomContainer();
         Atom a1 = new Atom("C");
         mol.addAtom(a1);
@@ -287,31 +286,31 @@ public class SaturationCheckerTest extends CDKTestCase {
         Assert.assertEquals(IBond.Order.SINGLE, b8.getOrder());
         Assert.assertEquals(IBond.Order.DOUBLE, b4.getOrder());
     }
-    
+
     /**
      * Tests whether the saturation checker gets a proton right.
      */
-	@Test public void testIsSaturated_Proton() throws Exception {
-		// test H+
-	    IAtomContainer m = new AtomContainer();
-		Atom h = new Atom("H");
+    @Test
+    public void testIsSaturated_Proton() throws Exception {
+        // test H+
+        IAtomContainer m = new AtomContainer();
+        Atom h = new Atom("H");
         h.setFormalCharge(+1);
-		m.addAtom(h);
-		Assert.assertTrue(satcheck.isSaturated(h, m));
-	}
-    
-    @Test public void testCalculateMissingHydrogens_Aromatic() throws Exception{
+        m.addAtom(h);
+        Assert.assertTrue(satcheck.isSaturated(h, m));
+    }
+
+    @Test
+    public void testCalculateMissingHydrogens_Aromatic() throws Exception {
         IAtomContainer pyrrole = MoleculeFactory.makePyrrole();
-	    IAtom n = pyrrole.getAtom(1);
-	    IRingSet rs = (new SSSRFinder(pyrrole)).findSSSR();
-	    IRing ring = (IRing) rs.getAtomContainer(0);
-	    for (int j=0 ; j<ring.getBondCount(); j++)
-	    {
-		    ring.getBond(j).setFlag(CDKConstants.ISAROMATIC, true);
-	    }
-	    Assert.assertEquals(5, ring.getBondCount());
-	    Assert.assertEquals(1, satcheck.calculateNumberOfImplicitHydrogens(n, pyrrole));
+        IAtom n = pyrrole.getAtom(1);
+        IRingSet rs = Cycles.sssr(pyrrole).toRingSet();
+        IRing ring = (IRing) rs.getAtomContainer(0);
+        for (int j = 0; j < ring.getBondCount(); j++) {
+            ring.getBond(j).setFlag(CDKConstants.ISAROMATIC, true);
+        }
+        Assert.assertEquals(5, ring.getBondCount());
+        Assert.assertEquals(1, satcheck.calculateNumberOfImplicitHydrogens(n, pyrrole));
     }
 
 }
-

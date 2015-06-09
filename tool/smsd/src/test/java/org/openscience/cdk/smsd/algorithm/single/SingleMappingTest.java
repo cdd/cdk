@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,17 +22,19 @@
  */
 package org.openscience.cdk.smsd.algorithm.single;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.AtomContainer;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.IAtom;
-import static org.junit.Assert.*;
-import org.openscience.cdk.interfaces.IAtomContainer;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -43,31 +44,25 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  */
 public class SingleMappingTest {
 
-    public SingleMappingTest() {
-    }
+    public SingleMappingTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of getOverLaps method, of class SingleMapping.
      */
     @Test
     public void testGetOverLaps() throws CDKException {
-        System.out.println("getOverLaps");
         IAtom atomSource = new Atom("R");
         IAtom atomTarget = new Atom("R");
         IAtomContainer source = new AtomContainer();

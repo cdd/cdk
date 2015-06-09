@@ -1,10 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,8 +19,6 @@
 package org.openscience.cdk.qsar.descriptors.molecular;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
@@ -66,11 +58,9 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:atomCount
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.AtomCountDescriptorTest")
 public class AtomCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
     private String elementName = "*";
-
 
     /**
      *  Constructor for the AtomCountDescriptor object.
@@ -81,7 +71,7 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -94,12 +84,11 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomCount",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomCount", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
 
     /**
@@ -110,7 +99,7 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
      *or else the parameter is not of type String
      *@see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length > 1) {
             throw new CDKException("AtomCount only expects one parameter");
@@ -121,14 +110,13 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
         elementName = (String) params[0];
     }
 
-
     /**
      *  Gets the parameters attribute of the AtomCountDescriptor object.
      *
      *@return    The parameters value
      *@see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         // return the parameters as used for the descriptor calculation
         Object[] params = new Object[1];
@@ -136,14 +124,15 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
         return params;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         String name = "n";
-        if (elementName.equals("*")) name = "nAtom";
-        else name += elementName;
+        if (elementName.equals("*"))
+            name = "nAtom";
+        else
+            name += elementName;
         return new String[]{name};
     }
-
 
     /**
      *  This method calculate the number of atoms of a given type in an {@link IAtomContainer}.
@@ -154,20 +143,19 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
 
     // it could be interesting to accept as elementName a SMARTS atom, to get the frequency of this atom
     // this could be useful for other descriptors like polar surface area...
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         int atomCount = 0;
 
         if (container == null) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), getDescriptorNames(),
-                    new CDKException("The supplied AtomContainer was NULL"));
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), getDescriptorNames(), new CDKException("The supplied AtomContainer was NULL"));
         }
 
         if (container.getAtomCount() == 0) {
-            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                    new IntegerResult((int) Double.NaN), getDescriptorNames(),
-                    new CDKException("The supplied AtomContainer did not have any atoms"));
+            return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                    (int) Double.NaN), getDescriptorNames(), new CDKException(
+                    "The supplied AtomContainer did not have any atoms"));
         }
 
         if (elementName.equals("*")) {
@@ -187,8 +175,7 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
                     if (hcount != CDKConstants.UNSET) atomCount += hcount;
                 }
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < container.getAtomCount(); i++) {
                 if (container.getAtom(i).getSymbol().equals(elementName)) {
                     atomCount += 1;
@@ -196,8 +183,8 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
             }
         }
 
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-                new IntegerResult(atomCount), getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                atomCount), getDescriptorNames());
     }
 
     /**
@@ -211,24 +198,22 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerResult(1);
     }
-
 
     /**
      *  Gets the parameterNames attribute of the AtomCountDescriptor object.
      *
      *@return    The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         String[] params = new String[1];
         params[0] = "elementName";
         return params;
     }
-
 
     /**
      *  Gets the parameterType attribute of the AtomCountDescriptor object.
@@ -236,9 +221,8 @@ public class AtomCountDescriptor extends AbstractMolecularDescriptor implements 
      *@param  name  Description of the Parameter
      *@return       An Object whose class is that of the parameter requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return "";
     }
 }
-

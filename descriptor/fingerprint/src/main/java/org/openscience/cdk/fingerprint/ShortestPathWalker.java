@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012   Syed Asad Rahman <asad@ebi.ac.uk>
  *               2013   John May         <jwmay@users.sf.net>
- *           
+ *
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,10 +25,14 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.graph.AllPairsShortestPaths;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -45,36 +49,34 @@ import org.openscience.cdk.interfaces.IPseudoAtom;
  * @cdk.githash
  *
  */
-@TestClass("org.openscience.cdk.fingerprint.ShortestPathWalkerTest")
 public final class ShortestPathWalker {
 
     /* container which is being traversed */
     private final IAtomContainer container;
 
     /* set of encoded atom paths */
-    private final Set<String> paths;
+    private final Set<String>    paths;
 
     /* list of encoded pseudo atoms */
-    private final List<String> pseudoAtoms;
+    private final List<String>   pseudoAtoms;
 
     /* maximum number of shortest paths, when there is more then one path */
-    private static final int MAX_SHORTEST_PATHS = 5;
+    private static final int     MAX_SHORTEST_PATHS = 5;
 
     /**
      * Create a new shortest path walker for a given container.
      * @param container the molecule to encode the shortest paths
      */
     public ShortestPathWalker(IAtomContainer container) {
-        this.container   = container;
+        this.container = container;
         this.pseudoAtoms = new ArrayList<String>(5);
-        this.paths       = Collections.unmodifiableSet(traverse());
+        this.paths = Collections.unmodifiableSet(traverse());
     }
 
     /**
      * Access a set of all shortest paths.
      * @return the paths
      */
-    @TestMethod("testPaths")
     public Set<String> paths() {
         return Collections.unmodifiableSet(paths);
     }
@@ -101,7 +103,7 @@ public final class ShortestPathWalker {
                 // only encode when there is a manageable number of paths
                 if (nPaths > 0 && nPaths < MAX_SHORTEST_PATHS) {
 
-                    for(int[] path : apsp.from(i).pathsTo(j)){
+                    for (int[] path : apsp.from(i).pathsTo(j)) {
                         paths.add(encode(path));
                         paths.add(encode(reverse(path)));
                     }
@@ -132,7 +134,8 @@ public final class ShortestPathWalker {
             dest[right] = src[left];
 
             // move the left and right index pointers in toward the center
-            left++; right--;
+            left++;
+            right--;
         }
         return dest;
     }
@@ -153,16 +156,15 @@ public final class ShortestPathWalker {
 
             sb.append(toAtomPattern(atom));
 
-            if(atom instanceof IPseudoAtom) {
+            if (atom instanceof IPseudoAtom) {
                 pseudoAtoms.add(atom.getSymbol());
                 // potential bug, although the atoms are canonical we cannot guarantee the order we will visit them.
                 // sb.append(PeriodicTable.getElementCount() + pseudoAtoms.size());
             }
 
             // if we are not at the last index, add the connecting bond
-            if(i < n){
-                IBond bond = container.getBond(container.getAtom(path[i]),
-                                               container.getAtom(path[i + 1]));
+            if (i < n) {
+                IBond bond = container.getBond(container.getAtom(path[i]), container.getAtom(path[i + 1]));
                 sb.append(getBondSymbol(bond));
             }
 
@@ -218,16 +220,14 @@ public final class ShortestPathWalker {
      * @inheritDoc
      */
     @Override
-    @TestMethod("testToString")
     public String toString() {
-        int      n       = this.paths.size();
-        String[] paths   = this.paths.toArray(new String[n]);
+        int n = this.paths.size();
+        String[] paths = this.paths.toArray(new String[n]);
         StringBuilder sb = new StringBuilder(n * 5);
 
-        for(int i = 0, last = n - 1; i < n; i++){
+        for (int i = 0, last = n - 1; i < n; i++) {
             sb.append(paths[i]);
-            if(i != last)
-                sb.append("->");
+            if (i != last) sb.append("->");
         }
 
         return sb.toString();

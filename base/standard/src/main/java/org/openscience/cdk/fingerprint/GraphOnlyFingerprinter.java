@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2002-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,13 +22,10 @@
  */
 package org.openscience.cdk.fingerprint;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
 import java.util.BitSet;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -43,47 +38,45 @@ import java.util.Random;
  * @cdk.keyword    similarity
  * @cdk.module     standard
  * @cdk.githash
- * 
+ *
  * @see            org.openscience.cdk.fingerprint.Fingerprinter
  */
-@TestClass("org.openscience.cdk.fingerprint.GraphOnlyFingerprinterTest")
 public class GraphOnlyFingerprinter extends Fingerprinter {
-	
-	/**
-	 * Creates a fingerprint generator of length <code>defaultSize</code>
-	 * and with a search depth of <code>defaultSearchDepth</code>.
-	 */
-	public GraphOnlyFingerprinter() {
-		super(DEFAULT_SIZE, DEFAULT_SEARCH_DEPTH);
-	}
-	
-	public GraphOnlyFingerprinter(int size) {
-		super(size, DEFAULT_SEARCH_DEPTH);
-	}
-	
-	public GraphOnlyFingerprinter(int size, int searchDepth) {
-		super(size, searchDepth);
-	}
 
-	/**
-	 * Gets the bondSymbol attribute of the Fingerprinter class. Because we do
-	 * not consider bond orders to be important, we just return "";
-	 *
-	 * @param  bond  Description of the Parameter
-	 * @return       The bondSymbol value
-	 */
-	protected String getBondSymbol(IBond bond) {
-		return "";
-	}
+    /**
+     * Creates a fingerprint generator of length <code>defaultSize</code>
+     * and with a search depth of <code>defaultSearchDepth</code>.
+     */
+    public GraphOnlyFingerprinter() {
+        super(DEFAULT_SIZE, DEFAULT_SEARCH_DEPTH);
+    }
 
-    @TestMethod("testFingerPrint,testFingerprint")
+    public GraphOnlyFingerprinter(int size) {
+        super(size, DEFAULT_SEARCH_DEPTH);
+    }
+
+    public GraphOnlyFingerprinter(int size, int searchDepth) {
+        super(size, searchDepth);
+    }
+
+    /**
+     * Gets the bondSymbol attribute of the Fingerprinter class. Because we do
+     * not consider bond orders to be important, we just return "";
+     *
+     * @param  bond  Description of the Parameter
+     * @return       The bondSymbol value
+     */
+    @Override
+    protected String getBondSymbol(IBond bond) {
+        return "";
+    }
+
     public BitSet getBitFingerprint(IAtomContainer container, int size) throws Exception {
-		int[] hashes = findPathes(container, super.getSearchDepth());
-		BitSet bitSet = new BitSet(size);
+        int[] hashes = findPathes(container, super.getSearchDepth());
+        BitSet bitSet = new BitSet(size);
         for (int hash : hashes) {
             bitSet.set(new Random(hash).nextInt(size));
         }
-		return bitSet;
-	}
+        return bitSet;
+    }
 }
-

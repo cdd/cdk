@@ -47,7 +47,6 @@
 package org.openscience.cdk.smsd.algorithm.matchers;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -59,14 +58,13 @@ import org.openscience.cdk.isomorphism.matchers.IQueryBond;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFLibTest")
 public class DefaultBondMatcher implements BondMatcher {
 
-    static final long serialVersionUID = -7861469841127328812L;
-    private IBond queryBond = null;
-    private IQueryBond smartQueryBond = null;
-    private int unsaturation = 0;
-    private boolean shouldMatchBonds = false;
+    static final long  serialVersionUID = -7861469841127328812L;
+    private IBond      queryBond        = null;
+    private IQueryBond smartQueryBond   = null;
+    private int        unsaturation     = 0;
+    private boolean    shouldMatchBonds = false;
 
     /**
      * Constructor
@@ -106,6 +104,7 @@ public class DefaultBondMatcher implements BondMatcher {
      * @param targetBond target bond
      * @return true if bonds match
      */
+    @Override
     public boolean matches(IAtomContainer targetContainer, IBond targetBond) {
         if (this.smartQueryBond != null && queryBond == null) {
             return smartQueryBond.matches(targetBond);
@@ -157,8 +156,7 @@ public class DefaultBondMatcher implements BondMatcher {
     }
 
     private int countImplicitHydrogens(IAtom atom) {
-        return (atom.getImplicitHydrogenCount() == null)
-                ? 0 : atom.getImplicitHydrogenCount();
+        return (atom.getImplicitHydrogenCount() == null) ? 0 : atom.getImplicitHydrogenCount();
     }
 
     /**

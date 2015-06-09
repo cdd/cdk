@@ -20,7 +20,8 @@ public class PDBAtomCustomizerTest {
 
     private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(PDBAtomCustomizerTest.class);
 
-    @Test public void testPDBAtomCustomization() throws Exception {
+    @Test
+    public void testPDBAtomCustomization() throws Exception {
         StringWriter writer = new StringWriter();
         IAtomContainer molecule = new AtomContainer();
         IPDBAtom atom = new PDBAtom("C");
@@ -31,6 +32,7 @@ public class PDBAtomCustomizerTest {
         CMLWriter cmlWriter = new CMLWriter(writer);
         cmlWriter.registerCustomizer(new PDBAtomCustomizer());
         cmlWriter.write(molecule);
+        cmlWriter.close();
         String cmlContent = writer.toString();
         logger.debug("****************************** testPDBAtomCustomization()");
         logger.debug(cmlContent);

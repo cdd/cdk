@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -64,30 +62,28 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.algorithm.vflib.VFlibMCSHandlerTest")
 public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
 
-    private static List<Map<IAtom, IAtom>> allAtomMCS = null;
-    private static Map<IAtom, IAtom> atomsMCS = null;
-    private static List<Map<IAtom, IAtom>> allAtomMCSCopy = null;
-    private static Map<Integer, Integer> firstMCS = null;
-    private static List<Map<Integer, Integer>> allMCS = null;
-    private static List<Map<Integer, Integer>> allMCSCopy = null;
-    private List<Map<INode, IAtom>> vfLibSolutions = null;
-    private IQueryAtomContainer queryMol = null;
-    private IAtomContainer mol1 = null;
-    private IAtomContainer mol2 = null;
-    private int vfMCSSize = -1;
-    private boolean bond_Match_Flag = false;
-    private int countR = 0;
-    private int countP = 0;
-    private final static ILoggingTool Logger =
-            LoggingToolFactory.createLoggingTool(VFlibMCSHandler.class);
+    private static       List<Map<IAtom, IAtom>>     allAtomMCS     = null;
+    private static       Map<IAtom, IAtom>           atomsMCS       = null;
+    private static       List<Map<IAtom, IAtom>>     allAtomMCSCopy = null;
+    private static       Map<Integer, Integer>       firstMCS       = null;
+    private static       List<Map<Integer, Integer>> allMCS         = null;
+    private static       List<Map<Integer, Integer>> allMCSCopy     = null;
+    private              List<Map<INode, IAtom>>     vfLibSolutions = null;
+    private              IQueryAtomContainer         queryMol       = null;
+    private              IAtomContainer              mol1           = null;
+    private              IAtomContainer              mol2           = null;
+    private              int                         vfMCSSize      = -1;
+    private              boolean                     bondMatchFlag  = false;
+    private              int                         countR         = 0;
+    private              int                         countP         = 0;
+    private final static ILoggingTool                LOGGER         = LoggingToolFactory
+            .createLoggingTool(VFlibMCSHandler.class);
 
     /**
      * Constructor for an extended VF Algorithm for the MCS search
      */
-    @TestMethod("setMCSAlgorithm")
     public VFlibMCSHandler() {
         allAtomMCS = new ArrayList<Map<IAtom, IAtom>>();
         allAtomMCSCopy = new ArrayList<Map<IAtom, IAtom>>();
@@ -100,10 +96,9 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
     /**
      *{@inheritDoc}
      *
-     * @param bondTypeMatch 
+     * @param bondTypeMatch
      */
     @Override
-    @TestMethod("testSearchMCS")
     public void searchMCS(boolean bondTypeMatch) {
         setBondMatchFlag(bondTypeMatch);
         searchVFMCSMappings();
@@ -112,11 +107,12 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
             try {
                 searchMcGregorMapping();
             } catch (CDKException ex) {
-                Logger.error(Level.SEVERE, null, ex);
+                LOGGER.error(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                Logger.error(Level.SEVERE, null, ex);
+                LOGGER.error(Level.SEVERE, null, ex);
             }
-        } else if (!allAtomMCSCopy.isEmpty()) {
+        }
+        else if (!allAtomMCSCopy.isEmpty()) {
             allAtomMCS.addAll(allAtomMCSCopy);
             allMCS.addAll(allMCSCopy);
         }
@@ -145,7 +141,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
      * @param reactant
      * @param product
      */
-    @TestMethod("testSet_MolHandler_MolHandler")
+    @Override
     public void set(MolHandler reactant, MolHandler product) {
         mol1 = reactant.getMolecule();
         mol2 = product.getMolecule();
@@ -156,7 +152,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
      * @param source
      * @param target
      */
-    @TestMethod("testSet_IQueryAtomContainer_MolHandler")
+    @Override
     public void set(IQueryAtomContainer source, IAtomContainer target) {
         queryMol = source;
         mol2 = target;
@@ -172,25 +168,25 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetAllAtomMapping")
+    @Override
     public List<Map<IAtom, IAtom>> getAllAtomMapping() {
         return Collections.unmodifiableList(allAtomMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetAllMapping")
+    @Override
     public List<Map<Integer, Integer>> getAllMapping() {
         return Collections.unmodifiableList(allMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetFirstAtomMapping")
+    @Override
     public Map<IAtom, IAtom> getFirstAtomMapping() {
         return Collections.unmodifiableMap(atomsMCS);
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testGetFirstMapping")
+    @Override
     public Map<Integer, Integer> getFirstMapping() {
         return Collections.unmodifiableMap(firstMCS);
     }
@@ -213,13 +209,15 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
     }
 
     private void searchVFMCSMappings() {
-//        System.out.println("searchVFMCSMappings ");
+        //        System.out.println("searchVFMCSMappings ");
         IQuery query = null;
         IMapper mapper = null;
 
         if (queryMol == null) {
-            countR = getReactantMol().getAtomCount() + AtomContainerManipulator.getSingleBondEquivalentSum(getReactantMol());
-            countP = getProductMol().getAtomCount() + AtomContainerManipulator.getSingleBondEquivalentSum(getProductMol());
+            countR = getReactantMol().getAtomCount()
+                    + AtomContainerManipulator.getSingleBondEquivalentSum(getReactantMol());
+            countP = getProductMol().getAtomCount()
+                    + AtomContainerManipulator.getSingleBondEquivalentSum(getProductMol());
         }
         vfLibSolutions = new ArrayList<Map<INode, IAtom>>();
         if (queryMol != null) {
@@ -248,16 +246,16 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
             setVFMappings(false, query);
         }
         setVFMappings(false, query);
-//        System.out.println("Sol count " + vfLibSolutions.size());
-//        System.out.println("Sol size " + vfLibSolutions.iterator().next().size());
-//        System.out.println("MCSSize " + vfMCSSize);
-//        System.out.println("After Sol count " + allMCSCopy.size());
+        //        System.out.println("Sol count " + vfLibSolutions.size());
+        //        System.out.println("Sol size " + vfLibSolutions.iterator().next().size());
+        //        System.out.println("MCSSize " + vfMCSSize);
+        //        System.out.println("After Sol count " + allMCSCopy.size());
 
     }
 
     private void searchMcGregorMapping() throws CDKException, IOException {
         List<List<Integer>> mappings = new ArrayList<List<Integer>>();
-        boolean ROPFlag = true;
+        boolean ropFlag = true;
         for (Map<Integer, Integer> firstPassMappings : allMCSCopy) {
             Map<Integer, Integer> tMapping = new TreeMap<Integer, Integer>(firstPassMappings);
             McGregor mgit = null;
@@ -269,7 +267,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                 } else {
                     tMapping.clear();
                     mgit = new McGregor(mol2, mol1, mappings, isBondMatchFlag());
-                    ROPFlag = false;
+                    ropFlag = false;
                     for (Map.Entry<Integer, Integer> map : firstPassMappings.entrySet()) {
                         tMapping.put(map.getValue(), map.getKey());
                     }
@@ -279,14 +277,14 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
             mappings = mgit.getMappings();
             mgit = null;
         }
-//        System.out.println("\nSol count after MG" + mappings.size());
-        setMcGregorMappings(ROPFlag, mappings);
+        //        System.out.println("\nSol count after MG" + mappings.size());
+        setMcGregorMappings(ropFlag, mappings);
         vfMCSSize = vfMCSSize / 2;
-//        System.out.println("After set Sol count MG" + allMCS.size());
-//        System.out.println("MCSSize " + vfMCSSize + "\n");
+        //        System.out.println("After set Sol count MG" + allMCS.size());
+        //        System.out.println("MCSSize " + vfMCSSize + "\n");
     }
 
-    private void setVFMappings(boolean RONP, IQuery query) {
+    private void setVFMappings(boolean rONP, IQuery query) {
         int counter = 0;
         for (Map<INode, IAtom> solution : vfLibSolutions) {
             Map<IAtom, IAtom> atomatomMapping = new HashMap<IAtom, IAtom>();
@@ -303,7 +301,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                 Integer qIndex = 0;
                 Integer tIndex = 0;
 
-                if (RONP) {
+                if (rONP) {
                     qAtom = query.getAtom(mapping.getKey());
                     tAtom = mapping.getValue();
                     qIndex = getReactantMol().getAtomNumber(qAtom);
@@ -314,7 +312,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                     qIndex = getReactantMol().getAtomNumber(qAtom);
                     tIndex = getProductMol().getAtomNumber(tAtom);
                 }
-                
+
                 if (qIndex != -1 && tIndex != -1) {
                     atomatomMapping.put(qAtom, tAtom);
                     indexindexMapping.put(qIndex, tIndex);
@@ -322,7 +320,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                     try {
                         throw new CDKException("Atom index pointing to -1");
                     } catch (CDKException ex) {
-                        Logger.error(Level.SEVERE, null, ex);
+                        LOGGER.error(Level.SEVERE, null, ex);
                     }
                 }
             }
@@ -335,7 +333,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
         }
     }
 
-    private void setMcGregorMappings(boolean RONP, List<List<Integer>> mappings) throws CDKException {
+    private void setMcGregorMappings(boolean ronp, List<List<Integer>> mappings) throws CDKException {
         int counter = 0;
         for (List<Integer> mapping : mappings) {
             if (mapping.size() > vfMCSSize) {
@@ -352,7 +350,7 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                 Integer qIndex = 0;
                 Integer tIndex = 0;
 
-                if (RONP) {
+                if (ronp) {
                     qAtom = getReactantMol().getAtom(mapping.get(index));
                     tAtom = getProductMol().getAtom(mapping.get(index + 1));
 
@@ -364,7 +362,6 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
                     qIndex = mapping.get(index + 1);
                     tIndex = mapping.get(index);
                 }
-
 
                 if (qIndex != null && tIndex != null) {
                     atomatomMapping.put(qAtom, tAtom);
@@ -386,14 +383,14 @@ public class VFlibMCSHandler extends AbstractMCSAlgorithm implements IMCSBase {
      * @return the shouldMatchBonds
      */
     public boolean isBondMatchFlag() {
-        return bond_Match_Flag;
+        return bondMatchFlag;
     }
 
     /**
      * @param shouldMatchBonds the shouldMatchBonds to set
      */
     public void setBondMatchFlag(boolean shouldMatchBonds) {
-        this.bond_Match_Flag = shouldMatchBonds;
+        this.bondMatchFlag = shouldMatchBonds;
     }
 
     private IAtomContainer getReactantMol() {

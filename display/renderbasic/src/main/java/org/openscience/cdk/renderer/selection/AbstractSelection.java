@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2009 Arvid Berg <goglepox@users.sf.net>
+/* Copyright (C) 2009 Arvid Berg <goglepox@users.sf.net>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -31,50 +29,56 @@ import org.openscience.cdk.interfaces.IChemObject;
 
 /**
  * An abstract selection of {@link IChemObject}s.
- * 
+ *
  * @author Arvid
  * @cdk.module renderbasic
  * @cdk.githash
  */
 public abstract class AbstractSelection implements IChemObjectSelection {
 
-	/**
-	 * Static implementation of an empty selection.
-	 */
+    /**
+     * Static implementation of an empty selection.
+     */
     public static IChemObjectSelection EMPTY_SELECTION = new AbstractSelection() {
 
-    	/** {@inheritDoc} */
-        public IAtomContainer getConnectedAtomContainer() {
-            return null;
-        }
+                                                           /** {@inheritDoc} */
+                                                           @Override
+                                                           public IAtomContainer getConnectedAtomContainer() {
+                                                               return null;
+                                                           }
 
-    	/** {@inheritDoc} */
-        public boolean isFilled() {
-            return false;
-        }
+                                                           /** {@inheritDoc} */
+                                                           @Override
+                                                           public boolean isFilled() {
+                                                               return false;
+                                                           }
 
-    	/** {@inheritDoc} */
-        public boolean contains(IChemObject obj) {
-            return false;
-        }
+                                                           /** {@inheritDoc} */
+                                                           @Override
+                                                           public boolean contains(IChemObject obj) {
+                                                               return false;
+                                                           }
 
-    	/** {@inheritDoc} */
-        public <E extends IChemObject> Collection<E> elements(Class<E> clazz) {
-            return Collections.emptySet();
-        }
+                                                           /** {@inheritDoc} */
+                                                           @Override
+                                                           public <E extends IChemObject> Collection<E> elements(
+                                                                   Class<E> clazz) {
+                                                               return Collections.emptySet();
+                                                           }
 
-    };
+                                                       };
 
     /** {@inheritDoc} */
+    @Override
     public void select(IChemModel chemModel) {
         // TODO Auto-generated method stub
 
     }
-    
+
     /**
      * Utility method to add an {@link IChemObject} to an {@link IAtomContainer}.
-     * 
-     * @param ac the {@link IAtomContainer} to add to 
+     *
+     * @param ac the {@link IAtomContainer} to add to
      * @param item the {@link IChemObject} to add
      */
     protected void addToAtomContainer(IAtomContainer ac, IChemObject item) {

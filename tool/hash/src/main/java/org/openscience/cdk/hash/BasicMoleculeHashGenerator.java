@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import java.util.Arrays;
@@ -50,14 +48,13 @@ import java.util.Arrays;
  * @see BasicAtomHashGenerator
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.BasicMoleculeHashGeneratorTest")
 final class BasicMoleculeHashGenerator implements MoleculeHashGenerator {
 
     /* generator for atom hashes */
     private final AtomHashGenerator generator;
 
     /* pseudorandom number generator */
-    private final Pseudorandom pseudorandom;
+    private final Pseudorandom      pseudorandom;
 
     /**
      * Create a new molecule hash using the provided atom hash generator.
@@ -65,11 +62,9 @@ final class BasicMoleculeHashGenerator implements MoleculeHashGenerator {
      * @param generator a generator for atom hash codes
      * @throws NullPointerException no generator provided
      */
-    @TestMethod("testConstruct_Null")
     public BasicMoleculeHashGenerator(AtomHashGenerator generator) {
         this(generator, new Xorshift());
     }
-
 
     /**
      * Create a new molecule hash using the provided atom hash generator and
@@ -80,12 +75,9 @@ final class BasicMoleculeHashGenerator implements MoleculeHashGenerator {
      * @throws NullPointerException no atom hash generator or pseudorandom
      *                              number generator provided
      */
-    @TestMethod("testConstruct_NullPRNG")
     BasicMoleculeHashGenerator(AtomHashGenerator generator, Pseudorandom pseudorandom) {
-        if (generator == null)
-            throw new NullPointerException("no AtomHashGenerator provided");
-        if (pseudorandom == null)
-            throw new NullPointerException("no Pseudorandom number generator provided");
+        if (generator == null) throw new NullPointerException("no AtomHashGenerator provided");
+        if (pseudorandom == null) throw new NullPointerException("no Pseudorandom number generator provided");
         this.generator = generator;
         this.pseudorandom = pseudorandom;
     }
@@ -93,8 +85,8 @@ final class BasicMoleculeHashGenerator implements MoleculeHashGenerator {
     /**
      * @inheritDoc
      */
-    @TestMethod("testGenerate")
-    @Override public long generate(IAtomContainer container) {
+    @Override
+    public long generate(IAtomContainer container) {
 
         long[] hashes = generator.generate(container);
         long[] rotated = new long[hashes.length];

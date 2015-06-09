@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.hash.stereo.DoubleBondElementEncoderFactory;
 import org.openscience.cdk.hash.stereo.StereoEncoder;
 import org.openscience.cdk.hash.stereo.GeometricCumulativeDoubleBondFactory;
@@ -76,27 +74,25 @@ import java.util.List;
  * @cdk.module hash
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.HashGeneratorMakerTest")
 public final class HashGeneratorMaker {
 
     /* no default depth */
-    private int depth = -1;
+    private int                        depth          = -1;
 
     /* ordered list of custom encoders */
-    private List<AtomEncoder> customEncoders = new ArrayList<AtomEncoder>();
+    private List<AtomEncoder>          customEncoders = new ArrayList<AtomEncoder>();
 
     /* ordered set of basic encoders */
-    private EnumSet<BasicAtomEncoder> encoderSet = EnumSet
-            .noneOf(BasicAtomEncoder.class);
+    private EnumSet<BasicAtomEncoder>  encoderSet     = EnumSet.noneOf(BasicAtomEncoder.class);
 
     /* list of stereo encoders */
     private List<StereoEncoderFactory> stereoEncoders = new ArrayList<StereoEncoderFactory>();
 
     /* whether we want to use perturbed hash generators */
-    private EquivalentSetFinder equivSetFinder = null;
-    
+    private EquivalentSetFinder        equivSetFinder = null;
+
     /* function determines whether any atoms are suppressed */
-    private AtomSuppression suppression = AtomSuppression.unsuppressed();
+    private AtomSuppression            suppression    = AtomSuppression.unsuppressed();
 
     /**
      * Specify the depth of the hash generator. Larger values discriminate more
@@ -106,10 +102,8 @@ public final class HashGeneratorMaker {
      * @return reference for fluent API
      * @throws IllegalArgumentException if the depth was less then zero
      */
-    @TestMethod("testInvalidDepth,testDepth")
     public HashGeneratorMaker depth(int depth) {
-        if (depth < 0)
-            throw new IllegalArgumentException("depth must not be less than 0");
+        if (depth < 0) throw new IllegalArgumentException("depth must not be less than 0");
         this.depth = depth;
         return this;
     }
@@ -120,7 +114,6 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @see BasicAtomEncoder#ATOMIC_NUMBER
      */
-    @TestMethod("testElemental")
     public HashGeneratorMaker elemental() {
         encoderSet.add(BasicAtomEncoder.ATOMIC_NUMBER);
         return this;
@@ -132,7 +125,6 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @see BasicAtomEncoder#MASS_NUMBER
      */
-    @TestMethod("testIsotopic")
     public HashGeneratorMaker isotopic() {
         encoderSet.add(BasicAtomEncoder.MASS_NUMBER);
         return this;
@@ -144,7 +136,6 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @see BasicAtomEncoder#FORMAL_CHARGE
      */
-    @TestMethod("testCharged")
     public HashGeneratorMaker charged() {
         encoderSet.add(BasicAtomEncoder.FORMAL_CHARGE);
         return this;
@@ -156,7 +147,6 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @see BasicAtomEncoder#ORBITAL_HYBRIDIZATION
      */
-    @TestMethod("testOrbital")
     public HashGeneratorMaker orbital() {
         encoderSet.add(BasicAtomEncoder.ORBITAL_HYBRIDIZATION);
         return this;
@@ -168,7 +158,6 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @see BasicAtomEncoder#FREE_RADICALS
      */
-    @TestMethod("testRadical")
     public HashGeneratorMaker radical() {
         encoderSet.add(BasicAtomEncoder.FREE_RADICALS);
         return this;
@@ -186,7 +175,6 @@ public final class HashGeneratorMaker {
      *
      * @return fluent API reference (self)
      */
-    @TestMethod("testChiral")
     public HashGeneratorMaker chiral() {
         this.stereoEncoders.add(new GeometricTetrahedralEncoderFactory());
         this.stereoEncoders.add(new GeometricDoubleBondEncoderFactory());
@@ -203,7 +191,6 @@ public final class HashGeneratorMaker {
      *
      * @return fluent API reference (self)
      */
-    @TestMethod("suppressHydrogens")
     public HashGeneratorMaker suppressHydrogens() {
         this.suppression = AtomSuppression.anyHydrogens();
         return this;
@@ -220,7 +207,6 @@ public final class HashGeneratorMaker {
      * @see MinimumEquivalentCyclicSet
      * @see #perturbWith(EquivalentSetFinder)
      */
-    @TestMethod("testPerturbed")
     public HashGeneratorMaker perturbed() {
         return perturbWith(new MinimumEquivalentCyclicSet());
     }
@@ -262,7 +248,6 @@ public final class HashGeneratorMaker {
      * @see MinimumEquivalentCyclicSet
      * @see MinimumEquivalentCyclicSetUnion
      */
-    @TestMethod("testPerturbedWith")
     HashGeneratorMaker perturbWith(EquivalentSetFinder equivSetFinder) {
         this.equivSetFinder = equivSetFinder;
         return this;
@@ -277,10 +262,8 @@ public final class HashGeneratorMaker {
      * @return fluent API reference (self)
      * @throws NullPointerException no encoder provided
      */
-    @TestMethod("testEncode_Null,testEncode")
     public HashGeneratorMaker encode(AtomEncoder encoder) {
-        if (encoder == null)
-            throw new NullPointerException("no encoder provided");
+        if (encoder == null) throw new NullPointerException("no encoder provided");
         customEncoders.add(encoder);
         return this;
     }
@@ -296,13 +279,9 @@ public final class HashGeneratorMaker {
         } else if (stereoEncoders.size() == 1) {
             return stereoEncoders.get(0);
         } else {
-            StereoEncoderFactory factory = new ConjugatedEncoderFactory(stereoEncoders
-                                                                                .get(0),
-                                                                        stereoEncoders
-                                                                                .get(1));
+            StereoEncoderFactory factory = new ConjugatedEncoderFactory(stereoEncoders.get(0), stereoEncoders.get(1));
             for (int i = 2; i < stereoEncoders.size(); i++) {
-                factory = new ConjugatedEncoderFactory(factory, stereoEncoders
-                        .get(i));
+                factory = new ConjugatedEncoderFactory(factory, stereoEncoders.get(i));
             }
             return factory;
         }
@@ -314,11 +293,9 @@ public final class HashGeneratorMaker {
      * @return instance of the generator
      * @throws IllegalArgumentException no depth or encoders were configured
      */
-    @TestMethod("testEnsemble")
     public EnsembleHashGenerator ensemble() {
         throw new UnsupportedOperationException("not yet supported");
     }
-
 
     /**
      * Given the current configuration create an {@link MoleculeHashGenerator}.
@@ -326,7 +303,6 @@ public final class HashGeneratorMaker {
      * @return instance of the generator
      * @throws IllegalArgumentException no depth or encoders were configured
      */
-    @TestMethod("testMolecular")
     public MoleculeHashGenerator molecular() {
         return new BasicMoleculeHashGenerator(atomic());
     }
@@ -337,11 +313,9 @@ public final class HashGeneratorMaker {
      * @return instance of the generator
      * @throws IllegalArgumentException no depth or encoders were configured
      */
-    @TestMethod("testAtomic,testNoDepth")
     public AtomHashGenerator atomic() {
 
-        if (depth < 0)
-            throw new IllegalArgumentException("no depth specified, use .depth(int)");
+        if (depth < 0) throw new IllegalArgumentException("no depth specified, use .depth(int)");
 
         List<AtomEncoder> encoders = new ArrayList<AtomEncoder>();
 
@@ -350,36 +324,24 @@ public final class HashGeneratorMaker {
             encoders.add(encoder);
         }
         encoders.addAll(this.customEncoders);
-        
+
         // check if suppression of atoms is wanted - if not use a default value
         // we also use the 'Basic' generator (see below)
         boolean suppress = suppression != AtomSuppression.unsuppressed();
-        
-        AtomEncoder   encoder = new ConjugatedAtomEncoder(encoders);
-        SeedGenerator seeds   = new SeedGenerator(encoder, suppression);
 
-        AbstractAtomHashGenerator simple = suppress
-                                           ? new SuppressedAtomHashGenerator(seeds,
-                                                                             new Xorshift(),
-                                                                             makeStereoEncoderFactory(),
-                                                                             suppression,
-                                                                             depth)
-                                           : new BasicAtomHashGenerator(seeds,
-                                                                        new Xorshift(),
-                                                                        makeStereoEncoderFactory(),
-                                                                        depth);
+        AtomEncoder encoder = new ConjugatedAtomEncoder(encoders);
+        SeedGenerator seeds = new SeedGenerator(encoder, suppression);
+
+        AbstractAtomHashGenerator simple = suppress ? new SuppressedAtomHashGenerator(seeds, new Xorshift(),
+                makeStereoEncoderFactory(), suppression, depth) : new BasicAtomHashGenerator(seeds, new Xorshift(),
+                makeStereoEncoderFactory(), depth);
 
         // if there is a finder for checking equivalent vertices then the user
         // wants to 'perturb' the hashed
         if (equivSetFinder != null) {
-            return new PerturbedAtomHashGenerator(seeds,
-                                                  simple,
-                                                  new Xorshift(),
-                                                  makeStereoEncoderFactory(),
-                                                  equivSetFinder,
-                                                  suppression);
-        } 
-        else {
+            return new PerturbedAtomHashGenerator(seeds, simple, new Xorshift(), makeStereoEncoderFactory(),
+                    equivSetFinder, suppression);
+        } else {
             // no equivalence set finder - just use the simple hash
             return simple;
         }
@@ -388,8 +350,8 @@ public final class HashGeneratorMaker {
     /**
      * Help class to combined two stereo encoder factories
      */
-    private final class ConjugatedEncoderFactory
-            implements StereoEncoderFactory {
+    private final class ConjugatedEncoderFactory implements StereoEncoderFactory {
+
         private final StereoEncoderFactory left, right;
 
         /**
@@ -409,8 +371,7 @@ public final class HashGeneratorMaker {
          */
         @Override
         public StereoEncoder create(IAtomContainer container, int[][] graph) {
-            return new ConjugatedEncoder(left.create(container, graph), right
-                    .create(container, graph));
+            return new ConjugatedEncoder(left.create(container, graph), right.create(container, graph));
         }
     }
 
@@ -439,7 +400,8 @@ public final class HashGeneratorMaker {
          * @param next    next invariants
          * @return whether either encoder modified any values
          */
-        @Override public boolean encode(long[] current, long[] next) {
+        @Override
+        public boolean encode(long[] current, long[] next) {
             boolean modified = left.encode(current, next);
             return right.encode(current, next) || modified;
         }
@@ -447,7 +409,8 @@ public final class HashGeneratorMaker {
         /**
          * reset the left and right encoders
          */
-        @Override public void reset() {
+        @Override
+        public void reset() {
             left.reset();
             right.reset();
         }

@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,13 +22,11 @@
  */
 package org.openscience.cdk.smsd.filters;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 import java.util.TreeMap;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
@@ -37,7 +34,12 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.smsd.Isomorphism;
 import org.openscience.cdk.smsd.interfaces.Algorithm;
-import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -47,24 +49,19 @@ import static org.junit.Assert.*;
  */
 public class ChemicalFiltersTest {
 
-    public ChemicalFiltersTest() {
-    }
+    public ChemicalFiltersTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of sortResultsByStereoAndBondMatch method, of class ChemicalFilters.
@@ -72,7 +69,6 @@ public class ChemicalFiltersTest {
      */
     @Test
     public void testSortResultsByStereoAndBondMatch() throws Exception {
-        System.out.println("sortResultsByStereoAndBondMatch");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/OCC=C");
         IAtomContainer queryac = sp.parseSmiles("CCCOCC(C)=C");
@@ -95,7 +91,6 @@ public class ChemicalFiltersTest {
      */
     @Test
     public void testSortResultsByFragments() throws InvalidSmilesException, CDKException {
-        System.out.println("sortResultsByFragments");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -113,11 +108,10 @@ public class ChemicalFiltersTest {
 
     /**
      * Test of sortResultsByEnergies method, of class ChemicalFilters.
-     * @throws Exception 
+     * @throws Exception
      */
     @Test
     public void testSortResultsByEnergies() throws Exception {
-        System.out.println("sortResultsByEnergies");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -138,7 +132,6 @@ public class ChemicalFiltersTest {
      */
     @Test
     public void testSortMapByValueInAccendingOrder() {
-        System.out.println("sortMapByValueInAccendingOrder");
 
         Map<Integer, Double> map = new TreeMap<Integer, Double>();
         map.put(1, 3.0);
@@ -160,7 +153,6 @@ public class ChemicalFiltersTest {
      */
     @Test
     public void testSortMapByValueInDecendingOrder() {
-        System.out.println("sortMapByValueInDecendingOrder");
         Map<Integer, Double> map = new TreeMap<Integer, Double>();
         map.put(1, 3.0);
         map.put(2, 2.0);
@@ -179,11 +171,10 @@ public class ChemicalFiltersTest {
     /**
      * Test of getSortedEnergy method, of class ChemicalFilters.
      * @throws InvalidSmilesException
-     * @throws CDKException 
+     * @throws CDKException
      */
     @Test
     public void testGetSortedEnergy() throws InvalidSmilesException, CDKException {
-        System.out.println("getSortedEnergy");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -198,11 +189,10 @@ public class ChemicalFiltersTest {
     /**
      * Test of getSortedFragment method, of class ChemicalFilters.
      * @throws InvalidSmilesException
-     * @throws CDKException 
+     * @throws CDKException
      */
     @Test
     public void testGetSortedFragment() throws InvalidSmilesException, CDKException {
-        System.out.println("getSortedFragment");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");
@@ -221,7 +211,6 @@ public class ChemicalFiltersTest {
      */
     @Test
     public void testGetStereoMatches() throws InvalidSmilesException, CDKException {
-        System.out.println("getStereoMatches");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/OCC=C");
         IAtomContainer queryac = sp.parseSmiles("CCCOCC(C)=C");

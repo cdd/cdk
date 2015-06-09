@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +22,8 @@ package org.openscience.cdk.interfaces;
  * The base class for atom types.
  *
  * Atom types are typically used to describe the
- * behaviour of an atom of a particular element in different environment like 
- * sp<sup>3</sup> hybridized carbon C3, etc., in some molecular modelling 
+ * behaviour of an atom of a particular element in different environment like
+ * sp<sup>3</sup> hybridized carbon C3, etc., in some molecular modelling
  * applications.
  *
  * @cdk.module  interfaces
@@ -41,69 +39,68 @@ public interface IAtomType extends IIsotope {
     /**
      *
      * An enum for the different hybridization states.
-     * 
+     *
      */
-	public enum Hybridization {
-	    S,
-	    SP1,     // linear
-	    SP2,     // trigonal planar (single pi-electron in pz)
-	    SP3,     // tetrahedral
-	    PLANAR3, // trigonal planar (lone pair in pz)
-	    SP3D1,   // trigonal planar
-	    SP3D2,   // octahedral
-	    SP3D3,   // pentagonal bipyramid
-	    SP3D4,   // square antiprim??
-	    SP3D5    // tricapped trigonal prism
-	}
-	
-	/**
-	 * Sets the if attribute of the AtomType object.
-	 *
-	 * @param  identifier  The new AtomTypeID value. Null if unset.
+    public enum Hybridization {
+        S, SP1, // linear
+        SP2, // trigonal planar (single pi-electron in pz)
+        SP3, // tetrahedral
+        PLANAR3, // trigonal planar (lone pair in pz)
+        SP3D1, // trigonal planar
+        SP3D2, // octahedral
+        SP3D3, // pentagonal bipyramid
+        SP3D4, // square antiprim??
+        SP3D5 // tricapped trigonal prism
+    }
+
+    /**
+     * Sets the if attribute of the AtomType object.
+     *
+     * @param  identifier  The new AtomTypeID value. Null if unset.
      * @see    #getAtomTypeName
-	 */
-	public void setAtomTypeName(String identifier);
+     */
+    public void setAtomTypeName(String identifier);
 
-	/**
-	 * Sets the MaxBondOrder attribute of the AtomType object.
-	 *
-	 * @param  maxBondOrder  The new MaxBondOrder value
+    /**
+     * Sets the MaxBondOrder attribute of the AtomType object.
+     *
+     * @param  maxBondOrder  The new MaxBondOrder value
      * @see    #getMaxBondOrder
-	 */
-	public void setMaxBondOrder(IBond.Order maxBondOrder);
+     */
+    public void setMaxBondOrder(IBond.Order maxBondOrder);
 
-	/**
-	 * Sets the the exact bond order sum attribute of the AtomType object.
-	 *
-	 * @param  bondOrderSum  The new bondOrderSum value
+    /**
+     * Sets the the exact bond order sum attribute of the AtomType object.
+     *
+     * @param  bondOrderSum  The new bondOrderSum value
      * @see    #getBondOrderSum
-	 */
-	public void setBondOrderSum(Double bondOrderSum);
+     */
+    public void setBondOrderSum(Double bondOrderSum);
 
-	/**
-	 * Gets the id attribute of the AtomType object.
-	 *
-	 * @return    The id value
+    /**
+     * Gets the id attribute of the AtomType object.
+     *
+     * @return    The id value
      * @see       #setAtomTypeName
-	 */
-	public String getAtomTypeName();
+     */
+    public String getAtomTypeName();
 
-	/**
-	 * Gets the MaxBondOrder attribute of the AtomType object.
-	 *
-	 * @return    The MaxBondOrder value
+    /**
+     * Gets the MaxBondOrder attribute of the AtomType object.
+     *
+     * @return    The MaxBondOrder value
      * @see       #setMaxBondOrder
-	 */
-	public IBond.Order getMaxBondOrder();
+     */
+    public IBond.Order getMaxBondOrder();
 
-	/**
-	 * Gets the bondOrderSum attribute of the AtomType object.
-	 *
-	 * @return    The bondOrderSum value
+    /**
+     * Gets the bondOrderSum attribute of the AtomType object.
+     *
+     * @return    The bondOrderSum value
      * @see       #setBondOrderSum
-	 */
-	public Double getBondOrderSum();
-	
+     */
+    public Double getBondOrderSum();
+
     /**
      * Sets the formal charge of this atom.
      *
@@ -111,7 +108,7 @@ public interface IAtomType extends IIsotope {
      * @see    #getFormalCharge
      */
     public void setFormalCharge(Integer charge);
-    
+
     /**
      * Returns the formal charge of this atom.
      *
@@ -119,7 +116,7 @@ public interface IAtomType extends IIsotope {
      * @see    #setFormalCharge
      */
     public Integer getFormalCharge();
-    
+
     /**
      * Sets the formal neighbour count of this atom.
      *
@@ -127,7 +124,7 @@ public interface IAtomType extends IIsotope {
      * @see    #getFormalNeighbourCount
      */
     public void setFormalNeighbourCount(Integer count);
-    
+
     /**
      * Returns the formal neighbour count of this atom.
      *
@@ -135,7 +132,7 @@ public interface IAtomType extends IIsotope {
      * @see    #setFormalNeighbourCount
      */
     public Integer getFormalNeighbourCount();
-    
+
     /**
      * Sets the hybridization of this atom.
      *
@@ -143,7 +140,7 @@ public interface IAtomType extends IIsotope {
      * @see    #getHybridization
      */
     public void setHybridization(Hybridization hybridization);
-    
+
     /**
      * Returns the hybridization of this atom.
      *
@@ -159,7 +156,7 @@ public interface IAtomType extends IIsotope {
      * @see    #getCovalentRadius
      */
     public void setCovalentRadius(Double radius);
-    
+
     /**
      * Returns the covalent radius for this AtomType.
      *
@@ -167,22 +164,21 @@ public interface IAtomType extends IIsotope {
      * @see    #setCovalentRadius
      */
     public Double getCovalentRadius();
-    
-	/**
-	 * Sets the the exact electron valency of the AtomType object.
-	 *
-	 * @param  valency  The new valency value
-	 * @see    #getValency()
-	 */
-	public void setValency(Integer valency);
 
-	/**
-	 * Gets the the exact electron valency of the AtomType object.
-	 *
-	 * @return The valency value
-	 * @see    #setValency(Integer)
-	 */
-	public Integer getValency();
+    /**
+     * Sets the the exact electron valency of the AtomType object.
+     *
+     * @param  valency  The new valency value
+     * @see    #getValency()
+     */
+    public void setValency(Integer valency);
+
+    /**
+     * Gets the the exact electron valency of the AtomType object.
+     *
+     * @return The valency value
+     * @see    #setValency(Integer)
+     */
+    public Integer getValency();
 
 }
-

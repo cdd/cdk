@@ -23,9 +23,6 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.BitSet;
 
 import static org.openscience.cdk.graph.InitialCycles.Cycle;
@@ -58,23 +55,22 @@ import static org.openscience.cdk.graph.InitialCycles.Cycle;
  * @cdk.module core
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.graph.BitMatrixTest")
 final class BitMatrix {
 
     /** rows of the matrix. */
     private final BitSet[] rows;
 
     /** keep track of row swaps. */
-    private final int[] indices;
+    private final int[]    indices;
 
     /** maximum number of rows. */
-    private final int max;
+    private final int      max;
 
     /** number of columns. */
-    private final int n;
+    private final int      n;
 
     /** current number of rows. */
-    private int m;
+    private int            m;
 
     /**
      * Create a new bit matrix with the given number of columns and rows. Note
@@ -99,7 +95,7 @@ final class BitMatrix {
      * @param i row index
      * @param j row index
      */
-    @TestMethod("swap") void swap(int i, int j) {
+    void swap(int i, int j) {
         BitSet row = rows[i];
         int k = indices[i];
         rows[i] = rows[j];
@@ -116,8 +112,7 @@ final class BitMatrix {
      */
     private int rowIndex(int j) {
         for (int i = 0; i < indices.length; i++) {
-            if (indices[i] == j)
-                return i;
+            if (indices[i] == j) return i;
         }
         return -1;
     }
@@ -128,7 +123,6 @@ final class BitMatrix {
      * @param j index of row
      * @return the row which was added at index j
      */
-    @TestMethod("swap")
     public BitSet row(int j) {
         return rows[rowIndex(j)];
     }
@@ -141,13 +135,11 @@ final class BitMatrix {
      * @return whether the row was eliminated
      * @see #eliminate()
      */
-    @TestMethod("eliminate1,eliminate2,eliminate3")
     public boolean eliminated(int j) {
         return row(j).isEmpty();
     }
 
     /** Clear the matrix, setting the number of rows to 0. */
-    @TestMethod("clear")
     public void clear() {
         m = 0;
     }
@@ -157,10 +149,8 @@ final class BitMatrix {
      *
      * @param row the row
      */
-    @TestMethod("swap,clear")
     public void add(BitSet row) {
-        if (m >= max)
-            throw new IndexOutOfBoundsException("initalise matrix with more rows");
+        if (m >= max) throw new IndexOutOfBoundsException("initalise matrix with more rows");
         rows[m] = row;
         indices[m] = m;
         m++;
@@ -173,7 +163,6 @@ final class BitMatrix {
      * @return rank of the matrix
      * @see #eliminated(int)
      */
-    @TestMethod("eliminate1,eliminate2,eliminate3")
     public int eliminate() {
         return eliminate(0, 0);
     }
@@ -191,12 +180,10 @@ final class BitMatrix {
 
             int i = indexOf(x, y);
 
-            if (i < 0)
-                return eliminate(x + 1, y);
+            if (i < 0) return eliminate(x + 1, y);
 
             // reorder rows
-            if (i != y)
-                swap(i, y);
+            if (i != y) swap(i, y);
 
             // xor row with all vectors that have x set
             // note: rows above y are not touched, this isn't an issue in
@@ -204,14 +191,12 @@ final class BitMatrix {
             //       new additions being independent. However starting from
             //       j = 0 allows you to change this but of course is slower.
             for (int j = y + 1; j < m; j++)
-                if (rows[j].get(x))
-                    rows[j] = xor(rows[j], rows[y]);
+                if (rows[j].get(x)) rows[j] = xor(rows[j], rows[y]);
 
             y++;
         }
         return y;
     }
-
 
     /**
      * Index of the the first row after {@literal y} where {@literal x} is set.
@@ -220,24 +205,23 @@ final class BitMatrix {
      * @param y row index
      * @return the first index where {@literal x} is set, index is < 0 if none
      */
-    @TestMethod("indexOf") int indexOf(int x, int y) {
+    int indexOf(int x, int y) {
         for (int j = y; j < m; j++) {
-            if (rows[j].get(x))
-                return j;
+            if (rows[j].get(x)) return j;
         }
         return -1;
     }
 
     /** @inheritDoc */
-    @TestMethod("string")
-    @Override public String toString() {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder((4 + n) * m);
         for (int j = 0; j < m; j++) {
             sb.append(indices[j]).append(": ");
             for (int i = 0; i < n; i++) {
                 sb.append(rows[j].get(i) ? '1' : '-');
             }
-            sb.append("\n");
+            sb.append('\n');
         }
         return sb.toString();
     }
@@ -250,7 +234,6 @@ final class BitMatrix {
      * @param v a bit set
      * @return the 'xor' of {@literal u} and {@literal v}
      */
-    @TestMethod("xor")
     static BitSet xor(BitSet u, BitSet v) {
         BitSet w = (BitSet) u.clone();
         w.xor(v);
@@ -263,13 +246,11 @@ final class BitMatrix {
      * @param cycles cycles to create the matrix from
      * @return instance of a BitMatrix for the cycles
      */
-    @TestMethod("from_cycles")
     static BitMatrix from(final Iterable<Cycle> cycles) {
 
         int rows = 0, cols = 0;
         for (final Cycle c : cycles) {
-            if (c.edgeVector().length() > cols)
-                cols = c.edgeVector().length();
+            if (c.edgeVector().length() > cols) cols = c.edgeVector().length();
             rows++;
         }
 
@@ -288,13 +269,11 @@ final class BitMatrix {
      * @param cycle  final cycle to add
      * @return instance of a BitMatrix for the cycles
      */
-    @TestMethod("from_cycles_cycle")
     static BitMatrix from(final Iterable<Cycle> cycles, Cycle cycle) {
 
         int rows = 1, cols = cycle.edgeVector().length();
         for (final Cycle c : cycles) {
-            if (c.edgeVector().length() > cols)
-                cols = c.edgeVector().length();
+            if (c.edgeVector().length() > cols) cols = c.edgeVector().length();
             rows++;
         }
 

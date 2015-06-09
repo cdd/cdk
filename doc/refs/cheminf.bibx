@@ -3,7 +3,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://bibtexml.sf.net/ bibtexml.xsd">
 
-  <!-- This file is preferably edited in jEdit with the XML plugin installed -->
+  <!-- DO NOT EDIT. INSTEAD EDIT THIS FILE: https://github.com/cdk/cdk-build-util/blob/master/src/main/resources/net/sf/cdk/tools/doclets/cheminf.bibx -->
 
   <bibtex:entry id="AiresDeSousa2002">
     <bibtex:article>
@@ -17,6 +17,16 @@
     </bibtex:article>
   </bibtex:entry>
   
+  <bibtex:entry id="batchelor13">
+    <bibtex:inproceedings>
+      <bibtex:author>Colin Batchelor and Ken Karapetyan and Valery Tkachenko and Anthony Williams</bibtex:author>
+      <bibtex:title>Validation and standardization of molecular structures in general and sugars in particular: a case study</bibtex:title>
+      <bibtex:year>2013</bibtex:year>
+      <bibtex:booktitle>6th Joint Sheffield Conference on Chemoinformatics</bibtex:booktitle>
+      <bibtex:url>http://www.slideshare.net/RSC-Chemistry/20130724-cisrg-sugarsbatchelor</bibtex:url>
+    </bibtex:inproceedings>
+  </bibtex:entry>
+  
   <bibtex:entry id="BER2001">
     <bibtex:misc>
       <bibtex:author>Bernstein, H.J.</bibtex:author>
@@ -24,6 +34,18 @@
       <bibtex:url>http://www.openrasmol.org/doc/rasmol.html#cpkcolours</bibtex:url>
     </bibtex:misc>
   </bibtex:entry>
+  
+  <bibtex:entry id="Brecher08">
+      <bibtex:article>
+        <bibtex:author>Jonathan Brecher</bibtex:author>
+        <bibtex:title>Graphical representation standards for chemical structure diagrams (IUPAC Recommendations 2008)</bibtex:title>
+        <bibtex:journal>Pure Appl. Chem</bibtex:journal>
+        <bibtex:year>2008</bibtex:year>
+        <bibtex:volume>80</bibtex:volume>
+        <bibtex:number>2</bibtex:number>
+        <bibtex:pages>277–410</bibtex:pages>
+      </bibtex:article>
+    </bibtex:entry>
 
   <bibtex:entry id="BGdV04a">
     <bibtex:article>
@@ -58,6 +80,17 @@
       <bibtex:pages>915-926</bibtex:pages>
     </bibtex:article>
   </bibtex:entry>
+  
+   <bibtex:entry id="Clark13">
+      <bibtex:article>
+        <bibtex:author>Clark A.</bibtex:author>
+        <bibtex:title>Rendering Molecular Sketches for Publication Quality Output</bibtex:title>
+        <bibtex:journal>Molecular Informatics</bibtex:journal>
+        <bibtex:year>2013</bibtex:year>
+        <bibtex:volume>32</bibtex:volume>      
+        <bibtex:pages>291-301</bibtex:pages>
+      </bibtex:article>
+    </bibtex:entry>
 
   <bibtex:entry id="Downs89">
     <bibtex:article>
@@ -326,6 +359,17 @@
       <bibtex:year>1980</bibtex:year>
       <bibtex:volume>36</bibtex:volume>
       <bibtex:pages>3219-3288</bibtex:pages>
+    </bibtex:article>
+  </bibtex:entry>
+
+  <bibtex:entry id="Green1994">
+    <bibtex:article>
+      <bibtex:author>Green and Kahn and Savoy and Sprague and Teig</bibtex:author>
+      <bibtex:title>Chemical Function Queries for 3D Database Search</bibtex:title>
+      <bibtex:journal>Journal of Chemical Information and Computer Science</bibtex:journal>
+      <bibtex:year>1994</bibtex:year>
+      <bibtex:volume>34</bibtex:volume>
+      <bibtex:pages>1297-1308</bibtex:pages>
     </bibtex:article>
   </bibtex:entry>
 
@@ -688,6 +732,17 @@ obtained by accurate mass spectrometry</bibtex:title>
     </bibtex:article>
   </bibtex:entry>
 
+  <bibtex:entry id="Rogers2010">
+    <bibtex:article>
+      <bibtex:author>Rogers and Hahn</bibtex:author>
+      <bibtex:journal>J. Chem. Inf. Mod.</bibtex:journal>
+      <bibtex:year>2010</bibtex:year>
+      <bibtex:volume>50</bibtex:volume>
+      <bibtex:pages>742-754</bibtex:pages>
+      <bibtex:doi>10.1021/ci100050t</bibtex:doi>
+    </bibtex:article>
+  </bibtex:entry>
+
   <bibtex:entry id="SMILESTUT">
     <bibtex:misc>
       <bibtex:title>SMILES Tutorial</bibtex:title>
@@ -764,6 +819,30 @@ obtained by accurate mass spectrometry</bibtex:title>
       <bibtex:pages>493-500</bibtex:pages>
       <bibtex:doi>10.1021/ci025584y</bibtex:doi>
       <bibtex:url>http://www.cdk.org/</bibtex:url>
+    </bibtex:article>
+  </bibtex:entry>
+  
+  <bibtex:entry id="Steffen09">
+    <bibtex:article>
+      <bibtex:author>Andreas Steffen, Thierry Kogej, Christian Tyrchan and Ola Engkvist</bibtex:author>
+      <bibtex:title>Comparison of Molecular Fingerprint Methods on the Basis of Biological Profile Data</bibtex:title>
+      <bibtex:journal>J. Chem. Inf. Model.</bibtex:journal>
+      <bibtex:year>2009</bibtex:year>
+      <bibtex:volume>49</bibtex:volume>
+      <bibtex:pages>338–347</bibtex:pages>
+      <bibtex:doi>10.1021/ci800326z</bibtex:doi>
+    </bibtex:article>
+  </bibtex:entry>
+  
+  <bibtex:entry id="Grant06">
+    <bibtex:article>
+      <bibtex:author>J.A. Grant, J.A. Haigh, B.T. Pickup, A. Nicholls and R.A. Sayle</bibtex:author>
+      <bibtex:title>Lingos, Finite State Machines, and Fast Similarity Searching</bibtex:title>
+      <bibtex:journal>J. Chem. Inf. Model.</bibtex:journal>
+      <bibtex:year>2006</bibtex:year>
+      <bibtex:volume>46</bibtex:volume>
+      <bibtex:pages>1912-1918</bibtex:pages>
+      <bibtex:doi>10.1021/ci6002152</bibtex:doi>
     </bibtex:article>
   </bibtex:entry>
 
@@ -1325,6 +1404,29 @@ Method </bibtex:title>
             <bibtex:journal>Journal of Cheminformatics</bibtex:journal>
             <bibtex:volume>4</bibtex:volume>
             <bibtex:number>22</bibtex:number>
+        </bibtex:article>
+    </bibtex:entry>
+    
+    <bibtex:entry id="Edmonds65">
+        <bibtex:article>
+            <bibtex:title>Paths, trees and flowers</bibtex:title>
+            <bibtex:author>Edmonds, Jack</bibtex:author>
+            <bibtex:year>1965</bibtex:year>
+            <bibtex:journal>Canad. J. Math.</bibtex:journal>
+            <bibtex:volume>17</bibtex:volume>
+            <bibtex:number>449-467</bibtex:number>
+        </bibtex:article>
+    </bibtex:entry>
+    
+    <bibtex:entry id="Pluskal2012">
+        <bibtex:article>
+            <bibtex:title>Highly accurate chemical formula prediction tool utilizing high-resolution mass spectra, MS/MS fragmentation, heuristic rules, and isotope pattern matching</bibtex:title>
+            <bibtex:author>Pluskal, Tomas and Uehara, Taisuke and Yanagida, Mitsuhiro</bibtex:author>
+            <bibtex:year>2012</bibtex:year>
+            <bibtex:journal>Analytical Chemistry</bibtex:journal>
+            <bibtex:volume>84</bibtex:volume>
+            <bibtex:number>10</bibtex:number>
+            <bibtex:pages>4396-4403</bibtex:pages>
         </bibtex:article>
     </bibtex:entry>
     

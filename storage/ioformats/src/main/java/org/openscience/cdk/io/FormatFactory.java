@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2001-2007  Bradley A. Smith <bradley@baysmith.com>
+/* Copyright (C) 2001-2007  Bradley A. Smith <bradley@baysmith.com>
  *               2003-2009  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -25,13 +23,10 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -39,9 +34,6 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.io.formats.IChemFormat;
 import org.openscience.cdk.io.formats.IChemFormatMatcher;
 import org.openscience.cdk.io.formats.XYZFormat;
@@ -64,10 +56,9 @@ import static org.openscience.cdk.io.formats.IChemFormatMatcher.MatchResult;
  * @author  Egon Willighagen <egonw@sci.kun.nl>
  * @author  Bradley A. Smith <bradley@baysmith.com>
  */
-@TestClass("org.openscience.cdk.io.FormatFactoryTest")
 public class FormatFactory {
 
-    private int headerLength;
+    private int                      headerLength;
 
     private List<IChemFormatMatcher> formats = new ArrayList<IChemFormatMatcher>(100);
 
@@ -91,7 +82,7 @@ public class FormatFactory {
     }
 
     private void loadFormats() {
-        for(IChemFormatMatcher format : ServiceLoader.load(IChemFormatMatcher.class)){
+        for (IChemFormatMatcher format : ServiceLoader.load(IChemFormatMatcher.class)) {
             formats.add(format);
         }
     }
@@ -99,19 +90,17 @@ public class FormatFactory {
     /**
      * Registers a format for detection.
      */
-    @TestMethod("testRegisterFormat")
     public void registerFormat(IChemFormatMatcher format) {
         formats.add(format);
     }
-    
+
     /**
      * Returns the list of recognizable formats.
-     * 
+     *
      * @return {@link List} of {@link IChemFormat}s.
      */
-    @TestMethod("testGetFormats")
-    public List<IChemFormatMatcher> getFormats(){
-    	return formats;
+    public List<IChemFormatMatcher> getFormats() {
+        return formats;
     }
 
     /**
@@ -128,12 +117,11 @@ public class FormatFactory {
      *
      * @throws IOException  if an I/O error occurs
      * @throws IllegalArgumentException if the input is null
-     * @return The guessed <code>IChemFormat</code> or <code>null</code> if the 
+     * @return The guessed <code>IChemFormat</code> or <code>null</code> if the
      *         file format is not recognized.
      *
      * @see #guessFormat(InputStream)
      */
-    @TestMethod("testGuessFormat_Reader")
     public IChemFormat guessFormat(Reader input) throws IOException {
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
@@ -147,11 +135,11 @@ public class FormatFactory {
         input.mark(this.headerLength);
         input.read(header, 0, this.headerLength);
         input.reset();
-        
+
         BufferedReader buffer = new BufferedReader(new CharArrayReader(header));
-        
+
         /* Search file for a line containing an identifying keyword */
-        List<String>     lines   = Collections.unmodifiableList(CharStreams.readLines(buffer));
+        List<String> lines = Collections.unmodifiableList(CharStreams.readLines(buffer));
         Set<MatchResult> results = new TreeSet<MatchResult>();
 
         for (IChemFormatMatcher format : formats) {
@@ -161,12 +149,11 @@ public class FormatFactory {
         // best result is first element (sorted set)
         if (results.size() > 1) {
             MatchResult best = results.iterator().next();
-            if (best.matched())
-                return best.format();
+            if (best.matched()) return best.format();
         }
 
         buffer = new BufferedReader(new CharArrayReader(header));
-        
+
         String line = buffer.readLine();
         // is it a XYZ file?
         StringTokenizer tokenizer = new StringTokenizer(line.trim());
@@ -175,11 +162,11 @@ public class FormatFactory {
             if (tokenCount == 1) {
                 Integer.parseInt(tokenizer.nextToken());
                 // if not failed, then it is a XYZ file
-                return (IChemFormat)XYZFormat.getInstance();
+                return (IChemFormat) XYZFormat.getInstance();
             } else if (tokenCount == 2) {
                 Integer.parseInt(tokenizer.nextToken());
                 if ("Bohr".equalsIgnoreCase(tokenizer.nextToken())) {
-                    return (IChemFormat)XYZFormat.getInstance();
+                    return (IChemFormat) XYZFormat.getInstance();
                 }
             }
         } catch (NumberFormatException exception) {
@@ -187,8 +174,7 @@ public class FormatFactory {
 
         return null;
     }
-    
-    @TestMethod("testGuessFormat")
+
     public IChemFormat guessFormat(InputStream input) throws IOException {
         if (input == null) {
             throw new IllegalArgumentException("input cannot be null");
@@ -203,12 +189,10 @@ public class FormatFactory {
         input.read(header, 0, this.headerLength);
         input.reset();
 
-        BufferedReader buffer = new BufferedReader(
-            new StringReader(new String(header))
-        );
+        BufferedReader buffer = new BufferedReader(new StringReader(new String(header)));
 
-         /* Search file for a line containing an identifying keyword */
-        List<String>     lines   = Collections.unmodifiableList(CharStreams.readLines(buffer));
+        /* Search file for a line containing an identifying keyword */
+        List<String> lines = Collections.unmodifiableList(CharStreams.readLines(buffer));
         Set<MatchResult> results = new TreeSet<MatchResult>();
 
         for (IChemFormatMatcher format : formats) {
@@ -218,13 +202,10 @@ public class FormatFactory {
         // best result is first element (sorted set)
         if (results.size() > 1) {
             MatchResult best = results.iterator().next();
-            if (best.matched())
-                return best.format();
+            if (best.matched()) return best.format();
         }
 
-        buffer = new BufferedReader(
-            new StringReader(new String(header))
-        );
+        buffer = new BufferedReader(new StringReader(new String(header)));
 
         String line = buffer.readLine();
         // is it a XYZ file?
@@ -234,11 +215,11 @@ public class FormatFactory {
             if (tokenCount == 1) {
                 Integer.parseInt(tokenizer.nextToken());
                 // if not failed, then it is a XYZ file
-                return (IChemFormat)XYZFormat.getInstance();
+                return (IChemFormat) XYZFormat.getInstance();
             } else if (tokenCount == 2) {
                 Integer.parseInt(tokenizer.nextToken());
                 if ("Bohr".equalsIgnoreCase(tokenizer.nextToken())) {
-                    return (IChemFormat)XYZFormat.getInstance();
+                    return (IChemFormat) XYZFormat.getInstance();
                 }
             }
         } catch (NumberFormatException exception) {
@@ -246,5 +227,5 @@ public class FormatFactory {
 
         return null;
     }
-    
+
 }

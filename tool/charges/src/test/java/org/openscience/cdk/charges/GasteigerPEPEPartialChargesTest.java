@@ -1,9 +1,4 @@
-/*
- *  $RCSfile$
- *  $Author: egonw $
- *  $Date: 2008-02-25 14:11:58 +0100 (Mon, 25 Feb 2008) $
- *  
- *  Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
+/* Copyright (C) 2008  Miguel Rojas <miguelrojasch@yahoo.es>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -23,20 +18,18 @@
  */
 package org.openscience.cdk.charges;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.DefaultChemObjectBuilder;
-import org.openscience.cdk.aromaticity.CDKHueckelAromaticityDetector;
+import org.openscience.cdk.aromaticity.Aromaticity;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IBond;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
-import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.LonePairElectronChecker;
@@ -55,7 +48,7 @@ import java.util.List;
  */
 public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
 
-    private IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
+    private IChemObjectBuilder      builder = SilentChemObjectBuilder.getInstance();
     private LonePairElectronChecker lpcheck = new LonePairElectronChecker();
 
     /**
@@ -96,25 +89,26 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         String smiles1 = "c1ccccc1";
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol1 = sp.parseSmiles(smiles1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        Aromaticity.cdkLegacy().apply(mol1);
         addExplicitHydrogens(mol1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
         lpcheck.saturate(mol1);
 
-
         List<Boolean> oldBondOrders = new ArrayList<Boolean>();
-        for (int i = 0; i < mol1.getBondCount(); i++) oldBondOrders.add(mol1.getBond(i).getFlag(CDKConstants.ISAROMATIC));
+        for (int i = 0; i < mol1.getBondCount(); i++)
+            oldBondOrders.add(mol1.getBond(i).getFlag(CDKConstants.ISAROMATIC));
 
         peoe.calculateCharges(mol1);
 
         List<Boolean> newBondOrders = new ArrayList<Boolean>();
-        for (int i = 0; i < mol1.getBondCount(); i++) newBondOrders.add(mol1.getBond(i).getFlag(CDKConstants.ISAROMATIC));
+        for (int i = 0; i < mol1.getBondCount(); i++)
+            newBondOrders.add(mol1.getBond(i).getFlag(CDKConstants.ISAROMATIC));
 
         for (int i = 0; i < oldBondOrders.size(); i++) {
-            Assert.assertEquals("bond "+i+" does not match", oldBondOrders.get(i), newBondOrders.get(i));
+            Assert.assertEquals("bond " + i + " does not match", oldBondOrders.get(i), newBondOrders.get(i));
         }
     }
-
 
     @Test
     public void testAromaticAndNonAromatic() throws Exception {
@@ -126,9 +120,10 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer mol1 = sp.parseSmiles(smiles1);
         IAtomContainer mol2 = sp.parseSmiles(smiles2);
-
-        CDKHueckelAromaticityDetector.detectAromaticity(mol1);
-        CDKHueckelAromaticityDetector.detectAromaticity(mol2);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
+        AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol2);
+        Aromaticity.cdkLegacy().apply(mol1);
+        Aromaticity.cdkLegacy().apply(mol2);
 
         addExplicitHydrogens(mol1);
         AtomContainerManipulator.percieveAtomTypesAndConfigureAtoms(mol1);
@@ -141,10 +136,8 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         peoe.calculateCharges(mol1);
         peoe.calculateCharges(mol2);
         for (int i = 0; i < mol1.getAtomCount(); i++) {
-            Assert.assertEquals("charge on atom " + i + " does not match",
-                    mol1.getAtom(i).getCharge(),
-                    mol2.getAtom(i).getCharge(),
-                    0.01);
+            Assert.assertEquals("charge on atom " + i + " does not match", mol1.getAtom(i).getCharge(), mol2.getAtom(i)
+                    .getCharge(), 0.01);
         }
 
     }
@@ -276,7 +269,6 @@ public class GasteigerPEPEPartialChargesTest extends CDKTestCase {
         lpcheck.saturate(molecule);
 
         Assert.assertNotNull(peoe.assignrPiMarsilliFactors(set));
-
 
     }
 }

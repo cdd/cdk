@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -25,9 +23,12 @@
 package org.openscience.cdk.geometry;
 
 import javax.vecmath.AxisAngle4d;
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3d;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
 
 /**
  * A set of static utility classes for dealing with Z matrices.
@@ -37,7 +38,6 @@ import javax.vecmath.Vector3d;
  * @cdk.keyword Z-matrix
  *
  * @cdk.created 2004-02-09
- * @cdk.bug     1653028
  */
 public class ZMatrixTools {
 
@@ -56,21 +56,18 @@ public class ZMatrixTools {
      *
      * @cdk.dictref blue-obelisk:zmatrixCoordinatesIntoCartesianCoordinates
      */
-    public static Point3d[] zmatrixToCartesian(double[] distances, int[] first_atoms,
-                                        double[] angles,    int[] second_atoms,
-                                        double[] dihedrals, int[] third_atoms) {
+    public static Point3d[] zmatrixToCartesian(double[] distances, int[] first_atoms, double[] angles,
+            int[] second_atoms, double[] dihedrals, int[] third_atoms) {
         Point3d[] cartesianCoords = new Point3d[distances.length];
-        for (int index=0; index<distances.length; index++) {
-            if (index==0) {
-                cartesianCoords[index] = new Point3d(0d,0d,0d);
-            } else if (index==1) {
-                cartesianCoords[index] = new Point3d(distances[1],0d,0d);
-            } else if (index==2) {
-                cartesianCoords[index] = new Point3d(-Math.cos((angles[2]/180)*Math.PI)*distances[2]+distances[1],
-                                           Math.sin((angles[2]/180)*Math.PI)*distances[2],
-                                           0d);
-                if (first_atoms[index] == 0)
-                    cartesianCoords[index].x = (cartesianCoords[index].x - distances[1]) * -1;
+        for (int index = 0; index < distances.length; index++) {
+            if (index == 0) {
+                cartesianCoords[index] = new Point3d(0d, 0d, 0d);
+            } else if (index == 1) {
+                cartesianCoords[index] = new Point3d(distances[1], 0d, 0d);
+            } else if (index == 2) {
+                cartesianCoords[index] = new Point3d(-Math.cos((angles[2] / 180) * Math.PI) * distances[2]
+                        + distances[1], Math.sin((angles[2] / 180) * Math.PI) * distances[2], 0d);
+                if (first_atoms[index] == 0) cartesianCoords[index].x = (cartesianCoords[index].x - distances[1]) * -1;
             } else {
                 Vector3d cd = new Vector3d();
                 cd.sub(cartesianCoords[third_atoms[index]], cartesianCoords[second_atoms[index]]);
@@ -81,8 +78,8 @@ public class ZMatrixTools {
                 Vector3d n1 = new Vector3d();
                 n1.cross(cd, bc);
 
-                Vector3d n2 = rotate(n1,bc,-dihedrals[index]);
-                Vector3d ba = rotate(bc,n2,-angles[index]);
+                Vector3d n2 = rotate(n1, bc, -dihedrals[index]);
+                Vector3d ba = rotate(bc, n2, -angles[index]);
 
                 ba.normalize();
                 ba.scale(distances[index]);
@@ -96,14 +93,12 @@ public class ZMatrixTools {
     }
 
     private static Vector3d rotate(Vector3d vector, Vector3d axis, double angle) {
-        Matrix3d rotate = new Matrix3d();
-        rotate.set(new AxisAngle4d(axis, Math.toRadians(angle)));
-        Vector3d result = new Vector3d();
-        rotate.transform(vector, result);
-        return result;
+        Matrix3f rotate = new Matrix3f();
+        rotate.set(new AxisAngle4f(new Vector3f(axis), (float) Math.toRadians(angle)));
+        Vector3f result   = new Vector3f();
+        Vector3f vector3f = new Vector3f(vector);
+        rotate.transform(vector3f, result);
+        return new Vector3d(result);
     }
 
 }
-
-
-

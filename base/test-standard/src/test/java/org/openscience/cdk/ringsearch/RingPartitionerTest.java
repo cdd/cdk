@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,6 +23,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
+import org.openscience.cdk.graph.Cycles;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IRingSet;
 import org.openscience.cdk.templates.MoleculeFactory;
@@ -40,52 +36,43 @@ import org.openscience.cdk.templates.MoleculeFactory;
  * @author         kaihartmann
  * @cdk.created    2005-05-24
  */
-public class RingPartitionerTest extends CDKTestCase
-{
+public class RingPartitionerTest extends CDKTestCase {
 
-	static boolean standAlone = false;
-	//private static ILoggingTool logger = null;
+    static boolean standAlone = false;
 
+    //private static ILoggingTool logger = null;
 
-
-	public RingPartitionerTest()
-	{
-		super();
-	}
+    public RingPartitionerTest() {
+        super();
+    }
 
     @Test
-    public void testConvertToAtomContainer_IRingSet()
-	{
+    public void testConvertToAtomContainer_IRingSet() {
         IAtomContainer molecule = MoleculeFactory.makeAlphaPinene();
-		SSSRFinder sssrf = new SSSRFinder(molecule);
 
-		IRingSet ringSet = sssrf.findSSSR();
-		IAtomContainer ac = RingPartitioner.convertToAtomContainer(ringSet);
+        IRingSet ringSet = Cycles.sssr(molecule).toRingSet();
+        IAtomContainer ac = RingPartitioner.convertToAtomContainer(ringSet);
         Assert.assertEquals(7, ac.getAtomCount());
         Assert.assertEquals(8, ac.getBondCount());
-	}
+    }
 
     @Test
     public void testPartitionIntoRings() {
         IAtomContainer azulene = MoleculeFactory.makeAzulene();
-        SSSRFinder sssrf = new SSSRFinder(azulene);
-        IRingSet ringSet = sssrf.findSSSR();
-        List list = RingPartitioner.partitionRings(ringSet);
+        IRingSet ringSet = Cycles.sssr(azulene).toRingSet();
+        List<IRingSet> list = RingPartitioner.partitionRings(ringSet);
         Assert.assertEquals(1, list.size());
 
         IAtomContainer biphenyl = MoleculeFactory.makeBiphenyl();
-        sssrf = new SSSRFinder(biphenyl);
-        ringSet = sssrf.findSSSR();
+        ringSet = Cycles.sssr(biphenyl).toRingSet();
         list = RingPartitioner.partitionRings(ringSet);
         Assert.assertEquals(2, list.size());
 
         IAtomContainer spiro = MoleculeFactory.makeSpiroRings();
-        sssrf = new SSSRFinder(spiro);
-        ringSet = sssrf.findSSSR();
+        ringSet = Cycles.sssr(spiro).toRingSet();
         list = RingPartitioner.partitionRings(ringSet);
         Assert.assertEquals(1, list.size());
 
     }
 
 }
-

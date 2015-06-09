@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -36,18 +31,18 @@ public interface IElement extends IChemObject {
 
     /**
      * Returns the atomic number of this element.
-     * 
-	 * <p>Once instantiated all field not filled by passing parameters
-	 * to the constructor are null. Elements can be configured by using
-	 * the IsotopeFactory.configure() method:
-	 * <pre>
-	 *   Element element = new Element("C");
-	 *   IsotopeFactory if = IsotopeFactory.getInstance(element.getNewBuilder());
-	 *   if.configure(element);
-	 * </pre>
-	 * </p>      
      *
-     * @return The atomic number of this element    
+     * <p>Once instantiated all field not filled by passing parameters
+     * to the constructor are null. Elements can be configured by using
+     * the IsotopeFactory.configure() method:
+     * <pre>
+     *   Element element = new Element("C");
+     *   IsotopeFactory if = IsotopeFactory.getInstance(element.getNewBuilder());
+     *   if.configure(element);
+     * </pre>
+     * </p>
+     *
+     * @return The atomic number of this element
      *
      * @see    #setAtomicNumber
      */

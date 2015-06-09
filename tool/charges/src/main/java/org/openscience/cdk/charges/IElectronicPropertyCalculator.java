@@ -1,6 +1,4 @@
-/* $Revision: 10248 $ $Author: egonw $ $Date: 2008-02-26 11:12:38 +0100 (Tue, 26 Feb 2008) $
- *
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@list.sourceforge.net
  *
@@ -26,13 +24,13 @@ import org.openscience.cdk.interfaces.IAtomContainer;
 /**
  * Interface for classes that calculate (partial) charges centered
  * on atom nuclei.
- * 
+ *
  * @author      egonw
  * @cdk.module  charges
  * @cdk.githash
  */
 public interface IElectronicPropertyCalculator {
 
-	public void calculateCharges(IAtomContainer container) throws CDKException;
-	
+    public void calculateCharges(IAtomContainer container) throws CDKException;
+
 }

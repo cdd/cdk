@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2009-2010 Syed Asad Rahman <asad@ebi.ac.uk>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -23,18 +22,20 @@
  */
 package org.openscience.cdk.smsd.interfaces;
 
-import org.openscience.cdk.smsd.tools.MolHandler;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+
 import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.smsd.algorithm.vflib.VFlibSubStructureHandler;
-import static org.junit.Assert.*;
+import org.openscience.cdk.smsd.tools.MolHandler;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
@@ -53,24 +54,19 @@ public abstract class AbstractSubGraphTest {
         AbstractSubGraphTest.algorithm = algorithm;
     }
 
-    public AbstractSubGraphTest() {
-    }
+    public AbstractSubGraphTest() {}
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+    public static void setUpClass() throws Exception {}
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+    public static void tearDownClass() throws Exception {}
 
     @Before
-    public void setUp() {
-    }
+    public void setUp() {}
 
     @After
-    public void tearDown() {
-    }
+    public void tearDown() {}
 
     /**
      * Test of isSubgraph method, of class AbstractSubGraph.
@@ -78,7 +74,6 @@ public abstract class AbstractSubGraphTest {
      */
     @Test
     public void testIsSubgraph() throws InvalidSmilesException {
-        System.out.println("isSubgraph");
         SmilesParser sp = new SmilesParser(DefaultChemObjectBuilder.getInstance());
         IAtomContainer target = sp.parseSmiles("C\\C=C/Nc1cccc(c1)N(O)\\C=C\\C\\C=C\\C=C/C");
         IAtomContainer queryac = sp.parseSmiles("Nc1ccccc1");

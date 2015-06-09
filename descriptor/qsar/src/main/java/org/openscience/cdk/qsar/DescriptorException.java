@@ -23,16 +23,14 @@
  */
 package org.openscience.cdk.qsar;
 
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.exception.CDKException;
 
 /**
- * Exception that is thrown by descriptor routines when a problem has occured.
+ * Exception that is thrown by descriptor routines when a problem has occurred.
  *
  * @cdk.module qsar
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.qsar.DescriptorExceptionTest")
 public class DescriptorException extends CDKException {
 
     private static final long serialVersionUID = 2564845219649348102L;
@@ -43,7 +41,7 @@ public class DescriptorException extends CDKException {
      * @param message for the constructed exception
      */
     public DescriptorException(String message) {
-        super( message );
+        super(message);
     }
 
     /**
@@ -53,8 +51,7 @@ public class DescriptorException extends CDKException {
      *  @param message The message associated with the exception
      */
     public DescriptorException(String name, String message) {
-        super( name + ": " + message );
+        super(name + ": " + message);
     }
-        
-}
 
+}

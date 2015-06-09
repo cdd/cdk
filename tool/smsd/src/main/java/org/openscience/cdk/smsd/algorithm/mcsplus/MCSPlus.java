@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.smsd.algorithm.mcgregor.McGregor;
@@ -42,14 +41,13 @@ import org.openscience.cdk.smsd.tools.TimeManager;
  * @cdk.githash
  * @author Syed Asad Rahman <asad@ebi.ac.uk>
  */
-@TestClass("org.openscience.cdk.smsd.SMSDBondSensitiveTest")
 public class MCSPlus {
 
     /**
-    * Default constructor added 
+    * Default constructor added
     */
-    public MCSPlus(){
-        
+    public MCSPlus() {
+
     }
 
     private static TimeManager timeManager = null;
@@ -77,46 +75,47 @@ public class MCSPlus {
     }
 
     /**
-     * 
+     *
      * @param ac1
      * @param ac2
-     * @param shouldMatchBonds 
+     * @param shouldMatchBonds
      * @return
      * @throws CDKException
      */
-    protected List<List<Integer>> getOverlaps(IAtomContainer ac1, IAtomContainer ac2, boolean shouldMatchBonds) throws CDKException {
+    protected List<List<Integer>> getOverlaps(IAtomContainer ac1, IAtomContainer ac2, boolean shouldMatchBonds)
+            throws CDKException {
         Stack<List<Integer>> maxCliqueSet = null;
         List<List<Integer>> mappings = new ArrayList<List<Integer>>();
         try {
             GenerateCompatibilityGraph gcg = new GenerateCompatibilityGraph(ac1, ac2, shouldMatchBonds);
-            List<Integer> comp_graph_nodes = gcg.getCompGraphNodes();
+            List<Integer> compGraphNodes = gcg.getCompGraphNodes();
 
-            List<Integer> C_edges = gcg.getCEgdes();
-            List<Integer> D_edges = gcg.getDEgdes();
+            List<Integer> cEdges = gcg.getCEgdes();
+            List<Integer> dEdges = gcg.getDEgdes();
 
-//            System.err.println("**************************************************");
-//            System.err.println("C_edges: " + C_edges.size());
-//            System.out.println("D_edges: " + D_edges.size());
+            //            System.err.println("**************************************************");
+            //            System.err.println("CEdges: " + CEdges.size());
+            //            System.out.println("DEdges: " + DEdges.size());
 
-            BKKCKCF init = new BKKCKCF(comp_graph_nodes, C_edges, D_edges);
+            BKKCKCF init = new BKKCKCF(compGraphNodes, cEdges, dEdges);
             maxCliqueSet = init.getMaxCliqueSet();
 
-//            System.err.println("**************************************************");
-//            System.err.println("Max_Cliques_Set: " + maxCliqueSet.size());
-//            System.out.println("Best Clique Size: " + init.getBestCliqueSize());
+            //            System.err.println("**************************************************");
+            //            System.err.println("Max_Cliques_Set: " + maxCliqueSet.size());
+            //            System.out.println("Best Clique Size: " + init.getBestCliqueSize());
 
             //clear all the compatibility graph content
             gcg.clear();
             while (!maxCliqueSet.empty()) {
-                List<Integer> clique_List = maxCliqueSet.peek();
-                int clique_size = clique_List.size();
-                if (clique_size < ac1.getAtomCount() && clique_size < ac2.getAtomCount()) {
+                List<Integer> cliqueList = maxCliqueSet.peek();
+                int cliqueSize = cliqueList.size();
+                if (cliqueSize < ac1.getAtomCount() && cliqueSize < ac2.getAtomCount()) {
                     McGregor mgit = new McGregor(ac1, ac2, mappings, shouldMatchBonds);
-                    mgit.startMcGregorIteration(mgit.getMCSSize(), clique_List, comp_graph_nodes);
+                    mgit.startMcGregorIteration(mgit.getMCSSize(), cliqueList, compGraphNodes);
                     mappings = mgit.getMappings();
                     mgit = null;
                 } else {
-                    mappings = ExactMapping.extractMapping(mappings, comp_graph_nodes, clique_List);
+                    mappings = ExactMapping.extractMapping(mappings, compGraphNodes, cliqueList);
                 }
                 maxCliqueSet.pop();
                 if (isTimeOut()) {

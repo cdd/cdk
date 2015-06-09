@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +19,6 @@
 package org.openscience.cdk.pharmacophore;
 
 import org.openscience.cdk.Bond;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * Represents an angle relationship between three pharmacophore groups.
@@ -37,7 +30,6 @@ import org.openscience.cdk.annotations.TestMethod;
  * @cdk.keyword 3D isomorphism
  * @see PharmacophoreAtom
  */
-@TestClass("org.openscience.cdk.pharmacophore.PharmacophoreAngleBondTest")
 public class PharmacophoreAngleBond extends Bond {
 
     /**
@@ -48,7 +40,7 @@ public class PharmacophoreAngleBond extends Bond {
      * @param patom3 The third pharmacophore group
      */
     public PharmacophoreAngleBond(PharmacophoreAtom patom1, PharmacophoreAtom patom2, PharmacophoreAtom patom3) {
-        super(new PharmacophoreAtom[] {patom1, patom2, patom3});
+        super(new PharmacophoreAtom[]{patom1, patom2, patom3});
     }
 
     /**
@@ -56,7 +48,6 @@ public class PharmacophoreAngleBond extends Bond {
      *
      * @return The angle in degrees between the two groups
      */
-    @TestMethod("testGetAngle1,testGetAngle2,testGetAngle3,testGetAngle4,testGetAngle5")
     public double getBondLength() {
         double epsilon = 1e-3;
         PharmacophoreAtom atom1 = (PharmacophoreAtom) getAtom(0);
@@ -67,12 +58,11 @@ public class PharmacophoreAngleBond extends Bond {
         double b2 = atom3.getPoint3d().distanceSquared(atom2.getPoint3d());
         double c2 = atom2.getPoint3d().distanceSquared(atom1.getPoint3d());
 
-        double cosangle = (b2+c2-a2) / (2*Math.sqrt(b2)*Math.sqrt(c2));
-        if (-1.0-epsilon < cosangle && -1.0+epsilon > cosangle) return 180.0;
-        if (1.0-epsilon < cosangle && 1.0+epsilon > cosangle) return 0.0;
+        double cosangle = (b2 + c2 - a2) / (2 * Math.sqrt(b2) * Math.sqrt(c2));
+        if (-1.0 - epsilon < cosangle && -1.0 + epsilon > cosangle) return 180.0;
+        if (1.0 - epsilon < cosangle && 1.0 + epsilon > cosangle) return 0.0;
 
         return Math.acos(cosangle) * 180.0 / Math.PI;
     }
-
 
 }

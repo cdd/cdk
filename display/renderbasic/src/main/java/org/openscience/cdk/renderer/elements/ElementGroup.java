@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2008  Arvid Berg <goglepox@users.sf.net>
+/* Copyright (C) 2008  Arvid Berg <goglepox@users.sf.net>
  *
  *  Contact: cdk-devel@list.sourceforge.net
  *
@@ -24,21 +22,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 /**
  * A group of rendering elements, of any type.
- * 
+ *
  * @cdk.module  renderbasic
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.renderer.elements.ElementGroupTest")
-public class ElementGroup 
-       implements IRenderingElement, Iterable<IRenderingElement> {
+public class ElementGroup implements IRenderingElement, Iterable<IRenderingElement> {
 
     /**
-     * The elements in the group. 
+     * The elements in the group.
      */
     private final List<IRenderingElement> elements;
 
@@ -50,13 +44,14 @@ public class ElementGroup
     }
 
     /** {@inheritDoc} */
+    @Override
     public Iterator<IRenderingElement> iterator() {
         return elements.iterator();
     }
 
     /**
      * Add a new element to the group.
-     * 
+     *
      * @param element the element to add to the group
      */
     public void add(IRenderingElement element) {
@@ -66,7 +61,7 @@ public class ElementGroup
 
     /**
      * Visit the members of the group.
-     *  
+     *
      * @param visitor the class that will be visiting each element
      */
     public void visitChildren(IRenderingVisitor visitor) {
@@ -76,9 +71,9 @@ public class ElementGroup
     }
 
     /** {@inheritDoc} */
-    @TestMethod("testAccept")
-    public void accept( IRenderingVisitor v ) {
-        v.visit( this );
+    @Override
+    public void accept(IRenderingVisitor v) {
+        v.visit(this);
     }
 
 }

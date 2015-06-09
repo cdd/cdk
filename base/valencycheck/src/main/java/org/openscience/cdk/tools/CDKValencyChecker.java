@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$
- *  
- * Copyright (C) 2007  Egon Willighagen
+/* Copyright (C) 2007  Egon Willighagen
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,80 +22,81 @@
  */
 package org.openscience.cdk.tools;
 
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-import org.openscience.cdk.config.AtomTypeFactory;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.interfaces.*;
-
 import java.util.Hashtable;
 import java.util.Map;
+
+import org.openscience.cdk.CDKConstants;
+import org.openscience.cdk.config.AtomTypeFactory;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IAtomType;
+import org.openscience.cdk.interfaces.IBond;
+import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
 /**
  * Assumes CDK atom types to be detected and adds missing hydrogens based on the
  * atom typing.
- * 
+ *
  * @author     egonw
  * @cdk.module valencycheck
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.tools.CDKValencyCheckerTest")
 public class CDKValencyChecker implements IValencyChecker {
 
-    private AtomTypeFactory atomTypeList;
-    private final static String ATOM_TYPE_LIST = "org/openscience/cdk/dict/data/cdk-atom-types.owl";
+    private AtomTypeFactory                       atomTypeList;
+    private final static String                   ATOM_TYPE_LIST = "org/openscience/cdk/dict/data/cdk-atom-types.owl";
 
-    private static Map<String,CDKValencyChecker> tables = new Hashtable<String,CDKValencyChecker>(3);
+    private static Map<String, CDKValencyChecker> tables         = new Hashtable<String, CDKValencyChecker>(3);
 
     private CDKValencyChecker(IChemObjectBuilder builder) {
-        if (atomTypeList == null)
-            atomTypeList = AtomTypeFactory.getInstance(ATOM_TYPE_LIST, builder);
+        if (atomTypeList == null) atomTypeList = AtomTypeFactory.getInstance(ATOM_TYPE_LIST, builder);
     }
 
-    @TestMethod("testInstance")
     public static CDKValencyChecker getInstance(IChemObjectBuilder builder) {
         if (!tables.containsKey(builder.getClass().getName()))
             tables.put(builder.getClass().getName(), new CDKValencyChecker(builder));
         return tables.get(builder.getClass().getName());
     }
 
-    @TestMethod("testIsSaturated_IAtomContainer,testIsSaturated_MissingHydrogens_Methane")
+    @Override
     public boolean isSaturated(IAtomContainer atomContainer) throws CDKException {
         for (IAtom atom : atomContainer.atoms()) {
             if (!isSaturated(atom, atomContainer)) return false;
-        }        
-		return true;
-	}
+        }
+        return true;
+    }
 
-    @TestMethod("testIsSaturatedPerAtom")
+    @Override
     public boolean isSaturated(IAtom atom, IAtomContainer container) throws CDKException {
-		System.out.println(atom.getAtomTypeName());
-		IAtomType type =  atomTypeList.getAtomType(atom.getAtomTypeName());
-		if (type == null)
-			throw new CDKException("Atom type is not a recognized CDK atom type: " + atom.getAtomTypeName());
-		
-		if (type.getFormalNeighbourCount() == CDKConstants.UNSET)
-			throw new CDKException("Atom tfindAndConfigureAtomTypesForAllAtomsype is too general; cannot decide the number of implicit hydrogen to add for: " + atom.getAtomTypeName());
+        System.out.println(atom.getAtomTypeName());
+        IAtomType type = atomTypeList.getAtomType(atom.getAtomTypeName());
+        if (type == null)
+            throw new CDKException("Atom type is not a recognized CDK atom type: " + atom.getAtomTypeName());
 
-		if (type.getProperty(CDKConstants.PI_BOND_COUNT) == CDKConstants.UNSET)
-			throw new CDKException("Atom type is too general; cannot determine the number of pi bonds for: " + atom.getAtomTypeName());
+        if (type.getFormalNeighbourCount() == CDKConstants.UNSET)
+            throw new CDKException(
+                    "Atom tfindAndConfigureAtomTypesForAllAtomsype is too general; cannot decide the number of implicit hydrogen to add for: "
+                            + atom.getAtomTypeName());
+
+        if (type.getProperty(CDKConstants.PI_BOND_COUNT) == CDKConstants.UNSET)
+            throw new CDKException("Atom type is too general; cannot determine the number of pi bonds for: "
+                    + atom.getAtomTypeName());
 
         double bondOrderSum = container.getBondOrderSum(atom);
         IBond.Order maxBondOrder = container.getMaximumBondOrder(atom);
-        Integer hcount = atom.getImplicitHydrogenCount() == CDKConstants.UNSET ?  0 : atom.getImplicitHydrogenCount();
-        
-        int piBondCount = ((Integer)type.getProperty(CDKConstants.PI_BOND_COUNT)).intValue();
+        Integer hcount = atom.getImplicitHydrogenCount() == CDKConstants.UNSET ? 0 : atom.getImplicitHydrogenCount();
+
+        int piBondCount = ((Integer) type.getProperty(CDKConstants.PI_BOND_COUNT)).intValue();
         int formalNeighborCount = type.getFormalNeighbourCount().intValue();
-        
-        int typeMaxBondOrder = piBondCount + 1;   
+
+        int typeMaxBondOrder = piBondCount + 1;
         int typeBondOrderSum = formalNeighborCount + piBondCount;
 
-        if (bondOrderSum + hcount == typeBondOrderSum &&
-        	maxBondOrder.numeric() <= typeMaxBondOrder) {
-        	return true;
+        if (bondOrderSum + hcount == typeBondOrderSum && maxBondOrder.numeric() <= typeMaxBondOrder) {
+            return true;
         }
-		return false;
-	}
+        return false;
+    }
 
 }

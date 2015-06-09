@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
- * 
+/* Copyright (C) 2001-2007  Egon Willighagen <egonw@users.sf.net>
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -47,49 +42,51 @@ import org.openscience.cdk.interfaces.IMonomer;
  * @cdk.created 2006-04-19
  * @cdk.keyword polymer
  */
-public class PDBStrand extends Strand { 
+public class PDBStrand extends Strand {
 
-	private static final long serialVersionUID = 8278569309787734236L;
+    private static final long serialVersionUID = 8278569309787734236L;
 
-	List sequentialListOfMonomers;
-	
-	/**
-	 * Constructs a new Polymer to store the Monomers.
-	 */	
-	public PDBStrand() {
-		super();
-		sequentialListOfMonomers = new ArrayList();
-	}
-	
-	/**
-	 * Adds the atom oAtom to a specified Monomer. Additionally, it keeps
-	 * record of the iCode.
-	 *
-	 * @param oAtom  The atom to add
-	 * @param oMonomer  The monomer the atom belongs to
-	 */
-	public void addAtom(IAtom oAtom, IMonomer oMonomer) {
-		super.addAtom(oAtom, oMonomer);
-		if (!sequentialListOfMonomers.contains(oMonomer.getMonomerName()))
-			sequentialListOfMonomers.add(oMonomer.getMonomerName());
-	}
+    List<String>              sequentialListOfMonomers;
 
-	/**
-	 * Returns the monomer names in the order in which they were added.
-	 * 
-	 * @see org.openscience.cdk.interfaces.IPolymer#getMonomerNames()
-	 */
-	public Collection getMonomerNamesInSequentialOrder() {
-		// don't return the original
-		return new ArrayList(sequentialListOfMonomers);
-	}
-	
-	public String toString() {
-        StringBuffer stringContent = new StringBuffer();
+    /**
+     * Constructs a new Polymer to store the Monomers.
+     */
+    public PDBStrand() {
+        super();
+        sequentialListOfMonomers = new ArrayList<String>();
+    }
+
+    /**
+     * Adds the atom oAtom to a specified Monomer. Additionally, it keeps
+     * record of the iCode.
+     *
+     * @param oAtom  The atom to add
+     * @param oMonomer  The monomer the atom belongs to
+     */
+    @Override
+    public void addAtom(IAtom oAtom, IMonomer oMonomer) {
+        super.addAtom(oAtom, oMonomer);
+        if (!sequentialListOfMonomers.contains(oMonomer.getMonomerName()))
+            sequentialListOfMonomers.add(oMonomer.getMonomerName());
+    }
+
+    /**
+     * Returns the monomer names in the order in which they were added.
+     *
+     * @see org.openscience.cdk.interfaces.IPolymer#getMonomerNames()
+     */
+    public Collection<String> getMonomerNamesInSequentialOrder() {
+        // don't return the original
+        return new ArrayList<String>(sequentialListOfMonomers);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringContent = new StringBuilder();
         stringContent.append("PDBPolymer(");
         stringContent.append(this.hashCode()).append(", ");
         stringContent.append(super.toString());
-        stringContent.append(")");
+        stringContent.append(')');
         return stringContent.toString();
     }
 

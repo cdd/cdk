@@ -40,8 +40,8 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
 public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
 
     private static final long serialVersionUID = -6570190504347822438L;
-    
-    private Set<String> symbols = new HashSet<String>();
+
+    private Set<String>       symbols          = new HashSet<String>();
 
     /**
      *  Constructor for the InverseSymbolSetQueryAtom object
@@ -49,7 +49,8 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
     public InverseSymbolSetQueryAtom(IChemObjectBuilder builder) {
         super(builder);
     }
-    public void setOperator(String str){}
+
+    public void setOperator(String str) {}
 
     /**
      *  The matches implementation of the QueryAtom interface.
@@ -57,10 +58,10 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
      *@param  atom  The atom to be matched by this QueryAtom
      *@return       true if Atom matched
      */
+    @Override
     public boolean matches(IAtom atom) {
         return !symbols.contains(atom.getSymbol());
     }
-
 
     /**
      *  Add a symbol to this QueryAtom
@@ -71,7 +72,6 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         symbols.add(symbol);
     }
 
-
     /**
      *  Remove a symbol from this QueryAtom
      *
@@ -80,7 +80,6 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
     public void removeSymbol(String symbol) {
         symbols.remove(symbol);
     }
-
 
     /**
      *  Check whether a symbol is already registered
@@ -92,7 +91,6 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         return symbols.contains(symbol);
     }
 
-
     /**
      *  Retrieve the Set of symbols
      *
@@ -102,19 +100,18 @@ public class InverseSymbolSetQueryAtom extends QueryAtom implements IQueryAtom {
         return symbols;
     }
 
-
     /**
      *  The toString method
      *
      *@return    The String representation of this object.
      */
+    @Override
     public String toString() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("InverseSymbolSetQueryAtom(");
         s.append(this.hashCode() + ", ");
         s.append(symbols.toString());
-        s.append(")");
+        s.append(')');
         return s.toString();
     }
 }
-

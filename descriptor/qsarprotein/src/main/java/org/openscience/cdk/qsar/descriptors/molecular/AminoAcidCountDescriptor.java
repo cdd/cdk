@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2006-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,13 +18,12 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAminoAcid;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.isomorphism.UniversalIsomorphismTester;
+import org.openscience.cdk.isomorphism.mcss.RMap;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
 import org.openscience.cdk.qsar.DescriptorSpecification;
 import org.openscience.cdk.qsar.DescriptorValue;
@@ -40,10 +34,9 @@ import org.openscience.cdk.templates.AminoAcids;
 
 import java.util.List;
 
-
 /**
  * Class that returns the number of each amino acid in an atom container.
- * 
+ *
  * <p>This descriptor uses these parameters:
  * <table border="1">
  *   <tr>
@@ -68,12 +61,11 @@ import java.util.List;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:aminoAcidsCount
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.AminoAcidCountDescriptorTest")
 public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
 
     private IAtomContainerSet substructureSet;
 
-    private static String[] names;
+    private static String[]   names;
 
     /**
      *  Constructor for the AromaticAtomsCountDescriptor object.
@@ -86,12 +78,13 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
         }
 
         names = new String[substructureSet.getAtomContainerCount()];
-        for (int i = 0; i < aas.length; i++) names[i] = "n"+aas[i].getProperty(AminoAcids.RESIDUE_NAME_SHORT);
+        for (int i = 0; i < aas.length; i++)
+            names[i] = "n" + aas[i].getProperty(AminoAcids.RESIDUE_NAME_SHORT);
     }
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -104,27 +97,24 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#aminoAcidsCount",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#aminoAcidsCount", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      * Sets the parameters attribute of the AminoAcidsCountDescriptor object.
-     * 
+     *
      * @param  params            The new parameters value
      * @exception  CDKException  if more than one parameter or a non-Boolean parameter is specified
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         // no parameters exist
     }
-
 
     /**
      * Gets the parameters attribute of the AminoAcidsCountDescriptor object.
@@ -132,16 +122,15 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      * @return    The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return names;
     }
-
 
     /**
      * Determine the number of amino acids groups the supplied {@link IAtomContainer}.
@@ -151,32 +140,32 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      *
      * @see #setParameters
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer ac) {
         int resultLength = substructureSet.getAtomContainerCount();
         IntegerArrayResult results = new IntegerArrayResult(resultLength);
 
         UniversalIsomorphismTester universalIsomorphismTester = new UniversalIsomorphismTester();
         IAtomContainer substructure;
-        for (int i=0; i<resultLength; i++) {
+        for (int i = 0; i < resultLength; i++) {
             substructure = substructureSet.getAtomContainer(i);
-            List maps;
+            List<List<RMap>> maps;
             try {
                 maps = universalIsomorphismTester.getSubgraphMaps(ac, substructure);
             } catch (CDKException e) {
                 // TODO is it OK to cast Double.NaN to int?
-                for (int j = 0; j < resultLength; j++) results.add((int) Double.NaN);
-                return new DescriptorValue(getSpecification(), getParameterNames(),
-                        getParameters(), results, getDescriptorNames(),
-                        new CDKException("Error in substructure search: "+e.getMessage()));
+                for (int j = 0; j < resultLength; j++)
+                    results.add((int) Double.NaN);
+                return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
+                        getDescriptorNames(), new CDKException("Error in substructure search: " + e.getMessage()));
             }
             if (maps != null) {
                 results.add(maps.size());
             }
         }
 
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-            getParameters(), results, getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), results,
+                getDescriptorNames());
     }
 
     /**
@@ -190,7 +179,7 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new IntegerArrayResult(20);
     }
@@ -200,7 +189,7 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      *
      * @return    The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -211,9 +200,8 @@ public class AminoAcidCountDescriptor extends AbstractMolecularDescriptor implem
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

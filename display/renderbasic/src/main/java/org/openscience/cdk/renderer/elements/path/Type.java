@@ -25,15 +25,11 @@ package org.openscience.cdk.renderer.elements.path;
 
 /**
  * The type of the path elements.
- *  
+ *
  * @author Arvid
  * @cdk.module renderbasic
  * @cdk.githash
  */
 public enum Type {
-    MoveTo,
-    LineTo,
-    QuadTo,
-    CubicTo,
-    Close;
+    MoveTo, LineTo, QuadTo, CubicTo, Close;
 }

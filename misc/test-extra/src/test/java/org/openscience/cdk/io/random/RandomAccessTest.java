@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2005-2008  Nina Jeliazkova <nina@acad.bg>
+/* Copyright (C) 2005-2008  Nina Jeliazkova <nina@acad.bg>
  *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -12,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -45,11 +43,10 @@ import java.io.InputStream;
  */
 public class RandomAccessTest extends CDKTestCase {
 
-    private ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(RandomAccessTest.class);
+    private ILoggingTool logger = LoggingToolFactory.createLoggingTool(RandomAccessTest.class);
 
-
-    @Test public void test() throws Exception {
+    @Test
+    public void test() throws Exception {
         String path = "/data/mdl/test2.sdf";
         logger.info("Testing: " + path);
         InputStream in = getClass().getResourceAsStream(path);
@@ -65,24 +62,16 @@ public class RandomAccessTest extends CDKTestCase {
                     out.write(buf, 0, len);
                 }
             } finally {
-                if (out != null)
-                    out.close();
+                if (out != null) out.close();
             }
 
             //System.out.println(System.getProperty("user.dir"));
-            RandomAccessReader rf = new RandomAccessSDFReader(
-                    f, DefaultChemObjectBuilder.getInstance());
+            RandomAccessReader rf = new RandomAccessSDFReader(f, DefaultChemObjectBuilder.getInstance());
             try {
                 Assert.assertEquals(6, rf.size());
 
-                String[] mdlnumbers = {
-                        "MFCD00000387",
-                        "MFCD00000661",
-                        "MFCD00000662",
-                        "MFCD00000663",
-                        "MFCD00000664",
-                        "MFCD03453215"
-                };
+                String[] mdlnumbers = {"MFCD00000387", "MFCD00000661", "MFCD00000662", "MFCD00000663", "MFCD00000664",
+                        "MFCD03453215"};
                 //reading backwards - just for the test
                 for (int i = rf.size() - 1; i >= 0; i--) {
                     IChemObject m = rf.readRecord(i);
@@ -91,13 +80,11 @@ public class RandomAccessTest extends CDKTestCase {
                     Assert.assertTrue(((IAtomContainer) m).getAtomCount() > 0);
                 }
             } finally {
-                if (rf != null)
-                    rf.close();
+                if (rf != null) rf.close();
             }
         } finally {
             f.delete();
-            if (in != null)
-                in.close();
+            if (in != null) in.close();
         }
     }
 }

@@ -1,9 +1,4 @@
-/* $RCSfile: $
- * $Author$
- * $Date$  
- * $Revision$
- *
- * Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
+/* Copyright (C) 2006-2007  Egon Willighagen <egonw@users.sf.net>
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -29,45 +24,42 @@
 package org.openscience.cdk.tools;
 
 import org.openscience.cdk.geometry.CrystalGeometryTools;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.tools.features.MoleculeFeaturesTool;
 
 /**
  * Utility that helps determine which data features are present.
- * 
+ *
  * @author egonw
  * @cdk.githash
- * 
+ *
  * @see    org.openscience.cdk.tools.DataFeatures
  */
 public class DataFeaturesTool {
 
-	/**
-	 * Determines the features present in the given IMolecule.
-	 *  
-	 * @param molecule IMolecule to determine the features off
-	 * 
-	 * @return integer representation of the present features 
-	 */
-	public static int getSupportedDataFeatures(IAtomContainer molecule) {
-		int features = DataFeatures.NONE;
-		if (MoleculeFeaturesTool.hasElementSymbols(molecule))
-			features = features | DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
-		if (GeometryTools.has2DCoordinates(molecule))
-			features = features | DataFeatures.HAS_2D_COORDINATES;
-		if (GeometryTools.has3DCoordinates(molecule))
-			features = features | DataFeatures.HAS_3D_COORDINATES;
-		if (CrystalGeometryTools.hasCrystalCoordinates(molecule))
-			features = features | DataFeatures.HAS_FRACTIONAL_CRYSTAL_COORDINATES;
-		if (MoleculeFeaturesTool.hasFormalCharges(molecule))
-			features = features | DataFeatures.HAS_ATOM_FORMAL_CHARGES;
-		if (MoleculeFeaturesTool.hasPartialCharges(molecule))
-			features = features | DataFeatures.HAS_ATOM_PARTIAL_CHARGES;
-		if (MoleculeFeaturesTool.hasGraphRepresentation(molecule))
-			features = features | DataFeatures.HAS_GRAPH_REPRESENTATION;
-		return features;
-	}
-	
-	
+    /**
+     * Determines the features present in the given {@link IAtomContainer}.
+     *
+     * @param molecule IAtomContainer to determine the features off
+     *
+     * @return integer representation of the present features
+     */
+    public static int getSupportedDataFeatures(IAtomContainer molecule) {
+        int features = DataFeatures.NONE;
+        if (MoleculeFeaturesTool.hasElementSymbols(molecule))
+            features = features | DataFeatures.HAS_ATOM_ELEMENT_SYMBOL;
+        if (GeometryUtil.has2DCoordinates(molecule)) features = features | DataFeatures.HAS_2D_COORDINATES;
+        if (GeometryUtil.has3DCoordinates(molecule)) features = features | DataFeatures.HAS_3D_COORDINATES;
+        if (CrystalGeometryTools.hasCrystalCoordinates(molecule))
+            features = features | DataFeatures.HAS_FRACTIONAL_CRYSTAL_COORDINATES;
+        if (MoleculeFeaturesTool.hasFormalCharges(molecule))
+            features = features | DataFeatures.HAS_ATOM_FORMAL_CHARGES;
+        if (MoleculeFeaturesTool.hasPartialCharges(molecule))
+            features = features | DataFeatures.HAS_ATOM_PARTIAL_CHARGES;
+        if (MoleculeFeaturesTool.hasGraphRepresentation(molecule))
+            features = features | DataFeatures.HAS_GRAPH_REPRESENTATION;
+        return features;
+    }
+
 }

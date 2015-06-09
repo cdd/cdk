@@ -1,52 +1,53 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
- * 
+/* Copyright (C) 2008  Egon Willighagen <egonw@users.sf.net>
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.tools.diff;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import org.openscience.cdk.CDKTestCase;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
-import java.io.*;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @cdk.module test-diff
  */
 public class AtomContainerDiffTest extends CDKTestCase {
 
-    @Test public void testMatchAgainstItself() {
+    @Test
+    public void testMatchAgainstItself() {
         IAtomContainer container = mock(IAtomContainer.class);
         when(container.getElectronContainerCount()).thenReturn(1);
         when(container.getElectronContainer(0)).thenReturn(mock(IBond.class));
         String result = AtomContainerDiff.diff(container, container);
         assertZeroLength(result);
     }
-    
-    @Test public void testDiff() {
+
+    @Test
+    public void testDiff() {
 
         IAtom carbon = mock(IAtom.class);
         IAtom oxygen = mock(IAtom.class);
@@ -85,7 +86,8 @@ public class AtomContainerDiffTest extends CDKTestCase {
         assertContains(result, "C/O");
     }
 
-    @Test public void testDifference() {
+    @Test
+    public void testDifference() {
         IAtom carbon = mock(IAtom.class);
         IAtom oxygen = mock(IAtom.class);
 
@@ -117,36 +119,36 @@ public class AtomContainerDiffTest extends CDKTestCase {
         Assert.assertNotNull(result);
     }
 
-    @Ignore("unit test did not test AtomContainerDiff but rather the ability of AtomContainer" +
-                    "to be serialized. This is already tested in each respective domain module")
+    @Ignore("unit test did not test AtomContainerDiff but rather the ability of AtomContainer"
+            + "to be serialized. This is already tested in each respective domain module")
     public void testDiffFromSerialized() throws IOException, ClassNotFoundException {
-//        IAtomContainer atomContainer = new AtomContainer();
-//        IBond bond1 = new Bond(new Atom("C"), new Atom("C"));
-//        bond1.setOrder(IBond.Order.SINGLE);
-//        atomContainer.addBond(bond1);
-//
-//        File tmpFile = File.createTempFile("serialized", ".dat");
-//        tmpFile.deleteOnExit();
-//        String objFilename = tmpFile.getAbsolutePath();
-//
-//        FileOutputStream fout = new FileOutputStream(objFilename);
-//        ObjectOutputStream ostream = new ObjectOutputStream(fout);
-//        ostream.writeObject(atomContainer);
-//
-//        ostream.close();
-//        fout.close();
-//
-//        // now read the serialized atomContainer in
-//        FileInputStream fin = new FileInputStream(objFilename);
-//        ObjectInputStream istream = new ObjectInputStream(fin);
-//        Object obj = istream.readObject();
-//
-//        Assert.assertTrue(obj instanceof IAtomContainer);
-//
-//        IAtomContainer newAtomContainer = (IAtomContainer) obj;
-//        String diff = AtomDiff.diff(atomContainer, newAtomContainer);
-//
-//        Assert.assertTrue("There were differences between original and deserialized version!", diff.equals(""));
+        //        IAtomContainer atomContainer = new AtomContainer();
+        //        IBond bond1 = new Bond(new Atom("C"), new Atom("C"));
+        //        bond1.setOrder(IBond.Order.SINGLE);
+        //        atomContainer.addBond(bond1);
+        //
+        //        File tmpFile = File.createTempFile("serialized", ".dat");
+        //        tmpFile.deleteOnExit();
+        //        String objFilename = tmpFile.getAbsolutePath();
+        //
+        //        FileOutputStream fout = new FileOutputStream(objFilename);
+        //        ObjectOutputStream ostream = new ObjectOutputStream(fout);
+        //        ostream.writeObject(atomContainer);
+        //
+        //        ostream.close();
+        //        fout.close();
+        //
+        //        // now read the serialized atomContainer in
+        //        FileInputStream fin = new FileInputStream(objFilename);
+        //        ObjectInputStream istream = new ObjectInputStream(fin);
+        //        Object obj = istream.readObject();
+        //
+        //        Assert.assertTrue(obj instanceof IAtomContainer);
+        //
+        //        IAtomContainer newAtomContainer = (IAtomContainer) obj;
+        //        String diff = AtomDiff.diff(atomContainer, newAtomContainer);
+        //
+        //        Assert.assertTrue("There were differences between original and deserialized version!", diff.equals(""));
 
     }
 }

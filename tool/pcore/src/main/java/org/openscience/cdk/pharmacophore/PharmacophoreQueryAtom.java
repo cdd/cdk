@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
+/* Copyright (C) 2004-2008  Rajarshi Guha <rajarshi.guha@gmail.com>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,10 +19,10 @@
 package org.openscience.cdk.pharmacophore;
 
 import org.openscience.cdk.Atom;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
+import org.openscience.cdk.isomorphism.matchers.IQueryAtomContainer;
+import org.openscience.cdk.smiles.smarts.parser.SMARTSParser;
 
 /**
  * Represents a query pharmacophore group.
@@ -45,9 +40,10 @@ import org.openscience.cdk.isomorphism.matchers.IQueryAtom;
  * @see org.openscience.cdk.isomorphism.matchers.QueryAtomContainer
  * @see org.openscience.cdk.pharmacophore.PharmacophoreMatcher
  */
-@TestClass("org.openscience.cdk.pharmacophore.PharmacophoreQueryAtomTest")
 public class PharmacophoreQueryAtom extends Atom implements IQueryAtom {
+
     private String smarts;
+    private IQueryAtomContainer[] compiledSmarts;
 
     /**
      * Creat a new query pharmacophore group
@@ -58,6 +54,13 @@ public class PharmacophoreQueryAtom extends Atom implements IQueryAtom {
     public PharmacophoreQueryAtom(String symbol, String smarts) {
         setSymbol(symbol);
         this.smarts = smarts;
+        // Note that we allow a special form of SMARTS where the | operator
+        // represents logical or of multi-atom groups (as opposed to ','
+        // which is for single atom matches)
+        String[] subSmarts = smarts.split("\\|");
+        this.compiledSmarts = new IQueryAtomContainer[subSmarts.length];
+        for (int i = 0; i < compiledSmarts.length; i++)
+            compiledSmarts[i] = SMARTSParser.parse(subSmarts[i], null);
     }
 
     /**
@@ -65,9 +68,16 @@ public class PharmacophoreQueryAtom extends Atom implements IQueryAtom {
      *
      * @return The SMARTS pattern
      */
-    @TestMethod("testGetSmarts")
     public String getSmarts() {
         return smarts;
+    }
+
+    /**
+     * Accessed the compiled SMARTS for this pcore query atom.  
+     * @return compiled SMARTS
+     */
+    IQueryAtomContainer[] getCompiledSmarts() {
+        return compiledSmarts;    
     }
 
     /**
@@ -81,15 +91,10 @@ public class PharmacophoreQueryAtom extends Atom implements IQueryAtom {
      * @param atom A target pharmacophore group
      * @return true if the current query group has the same symbol as the target group
      */
-    @TestMethod("testMatches")
+    @Override
     public boolean matches(IAtom atom) {
         PharmacophoreAtom patom = (PharmacophoreAtom) atom;
         return patom.getSymbol().equals(getSymbol());
-    }
-
-    @TestMethod("testSetOperator")
-    public void setOperator(String ID) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**
@@ -97,7 +102,7 @@ public class PharmacophoreQueryAtom extends Atom implements IQueryAtom {
      *
      * @return String representation of this pharmacophore group
      */
-    @TestMethod("testToString")
+    @Override
     public String toString() {
         StringBuffer s = new StringBuffer();
         s.append(getSymbol()).append(" [").append(getSmarts()).append(']');

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$  
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -45,8 +40,6 @@ import org.openscience.cdk.io.IChemObjectReader;
  * @author  Egon Willighagen <egonw@sci.kun.nl>
  * @cdk.created 2003-10-19
  */
-public interface  IIteratingChemObjectReader<T extends IChemObject>
-    extends IChemObjectReader, Iterator<T> {
-	
-}
+public interface IIteratingChemObjectReader<T extends IChemObject> extends IChemObjectReader, Iterator<T> {
 
+}

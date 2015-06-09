@@ -1,9 +1,7 @@
-/* $Revision$ $Author$ $Date$
- * 
- * Copyright (C) 2002  Bradley A. Smith <bradley@baysmith.com>
+/* Copyright (C) 2002  Bradley A. Smith <bradley@baysmith.com>
  *               2002  Miguel Howard
  *               2003-2007  Egon Willighagen <egonw@users.sf.net>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
  *
  *  This library is free software; you can redistribute it and/or
@@ -33,8 +31,6 @@ import java.util.Iterator;
 import javax.vecmath.Point3d;
 
 import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -54,24 +50,22 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @author  J. Daniel Gezelter
  * @author  Egon Willighagen
  */
-@TestClass("org.openscience.cdk.io.XYZWriterTest")
 public class XYZWriter extends DefaultChemObjectWriter {
-  
-    private BufferedWriter writer;
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(XYZWriter.class);
-    private FormatStringBuffer fsb;
+
+    private BufferedWriter      writer;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(XYZWriter.class);
+    private FormatStringBuffer  fsb;
 
     /**
     * Constructor.
-    * 
+    *
     * @param out the stream to write the XYZ file to.
     */
     public XYZWriter(Writer out) {
-    	fsb = new FormatStringBuffer("%-8.6f");
-    	try {
-    		if (out instanceof BufferedWriter) {
-                writer = (BufferedWriter)out;
+        fsb = new FormatStringBuffer("%-8.6f");
+        try {
+            if (out instanceof BufferedWriter) {
+                writer = (BufferedWriter) out;
             } else {
                 writer = new BufferedWriter(out);
             }
@@ -82,53 +76,56 @@ public class XYZWriter extends DefaultChemObjectWriter {
     public XYZWriter(OutputStream output) {
         this(new OutputStreamWriter(output));
     }
-    
+
     public XYZWriter() {
         this(new StringWriter());
     }
-    
-    @TestMethod("testGetFormat")
+
+    @Override
     public IResourceFormat getFormat() {
         return XYZFormat.getInstance();
     }
-    
+
+    @Override
     public void setWriter(Writer out) throws CDKException {
-    	if (out instanceof BufferedWriter) {
-            writer = (BufferedWriter)out;
+        if (out instanceof BufferedWriter) {
+            writer = (BufferedWriter) out;
         } else {
             writer = new BufferedWriter(out);
         }
     }
 
+    @Override
     public void setWriter(OutputStream output) throws CDKException {
-    	setWriter(new OutputStreamWriter(output));
+        setWriter(new OutputStreamWriter(output));
     }
-    
+
     /**
      * Flushes the output and closes this object.
      */
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
-    	writer.close();
+        writer.close();
     }
-    
-	@TestMethod("testAccepts")
-    public boolean accepts(Class classObject) {
-		if (IAtomContainer.class.equals(classObject)) return true;
-		Class[] interfaces = classObject.getInterfaces();
-		for (int i=0; i<interfaces.length; i++) {
-			if (IAtomContainer.class.equals(interfaces[i])) return true;
-		}
-    Class superClass = classObject.getSuperclass();
-    if (superClass != null) return this.accepts(superClass);
-		return false;
-	}
 
+    @Override
+    public boolean accepts(Class<? extends IChemObject> classObject) {
+        if (IAtomContainer.class.equals(classObject)) return true;
+        Class<?>[] interfaces = classObject.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (IAtomContainer.class.equals(interfaces[i])) return true;
+        }
+        Class superClass = classObject.getSuperclass();
+        if (superClass != null) return this.accepts(superClass);
+        return false;
+    }
+
+    @Override
     public void write(IChemObject object) throws CDKException {
         if (object instanceof IAtomContainer) {
             try {
-                writeMolecule((IAtomContainer)object);
-            } catch(Exception ex) {
+                writeMolecule((IAtomContainer) object);
+            } catch (Exception ex) {
                 throw new CDKException("Error while writing XYZ file: " + ex.getMessage(), ex);
             }
         } else {
@@ -141,52 +138,49 @@ public class XYZWriter extends DefaultChemObjectWriter {
     * @param mol the Molecule to write
     */
     public void writeMolecule(IAtomContainer mol) throws IOException {
-        
+
         String st = "";
         boolean writecharge = true;
-        
+
         try {
-            
+
             String s1 = "" + mol.getAtomCount();
             writer.write(s1, 0, s1.length());
             writer.newLine();
-            
+
             String s2 = null; // FIXME: add some interesting comment
             if (s2 != null) {
-            	writer.write(s2, 0, s2.length());
+                writer.write(s2, 0, s2.length());
             }
             writer.newLine();
-            
+
             // Loop through the atoms and write them out:
             Iterator<IAtom> atoms = mol.atoms().iterator();
             while (atoms.hasNext()) {
-            	IAtom a = atoms.next();
+                IAtom a = atoms.next();
                 st = a.getSymbol();
-                
+
                 Point3d p3 = a.getPoint3d();
                 if (p3 != null) {
-                    st = st + "\t" + (p3.x < 0 ? "" : " ") + fsb.format(p3.x) + "\t"
-                            + (p3.y < 0 ? "" : " ") + fsb.format(p3.y) + "\t"
-                            + (p3.z < 0 ? "" : " ") + fsb.format(p3.z);
+                    st = st + "\t" + (p3.x < 0 ? "" : " ") + fsb.format(p3.x) + "\t" + (p3.y < 0 ? "" : " ")
+                            + fsb.format(p3.y) + "\t" + (p3.z < 0 ? "" : " ") + fsb.format(p3.z);
                 } else {
                     st = st + "\t " + fsb.format(0.0) + "\t " + fsb.format(0.0) + "\t " + fsb.format(0.0);
                 }
-                
+
                 if (writecharge) {
                     double ct = a.getCharge() == CDKConstants.UNSET ? 0.0 : a.getCharge();
                     st = st + "\t" + ct;
                 }
-                
+
                 writer.write(st, 0, st.length());
                 writer.newLine();
-                
+
             }
         } catch (IOException e) {
-//            throw e;
+            //            throw e;
             logger.error("Error while writing file: ", e.getMessage());
             logger.debug(e);
         }
     }
 }
-
-

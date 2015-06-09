@@ -23,22 +23,17 @@
  */
 package org.openscience.cdk.graph;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * Determine the set of cycles which are the shortest through each edge. 
- * Unlike the Smallest Set of Smallest Rings (SSSR), linear dependence of 
- * each cycle does not need to be verified. 
+ * Determine the set of cycles which are the shortest through each edge.
+ * Unlike the Smallest Set of Smallest Rings (SSSR), linear dependence of
+ * each cycle does not need to be verified.
  *
  * @author John May
  * @cdk.module core
  */
-@TestClass("org.openscience.cdk.graph.EdgeShortCyclesTest")
 final class EdgeShortCycles {
 
     /** Shortest cycles stored as closed walks. */
@@ -54,16 +49,14 @@ final class EdgeShortCycles {
      *  given initial cycles. */
     EdgeShortCycles(InitialCycles initialCycles) {
 
-        int[][] graph  = initialCycles.graph();
-        int[]   sizeOf = new int[initialCycles.numberOfEdges()];
+        int[][] graph = initialCycles.graph();
+        int[] sizeOf = new int[initialCycles.numberOfEdges()];
 
         this.paths = new ArrayList<int[]>(initialCycles.numberOfCycles());
 
         // cycles are returned ordered by length
         for (final InitialCycles.Cycle cycle : initialCycles.cycles()) {
 
-            
-            
             final int length = cycle.length();
             final int[] path = cycle.path();
 
@@ -71,9 +64,9 @@ final class EdgeShortCycles {
 
             // check if any vertex is the shortest through a vertex in the path
             for (int i = 1; i < path.length; i++) {
-                int idx = initialCycles.indexOfEdge(path[i-1], path[i]);
+                int idx = initialCycles.indexOfEdge(path[i - 1], path[i]);
                 if (sizeOf[idx] < 1 || length <= sizeOf[idx]) {
-                    found       = true;
+                    found = true;
                     sizeOf[idx] = length;
                 }
             }
@@ -89,14 +82,12 @@ final class EdgeShortCycles {
     /**
      * The paths of the shortest cycles, that paths are closed walks such that
      * the first and last vertex is the same.
-     * 
+     *
      * @return the paths
      */
-    @TestMethod("paths_bicyclo,paths_napthalene,paths_anthracene," +
-                        "paths_cyclophane_even")
     int[][] paths() {
         int[][] paths = new int[this.paths.size()][0];
-        for (int i = 0; i < this.paths.size(); i++) {            
+        for (int i = 0; i < this.paths.size(); i++) {
             paths[i] = this.paths.get(i);
         }
         return paths;
@@ -107,8 +98,6 @@ final class EdgeShortCycles {
      *
      * @return number of cycles
      */
-    @TestMethod("size_bicyclo,size_napthalene,size_anthracene," +
-                        "size_cyclophane_even")
     int size() {
         return paths.size();
     }

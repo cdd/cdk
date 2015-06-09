@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -25,8 +25,6 @@
 package org.openscience.cdk.isomorphism;
 
 import com.google.common.base.Predicate;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.graph.ConnectedComponents;
 import org.openscience.cdk.graph.GraphUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -39,15 +37,15 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * indicated by an {@code int[]} array of length (|V(query)| + 1). The final
  * index indicates the maximum component group (in the query). A specification
  * of '0' indicates there are no grouping restrictions.
- * 
+ *
  * <blockquote><pre>
  * // grouping is actually set by SMARTS parser but this shows how it's stored
- * query.setProperty(ComponentGrouping.KEY, grouping); 
- * 
+ * query.setProperty(ComponentGrouping.KEY, grouping);
+ *
  * IAtomContainer query, target;
  * Pattern        pattern = ...; // create pattern for query
- * 
- * // filter for mappings which respect component grouping in the query 
+ *
+ * // filter for mappings which respect component grouping in the query
  * Iterables.filter(pattern.matchAll(target),
  *                  new ComponentGrouping(query, target));
  * </pre></blockquote>
@@ -56,17 +54,16 @@ import org.openscience.cdk.interfaces.IAtomContainer;
  * @cdk.module isomorphism
  * @see Pattern
  */
-@TestClass("org.openscience.cdk.isomorphism.ComponentGroupingTest")
 public final class ComponentGrouping implements Predicate<int[]> {
 
     /**
      * Key indicates where the grouping should be store in the query
      * properties.
      */
-    public static final String KEY = "COMPONENT.GROUPING";
+    public static final String        KEY = "COMPONENT.GROUPING";
 
     /** The required  (query) and the targetComponents of the target. */
-    private final int[] queryComponents, targetComponents;
+    private final int[]               queryComponents, targetComponents;
 
     /** Connected components of the target. */
     private final ConnectedComponents cc;
@@ -94,9 +91,8 @@ public final class ComponentGrouping implements Predicate<int[]> {
      * @param target target structure
      */
     public ComponentGrouping(IAtomContainer query, int[][] target) {
-        this(query.getProperty(KEY, int[].class),
-             query.getProperty(KEY) != null ? new ConnectedComponents(target)
-                                            : null);
+        this(query.getProperty(KEY, int[].class), query.getProperty(KEY) != null ? new ConnectedComponents(target)
+                : null);
     }
 
     /**
@@ -107,7 +103,7 @@ public final class ComponentGrouping implements Predicate<int[]> {
      * @param cc        connected component of the target
      */
     public ComponentGrouping(int[] grouping, ConnectedComponents cc) {
-        this.queryComponents  = grouping;
+        this.queryComponents = grouping;
         this.cc = cc;
         this.targetComponents = cc != null ? cc.components() : null;
     }
@@ -119,12 +115,11 @@ public final class ComponentGrouping implements Predicate<int[]> {
      * @param mapping a permutation of the query vertices
      * @return the mapping preserves the specified grouping
      */
-    @TestMethod("ungrouped,grouped")
+    @Override
     public boolean apply(final int[] mapping) {
 
         // no grouping required
-        if (queryComponents == null)
-            return true;
+        if (queryComponents == null) return true;
 
         // bidirectional map of query/target components, last index
         // of query components holds the count
@@ -133,25 +128,22 @@ public final class ComponentGrouping implements Predicate<int[]> {
 
         // verify we don't have any collisions
         for (int v = 0; v < mapping.length; v++) {
-            if (queryComponents[v] == 0)
-                continue;
+            if (queryComponents[v] == 0) continue;
 
             int w = mapping[v];
 
-            int queryComponent  = queryComponents[v];
+            int queryComponent = queryComponents[v];
             int targetComponent = targetComponents[w];
 
             // is the target component already used by a query component?
             if (usedBy[targetComponent] == 0)
                 usedBy[targetComponent] = queryComponent;
-            else if (usedBy[targetComponent] != queryComponent)
-                return false;
+            else if (usedBy[targetComponent] != queryComponent) return false;
 
             // is the query component already used in a target component?
             if (usedIn[queryComponent] == 0)
                 usedIn[queryComponent] = targetComponent;
-            else if (usedIn[queryComponent] != targetComponent)
-                return false;
+            else if (usedIn[queryComponent] != targetComponent) return false;
 
         }
 

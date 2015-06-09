@@ -1,9 +1,4 @@
-/* $RCSfile$   
- * $Author$   
- * $Date$   
- * $Revision$
- *
- *  Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -28,13 +23,11 @@
  */
 package org.openscience.cdk.exception;
 
-import org.openscience.cdk.annotations.TestClass;
 
 /**
  * @cdk.module standard
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.exception.InvalidSmilesExceptionTest")
 public class InvalidSmilesException extends CDKException {
 
     private static final long serialVersionUID = 1932255464874201495L;

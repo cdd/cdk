@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -65,13 +65,13 @@ public class DoubleBondElementEncoderFactoryTest {
         when(container.getAtom(1)).thenReturn(c2);
         when(container.getAtom(2)).thenReturn(cl3);
         when(container.getAtom(3)).thenReturn(cl4);
-        
+
         when(container.atoms()).thenReturn(Arrays.asList(c1, c2, cl3, cl4));
 
         IBond stereoBond = mock(IBond.class);
-        IBond left       = mock(IBond.class);
-        IBond right      = mock(IBond.class);
-        
+        IBond left = mock(IBond.class);
+        IBond right = mock(IBond.class);
+
         when(stereoBond.getAtom(0)).thenReturn(c1);
         when(stereoBond.getAtom(1)).thenReturn(c2);
         when(left.getConnectedAtom(c1)).thenReturn(cl3);
@@ -79,23 +79,14 @@ public class DoubleBondElementEncoderFactoryTest {
 
         IDoubleBondStereochemistry dbs = mock(IDoubleBondStereochemistry.class);
         when(dbs.getStereoBond()).thenReturn(stereoBond);
-        when(dbs.getBonds()).thenReturn(new IBond[]{
-                left,
-                right
-        });
+        when(dbs.getBonds()).thenReturn(new IBond[]{left, right});
         when(dbs.getStereo()).thenReturn(IDoubleBondStereochemistry.Conformation.OPPOSITE);
-        when(container.stereoElements()).thenReturn(Collections.<IStereoElement>singleton(dbs));
+        when(container.stereoElements()).thenReturn(Collections.<IStereoElement> singleton(dbs));
 
-        StereoEncoder encoder = new DoubleBondElementEncoderFactory().create(container,
-                                                                              new int[][]{
-                                                                                      {1, 2},
-                                                                                      {0, 3},
-                                                                                      {0},
-                                                                                      {1}
-                                                                              });
+        StereoEncoder encoder = new DoubleBondElementEncoderFactory().create(container, new int[][]{{1, 2}, {0, 3},
+                {0}, {1}});
 
-        assertThat(getGeometricParity(encoder).parity(),
-                   is(1));                  
+        assertThat(getGeometricParity(encoder).parity(), is(1));
     }
 
     @Test
@@ -117,8 +108,8 @@ public class DoubleBondElementEncoderFactoryTest {
         when(container.atoms()).thenReturn(Arrays.asList(c1, c2, cl3, cl4));
 
         IBond stereoBond = mock(IBond.class);
-        IBond left       = mock(IBond.class);
-        IBond right      = mock(IBond.class);
+        IBond left = mock(IBond.class);
+        IBond right = mock(IBond.class);
 
         when(stereoBond.getAtom(0)).thenReturn(c1);
         when(stereoBond.getAtom(1)).thenReturn(c2);
@@ -127,30 +118,20 @@ public class DoubleBondElementEncoderFactoryTest {
 
         IDoubleBondStereochemistry dbs = mock(IDoubleBondStereochemistry.class);
         when(dbs.getStereoBond()).thenReturn(stereoBond);
-        when(dbs.getBonds()).thenReturn(new IBond[]{
-                left,
-                right
-        });
+        when(dbs.getBonds()).thenReturn(new IBond[]{left, right});
         when(dbs.getStereo()).thenReturn(IDoubleBondStereochemistry.Conformation.TOGETHER);
-        when(container.stereoElements()).thenReturn(Collections.<IStereoElement>singleton(dbs));
+        when(container.stereoElements()).thenReturn(Collections.<IStereoElement> singleton(dbs));
 
-        StereoEncoder encoder = new DoubleBondElementEncoderFactory().create(container,
-                                                                              new int[][]{
-                                                                                      {1, 2},
-                                                                                      {0, 3},
-                                                                                      {0},
-                                                                                      {1}
-                                                                              }); 
+        StereoEncoder encoder = new DoubleBondElementEncoderFactory().create(container, new int[][]{{1, 2}, {0, 3},
+                {0}, {1}});
 
-        assertThat(getGeometricParity(encoder).parity(),
-                   is(-1));                
+        assertThat(getGeometricParity(encoder).parity(), is(-1));
     }
-    
+
     private static GeometricParity getGeometricParity(StereoEncoder encoder) {
         if (encoder instanceof MultiStereoEncoder) {
             return getGeometricParity(extractEncoders(encoder).get(0));
-        }
-        else if (encoder instanceof GeometryEncoder) {
+        } else if (encoder instanceof GeometryEncoder) {
             Field field = null;
             try {
                 field = encoder.getClass().getDeclaredField("geometric");

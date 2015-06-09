@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -38,7 +33,6 @@ import nu.xom.Element;
 import nu.xom.Elements;
 import nu.xom.ParsingException;
 
-import org.openscience.cdk.annotations.TestClass;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
 
@@ -52,10 +46,9 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.module   dict
  *
  */
-@TestClass("org.openscience.cdk.dict.OWLFileTest")
 public class OWLFile extends Dictionary {
 
-    private static String rdfNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private static String rdfNS  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static String rdfsNS = "http://www.w3.org/2000/01/rdf-schema#";
 
     public OWLFile() {
@@ -63,44 +56,40 @@ public class OWLFile extends Dictionary {
     }
 
     public static Dictionary unmarshal(Reader reader) {
-        ILoggingTool logger =
-            LoggingToolFactory.createLoggingTool(OWLFile.class);
+        ILoggingTool logger = LoggingToolFactory.createLoggingTool(OWLFile.class);
         Dictionary dict = new OWLFile();
         try {
             Builder parser = new Builder();
             Document doc = parser.build(reader);
             Element root = doc.getRootElement();
             logger.debug("Found root element: ", root.getQualifiedName());
-            
+
             // Extract ownNS from root element
-//            final String ownNS = root.getBaseURI();
+            //            final String ownNS = root.getBaseURI();
             final String ownNS = root.getBaseURI();
             dict.setNS(ownNS);
 
             logger.debug("Found ontology namespace: ", ownNS);
-            
+
             // process the defined facts
             Elements entries = root.getChildElements();
             logger.info("Found #elements in OWL dict:", entries.size());
-            for (int i=0; i<entries.size(); i++) {
+            for (int i = 0; i < entries.size(); i++) {
                 Element entry = entries.get(i);
                 if (entry.getNamespaceURI().equals(ownNS)) {
-                	Entry dbEntry = unmarshal(entry, ownNS); 
-                	dict.addEntry(dbEntry);
-                	logger.debug("Added entry: ", dbEntry);
+                    Entry dbEntry = unmarshal(entry, ownNS);
+                    dict.addEntry(dbEntry);
+                    logger.debug("Added entry: ", dbEntry);
                 } else {
-                	logger.debug("Found a non-fact: ", entry.getQualifiedName());
+                    logger.debug("Found a non-fact: ", entry.getQualifiedName());
                 }
             }
         } catch (ParsingException ex) {
             logger.error("Dictionary is not well-formed: ", ex.getMessage());
-            logger.debug("Error at line " + ex.getLineNumber(),
-                         ", column " + ex.getColumnNumber());
+            logger.debug("Error at line " + ex.getLineNumber(), ", column " + ex.getColumnNumber());
             dict = null;
-        } catch (IOException ex) { 
-            logger.error("Due to an IOException, the parser could not check:",
-                ex.getMessage()
-            );
+        } catch (IOException ex) {
+            logger.error("Due to an IOException, the parser could not check:", ex.getMessage());
             logger.debug(ex);
             dict = null;
         }
@@ -108,8 +97,7 @@ public class OWLFile extends Dictionary {
     }
 
     public static Entry unmarshal(Element entry, String ownNS) {
-    	ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(OWLFile.class);
+        ILoggingTool logger = LoggingToolFactory.createLoggingTool(OWLFile.class);
 
         // create a new entry by ID
         Attribute id = entry.getAttribute("ID", rdfNS);
@@ -130,12 +118,12 @@ public class OWLFile extends Dictionary {
         }
         Element description = entry.getFirstChildElement("description", ownNS);
         if (description != null) {
-        	dbEntry.setDescription(description.getValue());
+            dbEntry.setDescription(description.getValue());
         }
 
         if (entry.getQualifiedName().equals("Descriptor")) dbEntry.setRawContent(entry);
 
         return dbEntry;
     }
-    
+
 }

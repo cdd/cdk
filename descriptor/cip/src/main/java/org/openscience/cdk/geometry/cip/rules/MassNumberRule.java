@@ -1,4 +1,5 @@
 /* Copyright (C) 2010  Egon Willighagen <egonw@users.sf.net>
+ *               2014  Mark B Vine (orcid:0000-0002-7794-0426)
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -24,8 +25,6 @@ package org.openscience.cdk.geometry.cip.rules;
 
 import java.io.IOException;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.config.Isotopes;
 import org.openscience.cdk.config.IsotopeFactory;
 import org.openscience.cdk.geometry.cip.ILigand;
@@ -38,20 +37,19 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  * @cdk.module cip
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.geometry.cip.rules.MassNumberRuleTest")
 class MassNumberRule implements ISequenceSubRule<ILigand> {
 
-    ILoggingTool logger = LoggingToolFactory.createLoggingTool(MassNumberRule.class);
+    ILoggingTool   logger = LoggingToolFactory.createLoggingTool(MassNumberRule.class);
     IsotopeFactory factory;
 
     /** {@inheritDoc} */
-    @TestMethod("testCompare_Identity,testCompare,testOrder")
+    @Override
     public int compare(ILigand ligand1, ILigand ligand2) {
-        ensureFactory(ligand1);
+        ensureFactory();
         return getMassNumber(ligand1).compareTo(getMassNumber(ligand2));
     }
 
-    private void ensureFactory(ILigand ligand) {
+    private void ensureFactory() {
         if (factory == null) {
             try {
                 factory = Isotopes.getInstance();
@@ -67,5 +65,5 @@ class MassNumberRule implements ISequenceSubRule<ILigand> {
         if (factory == null) return 0;
         return factory.getMajorIsotope(ligand.getLigandAtom().getSymbol()).getMassNumber();
     }
-    
+
 }

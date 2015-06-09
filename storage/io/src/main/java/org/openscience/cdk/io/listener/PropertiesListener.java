@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2003-2007  The Jmol Development Team
+/* Copyright (C) 2003-2007  The Jmol Development Team
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -52,29 +47,30 @@ import org.openscience.cdk.io.setting.IOSetting;
  */
 public class PropertiesListener implements IReaderListener, IWriterListener {
 
-    private Properties props;
+    private Properties  props;
     private PrintWriter out;
-    
+
     public PropertiesListener(Properties props) {
         this.props = props;
         this.setOutputWriter(new OutputStreamWriter(System.out));
     }
-    
+
     /**
      * Overwrites the default writer to which the output is directed.
      */
     public void setOutputWriter(Writer writer) {
         if (writer instanceof PrintWriter) {
-            this.out = (PrintWriter)writer;
+            this.out = (PrintWriter) writer;
         } else if (writer == null) {
             this.out = null;
         } else {
             this.out = new PrintWriter(writer);
         }
     }
-    
+
+    @Override
     public void frameRead(ReaderEvent event) {}
-    
+
     /**
      * Processes the IOSettings by listing the question, giving the options
      * and asking the user to provide their choice.
@@ -82,6 +78,7 @@ public class PropertiesListener implements IReaderListener, IWriterListener {
      * <p>Note: if the input reader is <code>null</code>, then the method
      * does not wait for an answer, and takes the default.
      */
+    @Override
     public void processIOSettingQuestion(IOSetting setting) {
         String questionName = setting.getName();
         if (props != null) {
@@ -94,8 +91,5 @@ public class PropertiesListener implements IReaderListener, IWriterListener {
             }
         }
     }
-  
+
 }
-
-
-

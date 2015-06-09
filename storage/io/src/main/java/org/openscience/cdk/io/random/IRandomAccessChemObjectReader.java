@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2005-2008   Nina Jeliazkova <nina@acad.bg>
  *
  * Contact: cdk-devel@lists.sourceforge.net
@@ -28,15 +28,18 @@ import java.util.ListIterator;
 
 /**
  * Extension of {@link java.util.ListIterator}.
- * 
+ *
  * @author     Nina Jeliazkova <nina@acad.bg>
- * @cdk.module io 
+ * @cdk.module io
  * @cdk.githash
  */
 public interface IRandomAccessChemObjectReader<T> extends ListIterator<T> {
-	
-	T readRecord(int record) throws Exception ;
+
+    T readRecord(int record) throws Exception;
+
     public T first();
+
     public T last();
+
     public int size();
 }

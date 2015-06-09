@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -26,8 +26,6 @@ package org.openscience.cdk.isomorphism;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
@@ -57,7 +55,6 @@ import static org.openscience.cdk.interfaces.ITetrahedralChirality.Stereo.CLOCKW
  * @author John May
  * @cdk.module isomorphism
  */
-@TestClass("org.openscience.cdk.isomorphism.StereoMatchPredicateTest")
 final class StereoMatch implements Predicate<int[]> {
 
     /** Query and target contains. */
@@ -67,32 +64,32 @@ final class StereoMatch implements Predicate<int[]> {
     private final Map<IAtom, Integer> queryMap, targetMap;
 
     /** Indexed array of stereo elements. */
-    private final IStereoElement[] queryElements, targetElements;
+    private final IStereoElement[]    queryElements, targetElements;
 
     /** Indexed array of stereo element types. */
-    private final Type[] queryTypes, targetTypes;
+    private final Type[]              queryTypes, targetTypes;
 
     /** Indices of focus atoms of stereo elements. */
-    private final int[] queryStereoIndices, targetStereoIndices;
+    private final int[]               queryStereoIndices, targetStereoIndices;
 
     /**
      * Create a predicate for checking mappings between a provided
      * {@code query} and {@code target}.
-     * 
+     *
      * @param query query container
      * @param target target container
      */
     StereoMatch(IAtomContainer query, IAtomContainer target) {
-        this.query  = query;
+        this.query = query;
         this.target = target;
-        this.queryMap  = indexAtoms(query);
+        this.queryMap = indexAtoms(query);
         this.targetMap = indexAtoms(target);
-        this.queryElements  = new IStereoElement[query.getAtomCount()];
+        this.queryElements = new IStereoElement[query.getAtomCount()];
         this.targetElements = new IStereoElement[target.getAtomCount()];
-        this.queryTypes  = new Type[query.getAtomCount()];
+        this.queryTypes = new Type[query.getAtomCount()];
         this.targetTypes = new Type[target.getAtomCount()];
 
-        queryStereoIndices  = indexElements(queryMap, queryElements, queryTypes, query);
+        queryStereoIndices = indexElements(queryMap, queryElements, queryTypes, query);
         targetStereoIndices = indexElements(targetMap, targetElements, targetTypes, target);
     }
 
@@ -103,22 +100,19 @@ final class StereoMatch implements Predicate<int[]> {
      * @param mapping permutation of the query vertices
      * @return the stereo chemistry is value
      */
-    @TestMethod("tetrahedral_match,tetraherdal_mismatch")
+    @Override
     public boolean apply(final int[] mapping) {
 
         // n.b. not true for unspecified queries e.g. [C@?H](*)(*)*
-        if (queryStereoIndices.length > targetStereoIndices.length)
-            return false;
-        
+        if (queryStereoIndices.length > targetStereoIndices.length) return false;
+
         for (final int u : queryStereoIndices) {
             switch (queryTypes[u]) {
                 case Tetrahedral:
-                    if (!checkTetrahedral(u, mapping))
-                        return false;
+                    if (!checkTetrahedral(u, mapping)) return false;
                     break;
                 case Geometric:
-                    if (!checkGeometric(u, otherIndex(u), mapping))
-                        return false;
+                    if (!checkGeometric(u, otherIndex(u), mapping)) return false;
                     break;
             }
         }
@@ -135,8 +129,7 @@ final class StereoMatch implements Predicate<int[]> {
      */
     private boolean checkTetrahedral(int u, int[] mapping) {
         int v = mapping[u];
-        if (targetTypes[v] != Type.Tetrahedral)
-            return false;
+        if (targetTypes[v] != Type.Tetrahedral) return false;
 
         ITetrahedralChirality queryElement = (ITetrahedralChirality) queryElements[u];
         ITetrahedralChirality targetElement = (ITetrahedralChirality) targetElements[v];
@@ -145,9 +138,8 @@ final class StereoMatch implements Predicate<int[]> {
         int[] us = neighbors(queryElement, queryMap);
         int[] vs = neighbors(targetElement, targetMap);
         us = map(u, v, us, mapping);
-        
-        if (us == null)
-            return false;
+
+        if (us == null) return false;
 
         int p = permutationParity(us) * parity(queryElement.getStereo());
         int q = permutationParity(vs) * parity(targetElement.getStereo());
@@ -171,14 +163,12 @@ final class StereoMatch implements Predicate<int[]> {
 
         // implicit hydrogen in query but explicit in target, modify the mapping
         // such that the central atom, u, mapps to the hydrogen
-        if (query.getAtom(u).getImplicitHydrogenCount() == 1
-                && target.getAtom(v).getImplicitHydrogenCount() == 0) {
+        if (query.getAtom(u).getImplicitHydrogenCount() == 1 && target.getAtom(v).getImplicitHydrogenCount() == 0) {
             IAtom explicitHydrogen = findHydrogen(((ITetrahedralChirality) targetElements[v]).getLigands());
             // the substructure had a hydrogen but the superstructure did not
             // the matching is not possible - if we allowed the mapping then
             // we would have different results for implicit/explicit hydrogens
-            if (explicitHydrogen == null)
-                return null;
+            if (explicitHydrogen == null) return null;
             mapping[u] = targetMap.get(explicitHydrogen);
         }
 
@@ -205,17 +195,15 @@ final class StereoMatch implements Predicate<int[]> {
         int v2 = mapping[u2];
 
         // no configuration in target
-        if (targetTypes[v1] != Type.Geometric || targetTypes[v2] != Type.Geometric)
-            return false;
+        if (targetTypes[v1] != Type.Geometric || targetTypes[v2] != Type.Geometric) return false;
 
         IDoubleBondStereochemistry queryElement = (IDoubleBondStereochemistry) queryElements[u1];
         IDoubleBondStereochemistry targetElement = (IDoubleBondStereochemistry) targetElements[v1];
 
         // although the atoms were mapped and 'v1' and 'v2' are bond in double-bond
-        // elements they are not in the same element 
+        // elements they are not in the same element
         if (!targetElement.getStereoBond().contains(target.getAtom(v1))
-                || !targetElement.getStereoBond().contains(target.getAtom(v2)))
-            return false;
+                || !targetElement.getStereoBond().contains(target.getAtom(v2))) return false;
 
         // bond is undirected so we need to ensure v1 is the first atom in the bond
         // we also need to to swap the substituents later
@@ -245,10 +233,8 @@ final class StereoMatch implements Predicate<int[]> {
             vRight = tmp;
         }
 
-        if (mapping[uLeft] != vLeft)
-            p *= -1;
-        if (mapping[uRight] != vRight)
-            p *= -1;
+        if (mapping[uLeft] != vLeft) p *= -1;
+        if (mapping[uRight] != vRight) p *= -1;
 
         return p == q;
     }
@@ -276,8 +262,7 @@ final class StereoMatch implements Predicate<int[]> {
      */
     private IAtom findHydrogen(final IAtom[] atoms) {
         for (final IAtom a : atoms) {
-            if (Integer.valueOf(1).equals(a.getAtomicNumber()))
-                return a;
+            if (Integer.valueOf(1).equals(a.getAtomicNumber())) return a;
         }
         return null;
     }
@@ -294,8 +279,7 @@ final class StereoMatch implements Predicate<int[]> {
         int n = 0;
         for (int i = 0; i < vs.length; i++)
             for (int j = i + 1; j < vs.length; j++)
-                if (vs[i] > vs[j])
-                    n++;
+                if (vs[i] > vs[j]) n++;
         return (n & 0x1) == 1 ? -1 : 1;
     }
 
@@ -335,10 +319,8 @@ final class StereoMatch implements Predicate<int[]> {
      * @param container the container to index the elements of
      * @return indices of atoms involved in stereo configurations
      */
-    private static int[] indexElements(Map<IAtom, Integer> map,
-                                       IStereoElement[] elements,
-                                       Type[] types,
-                                       IAtomContainer container) {
+    private static int[] indexElements(Map<IAtom, Integer> map, IStereoElement[] elements, Type[] types,
+            IAtomContainer container) {
         int[] indices = new int[container.getAtomCount()];
         int nElements = 0;
         for (IStereoElement element : container.stereoElements()) {
@@ -348,8 +330,7 @@ final class StereoMatch implements Predicate<int[]> {
                 elements[idx] = element;
                 types[idx] = Type.Tetrahedral;
                 indices[nElements++] = idx;
-            }
-            else if (element instanceof IDoubleBondStereochemistry) {
+            } else if (element instanceof IDoubleBondStereochemistry) {
                 IDoubleBondStereochemistry dbs = (IDoubleBondStereochemistry) element;
                 int idx1 = map.get(dbs.getStereoBond().getAtom(0));
                 int idx2 = map.get(dbs.getStereoBond().getAtom(1));
@@ -383,7 +364,6 @@ final class StereoMatch implements Predicate<int[]> {
 
     // could be moved into the IStereoElement to allow faster introspection
     private static enum Type {
-        Tetrahedral,
-        Geometric
+        Tetrahedral, Geometric
     }
 }

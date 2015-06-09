@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 2003-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@slists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -50,36 +45,42 @@ import java.io.InputStream;
  */
 public class SDFReaderTest extends SimpleChemObjectReaderTest {
 
-    @BeforeClass public static void setup() throws Exception {
+    @BeforeClass
+    public static void setup() throws Exception {
         setSimpleChemObjectReader(new MDLV2000Reader(), "data/mdl/test.sdf");
     }
 
-    @Test public void testAccepts() {
-    	MDLV2000Reader reader = new MDLV2000Reader();
-    	Assert.assertTrue(reader.accepts(ChemFile.class));
-    	Assert.assertTrue(reader.accepts(ChemModel.class));
-    	Assert.assertTrue(reader.accepts(AtomContainer.class));
+    @Test
+    public void testAccepts() {
+        MDLV2000Reader reader = new MDLV2000Reader();
+        Assert.assertTrue(reader.accepts(ChemFile.class));
+        Assert.assertTrue(reader.accepts(ChemModel.class));
+        Assert.assertTrue(reader.accepts(AtomContainer.class));
     }
 
-    @Test public void testSDFFile() throws Exception {
+    @Test
+    public void testSDFFile() throws Exception {
         String filename = "data/mdl/test.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
         Assert.assertEquals(9, sequence.getChemModelCount());
-        for (int i=0; i<sequence.getChemModelCount(); i++) {
-        	Assert.assertNotNull(sequence.getChemModel(i));
+        for (int i = 0; i < sequence.getChemModelCount(); i++) {
+            Assert.assertNotNull(sequence.getChemModel(i));
         }
     }
 
-    @Test public void testDataFromSDFReading() throws Exception {
+    @Test
+    public void testDataFromSDFReading() throws Exception {
         String filename = "data/mdl/test.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
@@ -95,13 +96,14 @@ public class SDFReaderTest extends SimpleChemObjectReaderTest {
         Assert.assertEquals("1", m.getProperty("E_NSC"));
         Assert.assertEquals("553-97-9", m.getProperty("E_CAS"));
     }
-    
-    @Test public void testMultipleDataFields() throws Exception {
+
+    @Test
+    public void testMultipleDataFields() throws Exception {
         String filename = "data/mdl/bug1587283.mol";
-        InputStream ins = this.getClass().getClassLoader().
-          getResourceAsStream(filename);
+        InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        IChemFile fileContents = (IChemFile)reader.read(new ChemFile());
+        IChemFile fileContents = (IChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
@@ -120,64 +122,72 @@ public class SDFReaderTest extends SimpleChemObjectReaderTest {
         Assert.assertEquals("B02", m.getProperty("Tag"));
     }
 
-    @Test public void testSDFFile4() throws Exception {
+    @Test
+    public void testSDFFile4() throws Exception {
         String filename = "data/mdl/test4.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
         Assert.assertEquals(2, sequence.getChemModelCount());
-        for (int i=0; i<sequence.getChemModelCount(); i++) {
-        	Assert.assertNotNull(sequence.getChemModel(i));
+        for (int i = 0; i < sequence.getChemModelCount(); i++) {
+            Assert.assertNotNull(sequence.getChemModel(i));
         }
     }
 
-    @Test public void testSDFFile3() throws Exception {
+    @Test
+    public void testSDFFile3() throws Exception {
         String filename = "data/mdl/test3.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
         Assert.assertEquals(2, sequence.getChemModelCount());
-        for (int i=0; i<sequence.getChemModelCount(); i++) {
-        	Assert.assertNotNull(sequence.getChemModel(i));
+        for (int i = 0; i < sequence.getChemModelCount(); i++) {
+            Assert.assertNotNull(sequence.getChemModel(i));
         }
     }
 
-    @Test public void testSDFFile5() throws Exception {
+    @Test
+    public void testSDFFile5() throws Exception {
         String filename = "data/mdl/test5.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
         Assert.assertEquals(2, sequence.getChemModelCount());
-        for (int i=0; i<sequence.getChemModelCount(); i++) {
-        	Assert.assertNotNull(sequence.getChemModel(i));
+        for (int i = 0; i < sequence.getChemModelCount(); i++) {
+            Assert.assertNotNull(sequence.getChemModel(i));
         }
     }
-    
+
     /**
      * Test for bug 1974826.
      *
      * @cdk.bug 1974826
      */
-    @Test public void testSDFFile6() throws Exception {
+    @Test
+    public void testSDFFile6() throws Exception {
         String filename = "data/mdl/test6.sdf"; // a multi molecule SDF file
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        ChemFile fileContents = (ChemFile)reader.read(new ChemFile());
+        ChemFile fileContents = (ChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         org.openscience.cdk.interfaces.IChemSequence sequence = fileContents.getChemSequence(0);
         Assert.assertNotNull(sequence);
         Assert.assertEquals(3, sequence.getChemModelCount());
-        for (int i=0; i<sequence.getChemModelCount(); i++) {
-          Assert.assertNotNull(sequence.getChemModel(i));
+        for (int i = 0; i < sequence.getChemModelCount(); i++) {
+            Assert.assertNotNull(sequence.getChemModel(i));
         }
 
         IChemModel model = sequence.getChemModel(0);
@@ -195,12 +205,13 @@ public class SDFReaderTest extends SimpleChemObjectReaderTest {
      *
      * @cdk.bug 2911300
      */
-    @Test public void testBug2911300() throws Exception {
+    @Test
+    public void testBug2911300() throws Exception {
         String filename = "data/mdl/bug2911300.sdf";
-        InputStream ins = this.getClass().getClassLoader().
-            getResourceAsStream(filename);
+        InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         MDLV2000Reader reader = new MDLV2000Reader(ins);
-        IChemFile fileContents = (IChemFile)reader.read(new ChemFile());
+        IChemFile fileContents = (IChemFile) reader.read(new ChemFile());
+        reader.close();
         Assert.assertEquals(1, fileContents.getChemSequenceCount());
         IChemSequence sequence = fileContents.getChemSequence(0);
         IChemModel model = sequence.getChemModel(0);

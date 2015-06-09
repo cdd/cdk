@@ -1,21 +1,21 @@
-/* 
+/*
  * Copyright (C) 2010 Rajarshi Guha <rajarshi.guha@gmail.com>
- * 
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.fragment;
 
@@ -65,7 +65,7 @@ public class FragmentUtilsTest extends CDKTestCase {
         SpanningTree st = new SpanningTree(mol);
         IRingSet rings = st.getAllRings();
         IBond splitBond = null;
-        for (int i = 0 ; i < mol.getBondCount(); i++) {
+        for (int i = 0; i < mol.getBondCount(); i++) {
             if (rings.getRings(mol.getBond(i)).getAtomContainerCount() == 0) {
                 splitBond = mol.getBond(i);
                 break;
@@ -80,30 +80,25 @@ public class FragmentUtilsTest extends CDKTestCase {
         Assert.assertEquals(2, uniqueFrags.size());
         // You can put the fragments back together with a ring closure and dot
         // [CH]12CC1.[CH]12CCC1
-        Assert.assertThat(uniqueFrags, hasItems("[CH]1CC1",
-                                                "[CH]1CCC1"));        
+        Assert.assertThat(uniqueFrags, hasItems("[CH]1CC1", "[CH]1CCC1"));
     }
 
-    @Test public void testMakeAtomContainer() {
+    @Test
+    public void testMakeAtomContainer() {
 
         IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
 
-        IAtom atom    = builder.newInstance(IAtom.class, "C");
+        IAtom atom = builder.newInstance(IAtom.class, "C");
         IAtom exclude = builder.newInstance(IAtom.class, "C");
 
         IAtom a1 = builder.newInstance(IAtom.class, "C");
         IAtom a2 = builder.newInstance(IAtom.class, "C");
 
-        IBond[] bonds = new IBond[]{
-                builder.newInstance(IBond.class, atom, exclude),
-                builder.newInstance(IBond.class, a1, a2),
-                builder.newInstance(IBond.class, a1, atom),
-                builder.newInstance(IBond.class, a2, exclude)
-        };
+        IBond[] bonds = new IBond[]{builder.newInstance(IBond.class, atom, exclude),
+                builder.newInstance(IBond.class, a1, a2), builder.newInstance(IBond.class, a1, atom),
+                builder.newInstance(IBond.class, a2, exclude)};
 
-        IAtomContainer part = FragmentUtils.makeAtomContainer(atom,
-                                                              Arrays.asList(bonds),
-                                                              exclude);
+        IAtomContainer part = FragmentUtils.makeAtomContainer(atom, Arrays.asList(bonds), exclude);
 
         assertThat(part.getAtomCount(), is(3));
         assertThat(part.getBondCount(), is(2));
@@ -117,28 +112,21 @@ public class FragmentUtilsTest extends CDKTestCase {
         Assert.assertTrue(part.contains(bonds[2]));
     }
 
-    @Test public void testTraversal_Chain() {
+    @Test
+    public void testTraversal_Chain() {
 
         IChemObjectBuilder builder = SilentChemObjectBuilder.getInstance();
 
-        IAtom[] atoms = new IAtom[]{
-                builder.newInstance(IAtom.class, "C"),
-                builder.newInstance(IAtom.class, "C"),
-                builder.newInstance(IAtom.class, "C"),
-                builder.newInstance(IAtom.class, "C"),
-                builder.newInstance(IAtom.class, "C"),
-                builder.newInstance(IAtom.class, "C")
-        };
-        IBond[] bonds = new IBond[]{
-                builder.newInstance(IBond.class, atoms[0], atoms[1]),
+        IAtom[] atoms = new IAtom[]{builder.newInstance(IAtom.class, "C"), builder.newInstance(IAtom.class, "C"),
+                builder.newInstance(IAtom.class, "C"), builder.newInstance(IAtom.class, "C"),
+                builder.newInstance(IAtom.class, "C"), builder.newInstance(IAtom.class, "C")};
+        IBond[] bonds = new IBond[]{builder.newInstance(IBond.class, atoms[0], atoms[1]),
                 builder.newInstance(IBond.class, atoms[1], atoms[2]),
                 builder.newInstance(IBond.class, atoms[2], atoms[3]),
                 builder.newInstance(IBond.class, atoms[3], atoms[4]),
-                builder.newInstance(IBond.class, atoms[4], atoms[5])
-        };
+                builder.newInstance(IBond.class, atoms[4], atoms[5])};
 
-        IAtomContainer m = builder.newInstance(IAtomContainer.class,
-                                               0, 0, 0, 0);
+        IAtomContainer m = builder.newInstance(IAtomContainer.class, 0, 0, 0, 0);
         m.setAtoms(atoms);
         m.setBonds(bonds);
 

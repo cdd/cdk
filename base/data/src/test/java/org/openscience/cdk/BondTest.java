@@ -1,26 +1,21 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- * 
- * Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
- * 
+/* Copyright (C) 2002-2007  The Chemistry Development Kit (CDK) project
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
- * 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
  */
 package org.openscience.cdk;
 
@@ -44,6 +39,8 @@ public class BondTest extends AbstractBondTest {
     @BeforeClass
     public static void setUp() {
         setTestObjectBuilder(new ITestObjectBuilder() {
+
+            @Override
             public IChemObject newTestObject() {
                 return new Bond();
             }
@@ -63,11 +60,11 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_arrayIAtom() {
         IChemObject object = newChemObject();
-        IAtom atom1 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom2 = object.getBuilder().newInstance(IAtom.class,"O");
-        IAtom atom3 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom4 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom5 = object.getBuilder().newInstance(IAtom.class,"C");
+        IAtom atom1 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom2 = object.getBuilder().newInstance(IAtom.class, "O");
+        IAtom atom3 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom4 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom5 = object.getBuilder().newInstance(IAtom.class, "C");
 
         IBond bond1 = new Bond(new IAtom[]{atom1, atom2, atom3, atom4, atom5});
         Assert.assertEquals(5, bond1.getAtomCount());
@@ -78,11 +75,11 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_arrayIAtom_IBond_Order() {
         IChemObject object = newChemObject();
-        IAtom atom1 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom2 = object.getBuilder().newInstance(IAtom.class,"O");
-        IAtom atom3 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom4 = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom atom5 = object.getBuilder().newInstance(IAtom.class,"C");
+        IAtom atom1 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom2 = object.getBuilder().newInstance(IAtom.class, "O");
+        IAtom atom3 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom4 = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom atom5 = object.getBuilder().newInstance(IAtom.class, "C");
 
         IBond bond1 = new Bond(new IAtom[]{atom1, atom2, atom3, atom4, atom5}, IBond.Order.SINGLE);
         Assert.assertEquals(5, bond1.getAtomCount());
@@ -94,8 +91,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -108,8 +105,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom_IBond_Order() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o, IBond.Order.DOUBLE);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -122,8 +119,8 @@ public class BondTest extends AbstractBondTest {
     @Test
     public void testBond_IAtom_IAtom_IBond_Order_IBond_Stereo() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
         IBond bond = new Bond(c, o, IBond.Order.SINGLE, IBond.Stereo.UP);
 
         Assert.assertEquals(2, bond.getAtomCount());
@@ -134,10 +131,11 @@ public class BondTest extends AbstractBondTest {
     }
 
     @Test
+    @Override
     public void testCompare_Object() {
         IChemObject object = newChemObject();
-        IAtom c = object.getBuilder().newInstance(IAtom.class,"C");
-        IAtom o = object.getBuilder().newInstance(IAtom.class,"O");
+        IAtom c = object.getBuilder().newInstance(IAtom.class, "C");
+        IAtom o = object.getBuilder().newInstance(IAtom.class, "O");
 
         IBond b = new Bond(c, o, IBond.Order.DOUBLE); // C=O bond
         IBond b2 = new Bond(c, o, IBond.Order.DOUBLE); // same C=O bond

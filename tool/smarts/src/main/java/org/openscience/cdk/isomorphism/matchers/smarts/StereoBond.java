@@ -1,6 +1,4 @@
-/* $Revision$ $Author$ $Date$ 
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,35 +30,35 @@ import org.openscience.cdk.interfaces.IChemObjectBuilder;
  */
 public class StereoBond extends SMARTSBond {
 
-    private final boolean unspecified;
+    private final boolean   unspecified;
     private final Direction direction;
-    
-    public enum Direction {UP, DOWN}
-    
-    public StereoBond(IChemObjectBuilder builder,
-                      Direction          direction,
-                      boolean            unspecified){
-        super(builder);
-        this.unspecified = unspecified;
-        this.direction  = direction;
+
+    public enum Direction {
+        UP, DOWN
     }
 
-	public boolean matches(IBond bond) {
+    public StereoBond(IChemObjectBuilder builder, Direction direction, boolean unspecified) {
+        super(builder);
+        this.unspecified = unspecified;
+        this.direction = direction;
+    }
+
+    @Override
+    public boolean matches(IBond bond) {
         return Order.SINGLE.equals(bond.getOrder());
     }
-    
+
     public boolean unspecified() {
         return unspecified;
     }
-    
+
     public Direction direction(IAtom atom) {
         if (atom == getAtom(0))
             return direction;
-        else if (atom == getAtom(1))
-            return inv(direction);
+        else if (atom == getAtom(1)) return inv(direction);
         throw new IllegalArgumentException("atom is not a memeber of this bond");
     }
-    
+
     private Direction inv(Direction direction) {
         return direction == Direction.UP ? Direction.DOWN : Direction.UP;
     }

@@ -1,9 +1,4 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
- *
- * Copyright (C) 2001-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2001-2007  The Chemistry Development Kit (CDK) project
  *
  * Contact: cdk-devel@lists.sourceforge.net
  *
@@ -31,7 +26,8 @@ package org.openscience.cdk.io.iterator.event;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.openscience.cdk.annotations.TestMethod;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
@@ -42,6 +38,7 @@ import org.openscience.cdk.io.formats.IResourceFormat;
 import org.openscience.cdk.io.listener.IReaderListener;
 import org.openscience.cdk.tools.ILoggingTool;
 import org.openscience.cdk.tools.LoggingToolFactory;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -62,13 +59,12 @@ import org.xml.sax.XMLReader;
  */
 public class EventCMLReader extends DefaultEventChemObjectReader {
 
-    private XMLReader parser;
-    private Reader input;
-    private IChemObjectBuilder builder;    
-    private EventCMLHandler cdo;
+    private XMLReader           parser;
+    private Reader              input;
+    private IChemObjectBuilder  builder;
+    private EventCMLHandler     cdo;
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(EventCMLReader.class);;
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(EventCMLReader.class); ;
 
     /**
      * Define this CMLReader to take the input from a java.io.Reader
@@ -77,27 +73,26 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
      * a new molecule is read.
      *
      * @param input    Reader type input
-     * @param listener ReaderListener that listens to newMolecule events. 
+     * @param listener ReaderListener that listens to newMolecule events.
      */
-    public EventCMLReader(Reader input, IReaderListener listener,
-    		              IChemObjectBuilder builder) {
+    public EventCMLReader(Reader input, IReaderListener listener, IChemObjectBuilder builder) {
         this.init();
         this.input = input;
         this.cdo = new EventCMLHandler(this, builder);
         this.builder = builder;
         this.addChemObjectIOListener(listener);
     }
-    
-    @TestMethod("testGetFormat")
+
+    @Override
     public IResourceFormat getFormat() {
         return CMLFormat.getInstance();
     }
 
+    @Override
     public IAtomContainer getAtomContainer() {
         return cdo.getAtomContainer();
     }
-    
-    @TestMethod("testSetReader_Reader")
+
     public void setReader(Reader reader) throws CDKException {
         this.input = reader;
     }
@@ -113,7 +108,7 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
                 parser = saxParser.getXMLReader();
                 logger.info("Using JAXP/SAX XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ParserConfigurationException | SAXException e) {
                 logger.warn("Could not instantiate JAXP/SAX XML reader: ", e.getMessage());
                 logger.debug(e);
             }
@@ -121,12 +116,11 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
         // Aelfred is first alternative.
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("gnu.xml.aelfred2.XmlReader").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("gnu.xml.aelfred2.XmlReader")
+                        .newInstance();
                 logger.info("Using Aelfred2 XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Aelfred2 XML reader!");
                 logger.debug(e);
             }
@@ -134,12 +128,11 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
         // Xerces is second alternative
         if (!success) {
             try {
-                parser = (XMLReader)this.getClass().getClassLoader().
-                        loadClass("org.apache.xerces.parsers.SAXParser").
-                        newInstance();
+                parser = (XMLReader) this.getClass().getClassLoader().loadClass("org.apache.xerces.parsers.SAXParser")
+                        .newInstance();
                 logger.info("Using Xerces XML parser.");
                 success = true;
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 logger.warn("Could not instantiate Xerces XML reader!");
                 logger.debug(e);
             }
@@ -173,7 +166,7 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
             logger.debug(e);
             throw new CDKException(error, e);
         } catch (SAXParseException saxe) {
-            SAXParseException spe = (SAXParseException)saxe;
+            SAXParseException spe = (SAXParseException) saxe;
             String error = "Found well-formedness error in line " + spe.getLineNumber();
             logger.error(error);
             logger.debug(saxe);
@@ -186,10 +179,9 @@ public class EventCMLReader extends DefaultEventChemObjectReader {
         }
     }
 
-    @TestMethod("testClose")
+    @Override
     public void close() throws IOException {
         input.close();
     }
 
 }
-

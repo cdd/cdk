@@ -1,12 +1,7 @@
-/* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+/* Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
  *
- * Copyright (C) 1997-2007  The Chemistry Development Kit (CDK) project
- * 
  * Contact: cdk-devel@lists.sourceforge.net
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
  * as published by the Free Software Foundation; either version 2.1
@@ -15,12 +10,12 @@
  * - but is not limited to - adding the above copyright notice to the beginning
  * of your source code files, and to any copyright notice that you may distribute
  * with programs based on this work.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -32,7 +27,7 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemFile;
@@ -51,18 +46,19 @@ import org.openscience.cdk.tools.LoggingToolFactory;
  */
 public class JChemPaintTest extends CDKTestCase {
 
-    private static ILoggingTool logger =
-        LoggingToolFactory.createLoggingTool(JChemPaintTest.class);
+    private static ILoggingTool logger = LoggingToolFactory.createLoggingTool(JChemPaintTest.class);
 
     /**
      * This one tests a CML2 file.
      */
-    @Test public void testSalt() throws Exception {
+    @Test
+    public void testSalt() throws Exception {
         String filename = "data/cml/COONa.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -80,18 +76,20 @@ public class JChemPaintTest extends CDKTestCase {
         IAtomContainer mol = model.getMoleculeSet().getAtomContainer(0);
         Assert.assertNotNull(mol);
         Assert.assertEquals(4, mol.getAtomCount());
-        Assert.assertTrue(GeometryTools.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(mol));
     }
 
     /**
      * This one tests reading of output from the WWMM matrix (KEGG collection).
      */
-    @Test public void testWWMMOutput() throws Exception {
+    @Test
+    public void testWWMMOutput() throws Exception {
         String filename = "data/cml/keggtest.cml";
         logger.info("Testing: " + filename);
         InputStream ins = this.getClass().getClassLoader().getResourceAsStream(filename);
         CMLReader reader = new CMLReader(ins);
-        IChemFile chemFile = (IChemFile)reader.read(new org.openscience.cdk.ChemFile());
+        IChemFile chemFile = (IChemFile) reader.read(new org.openscience.cdk.ChemFile());
+        reader.close();
 
         // test the resulting ChemFile content
         Assert.assertNotNull(chemFile);
@@ -109,6 +107,6 @@ public class JChemPaintTest extends CDKTestCase {
         IAtomContainer mol = moleculeSet.getAtomContainer(0);
         Assert.assertNotNull(mol);
         Assert.assertEquals(2, mol.getAtomCount());
-        Assert.assertTrue(GeometryTools.has3DCoordinates(mol));
+        Assert.assertTrue(GeometryUtil.has3DCoordinates(mol));
     }
 }

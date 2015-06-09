@@ -21,7 +21,7 @@
  */
 package org.openscience.cdk.renderer;
 
-import org.openscience.cdk.geometry.GeometryTools;
+import org.openscience.cdk.geometry.GeometryUtil;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IAtomContainerSet;
 import org.openscience.cdk.interfaces.IChemModel;
@@ -30,8 +30,8 @@ import org.openscience.cdk.interfaces.IReactionSet;
 
 /**
  * Utility class for calculating the average bond length for various
- * IChemObject subtypes : IReaction, IMoleculeSet, IChemModel, and IReactionSet.  
- * 
+ * IChemObject subtypes : IReaction, IAtomContainerSet, IChemModel, and IReactionSet.
+ *
  * @author maclean
  * @cdk.module renderbasic
  * @cdk.githash
@@ -40,7 +40,7 @@ public class AverageBondLengthCalculator {
 
     /**
      * Calculate the average bond length for the bonds in a reaction.
-     * 
+     *
      * @param reaction the reaction to use
      * @return the average bond length
      */
@@ -49,17 +49,13 @@ public class AverageBondLengthCalculator {
         IAtomContainerSet reactants = reaction.getReactants();
         double reactantAverage = 0.0;
         if (reactants != null) {
-            reactantAverage =
-                calculateAverageBondLength(reactants) /
-                reactants.getAtomContainerCount();
+            reactantAverage = calculateAverageBondLength(reactants) / reactants.getAtomContainerCount();
         }
 
         IAtomContainerSet products = reaction.getProducts();
         double productAverage = 0.0;
         if (products != null) {
-            productAverage =
-                calculateAverageBondLength(products) /
-                products.getAtomContainerCount();
+            productAverage = calculateAverageBondLength(products) / products.getAtomContainerCount();
         }
 
         if (productAverage == 0.0 && reactantAverage == 0.0) {
@@ -71,15 +67,14 @@ public class AverageBondLengthCalculator {
 
     /**
      * Calculate the average bond length for the bonds in a molecule set.
-     * 
+     *
      * @param moleculeSet the molecule set to use
      * @return the average bond length
      */
     public static double calculateAverageBondLength(IAtomContainerSet moleculeSet) {
         double averageBondModelLength = 0.0;
         for (IAtomContainer atomContainer : moleculeSet.atomContainers()) {
-            averageBondModelLength +=
-                GeometryTools.getBondLengthAverage(atomContainer);
+            averageBondModelLength += GeometryUtil.getBondLengthAverage(atomContainer);
         }
         return averageBondModelLength / moleculeSet.getAtomContainerCount();
     }
@@ -113,8 +108,7 @@ public class AverageBondLengthCalculator {
     public static double calculateAverageBondLength(IReactionSet reactionSet) {
         double averageBondModelLength = 0.0;
         for (IReaction reaction : reactionSet.reactions()) {
-            averageBondModelLength +=
-                calculateAverageBondLength(reaction);
+            averageBondModelLength += calculateAverageBondLength(reaction);
         }
         return averageBondModelLength / reactionSet.getReactionCount();
     }

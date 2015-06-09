@@ -18,8 +18,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.molecular;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.qsar.AbstractMolecularDescriptor;
@@ -36,7 +34,7 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  *  C=abs(B^2-A^2+A)+H/100
  *  </pre>
  *  where C=complexity, A=number of non-hydrogen atoms, B=number of bonds and H=number of heteroatoms
- *  
+ *
  * <p>This descriptor uses no parameters.
  *
  * @author      chhoppe from EUROSCREEN
@@ -46,19 +44,18 @@ import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:NilaComplexity
  */
-@TestClass("org.openscience.cdk.qsar.descriptors.molecular.FragmentComplexityDescriptorTest")
 public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor implements IMolecularDescriptor {
-    private static final String[] names = {"fragC"};
 
+    private static final String[] NAMES = {"fragC"};
 
     /**
      *  Constructor for the FragmentComplexityDescriptor object.
      */
-    public FragmentComplexityDescriptor() { }
+    public FragmentComplexityDescriptor() {}
 
     /**
      * Returns a <code>Map</code> which specifies which descriptor
-     * is implemented by this class. 
+     * is implemented by this class.
      *
      * These fields are used in the map:
      * <ul>
@@ -71,31 +68,28 @@ public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor im
      *
      * @return An object containing the descriptor specification
      */
-    @TestMethod("testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#NilaComplexity",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#NilaComplexity", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
-
 
     /**
      *  Sets the parameters attribute of the FragmentComplexityDescriptor object.
      *
      * This descriptor takes no parameter.
-     * 
+     *
      * @param  params            The new parameters value
      * @exception  CDKException if more than one parameter or a non-Boolean parameter is specified
      * @see #getParameters
      */
-    @TestMethod("testSetParameters_arrayObject")
+    @Override
     public void setParameters(Object[] params) throws CDKException {
         if (params.length > 0) {
             throw new CDKException("FragmentComplexityDescriptor expects no parameter");
         }
     }
-
 
     /**
      *  Gets the parameters attribute of the FragmentComplexityDescriptor object.
@@ -103,41 +97,40 @@ public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor im
      * @return    The parameters value
      * @see #setParameters
      */
-    @TestMethod("testGetParameters")
+    @Override
     public Object[] getParameters() {
         return new Object[0];
         // return the parameters as used for the descriptor calculation
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
-        return names;
-    }    
+        return NAMES;
+    }
 
     /**
      * Calculate the complexity in the supplied {@link IAtomContainer}.
-     * 
+     *
      *@param  container  The {@link IAtomContainer} for which this descriptor is to be calculated
      *@return                   the complexity
      *@see #setParameters
      */
-    @TestMethod("testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtomContainer container) {
         //System.out.println("FragmentComplexityDescriptor");
-        int A = 0;
-        double H = 0;
+        int a = 0;
+        double h = 0;
         for (int i = 0; i < container.getAtomCount(); i++) {
             if (!container.getAtom(i).getSymbol().equals("H")) {
-                A++;
+                a++;
             }
             if (!container.getAtom(i).getSymbol().equals("H") & !container.getAtom(i).getSymbol().equals("C")) {
-                H++;
+                h++;
             }
         }
-        int B = container.getBondCount() + AtomContainerManipulator.getImplicitHydrogenCount(container);
-        double C = Math.abs(B * B - A * A + A) + (H / 100);
-        return new DescriptorValue(getSpecification(), getParameterNames(),
-                getParameters(), new DoubleResult(C),
+        int b = container.getBondCount() + AtomContainerManipulator.getImplicitHydrogenCount(container);
+        double c = Math.abs(b * b - a * a + a) + (h / 100);
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new DoubleResult(c),
                 getDescriptorNames());
     }
 
@@ -152,23 +145,20 @@ public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor im
      * @return an object that implements the {@link org.openscience.cdk.qsar.result.IDescriptorResult} interface indicating
      *         the actual type of values returned by the descriptor in the {@link org.openscience.cdk.qsar.DescriptorValue} object
      */
-    @TestMethod("testGetDescriptorResultType")
+    @Override
     public IDescriptorResult getDescriptorResultType() {
         return new DoubleResult(0.0);
     }
-
 
     /**
      *  Gets the parameterNames attribute of the FragmentComplexityDescriptor object.
      *
      *@return    The parameterNames value
      */
-    @TestMethod("testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return null;
     }
-
-
 
     /**
      *  Gets the parameterType attribute of the FragmentComplexityDescriptor object.
@@ -176,11 +166,8 @@ public class FragmentComplexityDescriptor extends AbstractMolecularDescriptor im
      *@param  name  Description of the Parameter
      *@return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod("testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
-       return null;
+        return null;
     }
 }
-
-
-

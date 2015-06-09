@@ -1,6 +1,4 @@
-/*  $Revision$ $Author$ $Date$
- *
- *  Copyright (C) 2004-2007  Matteo Floris <mfe4@users.sf.net>
+/* Copyright (C) 2004-2007  Matteo Floris <mfe4@users.sf.net>
  *                     2008  Egon Willighagen <egonw@users.sf.net>
  *
  *  Contact: cdk-devel@lists.sourceforge.net
@@ -21,8 +19,6 @@
  */
 package org.openscience.cdk.qsar.descriptors.atomic;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtom;
 import org.openscience.cdk.interfaces.IAtomContainer;
@@ -43,10 +39,9 @@ import org.openscience.cdk.qsar.result.IntegerResult;
  * @cdk.githash
  * @cdk.set     qsar-descriptors
  * @cdk.dictref qsar-descriptors:atomValence
- * 
+ *
  * @see         org.openscience.cdk.qsar.AtomValenceTool
  */
-@TestClass(value="org.openscience.cdk.qsar.descriptors.atomic.AtomValenceDescriptorTest")
 public class AtomValenceDescriptor extends AbstractAtomicDescriptor implements IAtomicDescriptor {
 
     /**
@@ -59,21 +54,18 @@ public class AtomValenceDescriptor extends AbstractAtomicDescriptor implements I
      *
      * @return The specification value
      */
-    @TestMethod(value="testGetSpecification")
+    @Override
     public DescriptorSpecification getSpecification() {
         return new DescriptorSpecification(
-                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomValence",
-                this.getClass().getName(),
-                "The Chemistry Development Kit");
+                "http://www.blueobelisk.org/ontologies/chemoinformatics-algorithms/#atomValence", this.getClass()
+                        .getName(), "The Chemistry Development Kit");
     }
 
     /**
      * This descriptor does have any parameter.
      */
-    @TestMethod(value="testSetParameters_arrayObject")
-    public void setParameters(Object[] params) throws CDKException {
-    }
-
+    @Override
+    public void setParameters(Object[] params) throws CDKException {}
 
     /**
      *  Gets the parameters attribute of the VdWRadiusDescriptor object.
@@ -81,12 +73,12 @@ public class AtomValenceDescriptor extends AbstractAtomicDescriptor implements I
      *@return    The parameters value
      * @see #setParameters
      */
-    @TestMethod(value="testGetParameters")
+    @Override
     public Object[] getParameters() {
         return null;
     }
 
-    @TestMethod(value="testNamesConsistency")
+    @Override
     public String[] getDescriptorNames() {
         return new String[]{"val"};
     }
@@ -96,23 +88,22 @@ public class AtomValenceDescriptor extends AbstractAtomicDescriptor implements I
      *
      * @param atom          The IAtom for which the DescriptorValue is requested
      * @param container      Parameter is the atom container.
-     * @return The valence of an atom     
+     * @return The valence of an atom
      */
 
-    @TestMethod(value="testCalculate_IAtomContainer")
+    @Override
     public DescriptorValue calculate(IAtom atom, IAtomContainer container) {
         int atomValence = AtomValenceTool.getValence(atom);
-        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(),
-        	new IntegerResult(atomValence), getDescriptorNames());
+        return new DescriptorValue(getSpecification(), getParameterNames(), getParameters(), new IntegerResult(
+                atomValence), getDescriptorNames());
     }
-
 
     /**
      *  Gets the parameterNames attribute of the VdWRadiusDescriptor object.
      *
      *@return    The parameterNames value
      */
-    @TestMethod(value="testGetParameterNames")
+    @Override
     public String[] getParameterNames() {
         return new String[0];
     }
@@ -123,9 +114,8 @@ public class AtomValenceDescriptor extends AbstractAtomicDescriptor implements I
      * @param  name  Description of the Parameter
      * @return       An Object of class equal to that of the parameter being requested
      */
-    @TestMethod(value="testGetParameterType_String")
+    @Override
     public Object getParameterType(String name) {
         return null;
     }
 }
-

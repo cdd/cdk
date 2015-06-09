@@ -11,12 +11,7 @@ options {
 
 PARSER_BEGIN(SMARTSParser)
 
-/* $RCSfile$
- * $Author: $
- * $Date: $
- * $Revision: $
- *
- * Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,9 +31,6 @@ PARSER_BEGIN(SMARTSParser)
 package org.openscience.cdk.smiles.smarts.parser;
 
 import java.io.StringReader;
-import java.util.Stack;
-
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.isomorphism.matchers.QueryAtomContainer;
 import org.openscience.cdk.interfaces.IChemObjectBuilder;
 
@@ -114,7 +106,7 @@ TOKEN_MGR_DECLS : {
 
 <*> TOKEN:
 {
-    <#_WS: ( " " | "\t" | "\n" | "\r" ) >
+    <WS: ( " " | "\t" | "\n" | "\r" ) >
     |
     // Logical Operators
     <L_AND : ";" >
@@ -302,7 +294,7 @@ TOKEN_MGR_DECLS : {
 }
 
 /**
- *                     Start ::= <ReactionExpression>
+ *                     Start ::= <ReactionExpression> <#_WS>
  *        ReactionExpression ::= <GroupExpression> (">>" <GroupExpression>)? |
  *                               ">" <GroupExpression> ">" | ">>" <GroupExpression>
  *           GroupExpression ::= ["("] <SmartsExpresion> [")"] ( "." ["("] <SmartsExpression> [")"] )*
@@ -341,7 +333,7 @@ TOKEN_MGR_DECLS : {
 
 ASTStart Start() #Start : {}
 {
-    ReactionExpression() <EOF>
+    ReactionExpression() (<WS> | <EOF>)
     {
         return jjtThis;
     }

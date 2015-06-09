@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2013 European Bioinformatics Institute (EMBL-EBI)
  *                    John May <jwmay@users.sf.net>
- *  
+ *
  * Contact: cdk-devel@lists.sourceforge.net
- *  
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation; either version 2.1 of the License, or (at
  * your option) any later version. All we ask is that proper credit is given
- * for our work, which includes - but is not limited to - adding the above 
+ * for our work, which includes - but is not limited to - adding the above
  * copyright notice to the beginning of your source code files, and to any
  * copyright notice that you may distribute with programs based on this work.
  *
@@ -24,10 +24,8 @@
 
 package org.openscience.cdk.isomorphism;
 
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
-import org.openscience.cdk.annotations.TestClass;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,14 +44,13 @@ import java.util.Set;
  * @author John May
  * @cdk.module isomorphism
  */
-@TestClass("org.openscience.cdk.isomorphism.MappingPredicatesTest")
 final class UniqueBondMatches implements Predicate<int[]> {
 
     /** Which mappings have we seen already. */
     private final Set<Set<Tuple>> unique;
 
     /** The query graph. */
-    private final int[][] g;
+    private final int[][]         g;
 
     /**
      * Create filter for the expected number of unique matches. The number of
@@ -111,19 +108,20 @@ final class UniqueBondMatches implements Predicate<int[]> {
         }
 
         /** @inheritDoc */
-        @Override public int hashCode() {
+        @Override
+        public int hashCode() {
             return u ^ v;
         }
 
         /** @inheritDoc */
-        @Override public boolean equals(Object o) {
+        @Override
+        public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
             Tuple that = (Tuple) o;
 
-            return this.u == that.u && this.v == that.v
-                    || this.u == that.v && this.v == that.u;
+            return this.u == that.u && this.v == that.v || this.u == that.v && this.v == that.u;
         }
     }
 }

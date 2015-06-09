@@ -1,9 +1,4 @@
-/*  $RCSfile$
- *  $Author$
- *  $Date$
- *  $Revision$
- *
- *  Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
+/* Copyright (C) 2004-2007  The Chemistry Development Kit (CDK) project
  *
  *  Contact: cdk-devel@lists.sourceforge.net
  *
@@ -23,8 +18,6 @@
  */
 package org.openscience.cdk.graph.matrix;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.interfaces.IBond;
 
@@ -43,30 +36,27 @@ import org.openscience.cdk.interfaces.IBond;
  * @cdk.created 2004-07-04
  * @cdk.dictref blue-obelisk:calculateAdjecencyMatrix
  */
-@TestClass("org.openscience.cdk.graph.matrix.AdjacencyMatrixTest")
 public class AdjacencyMatrix implements IGraphMatrix {
 
-	/**
-	 * Returns the adjacency matrix for the given AtomContainer.
-	 *
+    /**
+     * Returns the adjacency matrix for the given AtomContainer.
+     *
      * @param  container The AtomContainer for which the matrix is calculated
-	 * @return           A adjacency matrix representating this AtomContainer
-	 */
-    @TestMethod("testGetMatrix_IAtomContainer")
+     * @return           An adjacency matrix representing this AtomContainer
+     */
     public static int[][] getMatrix(IAtomContainer container) {
-		IBond bond;
-		int indexAtom1;
-		int indexAtom2;
-		int[][] conMat = new int[container.getAtomCount()][container.getAtomCount()];
-		for (int f = 0; f < container.getBondCount(); f++){
+        IBond bond;
+        int indexAtom1;
+        int indexAtom2;
+        int[][] conMat = new int[container.getAtomCount()][container.getAtomCount()];
+        for (int f = 0; f < container.getBondCount(); f++) {
             bond = container.getBond(f);
             indexAtom1 = container.getAtomNumber(bond.getAtom(0));
-			indexAtom2 = container.getAtomNumber(bond.getAtom(1));
-			conMat[indexAtom1][indexAtom2] = 1;
-			conMat[indexAtom2][indexAtom1] = 1;
-		}
-		return conMat;
-	}
+            indexAtom2 = container.getAtomNumber(bond.getAtom(1));
+            conMat[indexAtom1][indexAtom2] = 1;
+            conMat[indexAtom2][indexAtom1] = 1;
+        }
+        return conMat;
+    }
 
 }
-

@@ -18,13 +18,12 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA. 
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.openscience.cdk.fingerprint;
 
 import org.junit.Test;
 import org.openscience.cdk.CDKTestCase;
-import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 
 import static org.mockito.Mockito.mock;
@@ -35,18 +34,18 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractFingerprinterTest extends CDKTestCase {
 
     public IFingerprinter getBitFingerprinter() {
-        throw new IllegalAccessError("This method should be overwritten " +
-        "by subclasses unit tests");
+        throw new IllegalAccessError("This method should be overwritten " + "by subclasses unit tests");
     };
 
     /* override if method is implemented */
-    @Test(expected=UnsupportedOperationException.class) public void testGetCountFingerprint() throws Exception {
+    @Test(expected = UnsupportedOperationException.class)
+    public void testGetCountFingerprint() throws Exception {
         getBitFingerprinter().getCountFingerprint(mock(IAtomContainer.class));
     }
 
     /* override if method is implemented */
-    @Test(expected=UnsupportedOperationException.class) public void testGetRawFingerprint() throws Exception {
+    @Test(expected = UnsupportedOperationException.class)
+    public void testGetRawFingerprint() throws Exception {
         getBitFingerprinter().getRawFingerprint(mock(IAtomContainer.class));
     }
 }
-

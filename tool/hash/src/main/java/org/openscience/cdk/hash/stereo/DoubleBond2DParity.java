@@ -24,8 +24,6 @@
 
 package org.openscience.cdk.hash.stereo;
 
-import org.openscience.cdk.annotations.TestClass;
-import org.openscience.cdk.annotations.TestMethod;
 
 import javax.vecmath.Point2d;
 
@@ -40,7 +38,6 @@ import javax.vecmath.Point2d;
  * @cdk.module hash
  * @cdk.githash
  */
-@TestClass("org.openscience.cdk.hash.stereo.DoubleBond2DParityTest")
 final class DoubleBond2DParity extends GeometricParity {
 
     // coordinates of the double bond atoms
@@ -49,7 +46,7 @@ final class DoubleBond2DParity extends GeometricParity {
     //   l = r
     //  /     \
     // l2      r2
-    private Point2d l, r, l1, r1, l2, r2;
+    private Point2d             l, r, l1, r1, l2, r2;
 
     /* the area below which we return unspecified parity */
     private static final double THRESHOLD = 0.1;
@@ -62,8 +59,7 @@ final class DoubleBond2DParity extends GeometricParity {
      * @param leftSubstituent  the substituent atom connected to the left atom
      * @param rightSubstituent the substituent atom connected to the right atom
      */
-    public DoubleBond2DParity(Point2d left, Point2d right,
-                              Point2d leftSubstituent, Point2d rightSubstituent) {
+    public DoubleBond2DParity(Point2d left, Point2d right, Point2d leftSubstituent, Point2d rightSubstituent) {
         this.l = left;
         this.r = right;
         this.l1 = leftSubstituent;
@@ -97,9 +93,8 @@ final class DoubleBond2DParity extends GeometricParity {
      * @param rightSubstituent1 first substituent atom connected to the right atom
      * @param rightSubstituent2 second substituent atom connected to the right atom
      */
-    public DoubleBond2DParity(Point2d left, Point2d right,
-                              Point2d leftSubstituent1, Point2d leftSubstituent2,
-                              Point2d rightSubstituent1, Point2d rightSubstituent2) {
+    public DoubleBond2DParity(Point2d left, Point2d right, Point2d leftSubstituent1, Point2d leftSubstituent2,
+            Point2d rightSubstituent1, Point2d rightSubstituent2) {
         this.l = left;
         this.r = right;
         this.l1 = leftSubstituent1;
@@ -113,8 +108,8 @@ final class DoubleBond2DParity extends GeometricParity {
      *
      * @return opposite (+1), together (-1) or unspecified (0)
      */
-    @TestMethod("opposite,together,unspecified")
-    @Override public int parity() {
+    @Override
+    public int parity() {
         return parity(l1, l2, r) * parity(r1, r2, l);
     }
 
@@ -139,6 +134,5 @@ final class DoubleBond2DParity extends GeometricParity {
 
         return Math.abs(det) < THRESHOLD ? 0 : (int) Math.signum(det);
     }
-
 
 }
